@@ -62,7 +62,7 @@ IF(PERIMETER_WINDOWS)
     INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/MSDXSDK_02_06/Include")
     
     #Select 64 or 32 compiled libs
-    IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    IF(PERIMETER_ARCH_64)
         MESSAGE("Linking against DirectX 64 bits")
         LINK_DIRECTORIES(BEFORE ${PROJECT_SOURCE_DIR}/MSDXSDK_02_06/Lib/x64)
     ELSE()
@@ -72,27 +72,10 @@ IF(PERIMETER_WINDOWS)
 
     SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS}
             #DirectX libs
-            d3d8
             d3d9
             d3dx9
-            d3dx9d
-            d3d10
-            d3dx10
-            d3dx10d
-            d3dxof
-            ddraw
-            dinput
-            dsetup
-            dinput8
-            dplayx
             dsound
-            dxgi
-            dxtrans
             DxErr
-            DxErr8
-            DxErr9
-            X3DAudio
-            XInput
     
             #Windows libs
             winmm
