@@ -2,7 +2,6 @@ name: Windows MSVC Build
 
 on:
   push:
-  pull_request:
 
 env:
   buildDir: '${{ github.workspace }}/build/'
@@ -13,12 +12,12 @@ jobs:
     # Run a job for each of the specified target architectures:
     strategy:
       matrix:
-        arch: [x86, x64]
+        arch: x86
         include:
           - arch: x86
             triplet: x86-windows
-          - arch: x64
-            triplet: x64-windows
+          #- arch: x64
+          #  triplet: x64-windows
     steps:
       - uses: actions/checkout@v2
       - uses: lukka/get-cmake@latest
