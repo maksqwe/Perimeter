@@ -17,8 +17,6 @@ jobs:
         include:
           - arch: x86
             triplet: x86-windows
-          #- arch: x64
-          #  triplet: x64-windows
     steps:
       - uses: actions/checkout@v2
       - uses: lukka/get-cmake@latest
