@@ -1,4 +1,4 @@
-name: Windows MSVC Build
+name: Windows MSVC Build 2
 
 on:
   push:
