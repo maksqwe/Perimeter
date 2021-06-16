@@ -1,0 +1,46 @@
+name: Windows MSVC Build
+
+on:
+  push:
+  pull_request:
+
+env:
+  buildDir: '${{ github.workspace }}/build/'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    # Run a job for each of the specified target architectures:
+    strategy:
+      matrix:
+        arch: [x86, x64]
+        include:
+          - arch: x86
+            triplet: x86-windows
+          - arch: x64
+            triplet: x64-windows
+    steps:
+      - uses: actions/checkout@v2
+      - uses: lukka/get-cmake@latest
+      - name: Restore from cache and run vcpkg
+        uses: lukka/run-vcpkg@v7
+        with:
+          setupOnly: true
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+          appendedCacheKey: ${{ hashFiles( '**/vcpkg.json' ) }}
+          vcpkgTriplet: ${{ matrix.triplet }}
+          # Ensure the vcpkg artifacts are cached, they are generated in the 'CMAKE_BINARY_DIR/vcpkg_installed' directory.
+          vcpkgGitCommitId: 92b42c4c680defe94f1665a847d04ded890f372e
+          # additionalCachedPaths: ${{ env.buildDir }}/vcpkg_installed
+      - name: Configure developer command prompt for ${{ matrix.arch }}
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+      - name: Run cmake to install the dependencies specified in the vcpkg.json manifest, generate project file and build the project
+        run: |
+          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -D_VCPKG_INSTALLED_DIR=${{ env.buildDir }}/vcpkg_installed -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}\vcpkg\scripts\buildsystems\vcpkg.cmake -DOPTION_DISABLE_STACKTRACE=ON ..
+          nmake
+      - uses: actions/upload-artifact@v2
+        with:
+          name: 'Perimeter-Windows-MSVC-${{ matrix.arch }}'
+          path: '${{ env.buildDir }}/Source/Release/'

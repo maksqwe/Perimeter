@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #include "StdAfx.h"
 
 #include "Runtime.h"
@@ -106,7 +108,7 @@ void terBuilding::setRealModel(int modelIndex, float scale)
 {
 	uninstallBasement();
 
-	__super::setRealModel(isConstructed() ? 0 : 1, 1);
+    terUnitReal::setRealModel(isConstructed() ? 0 : 1, 1);
 
 	if(attr().hasAnimationSetup()){
 		if(!isConstructed()){

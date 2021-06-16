@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #include "StdAfx.h"
 #include "Save.h"
 #include "EditArchive.h"
@@ -58,7 +60,8 @@ public:
 };
 
 TriggerInterface& triggerInterface() {
-	return Singleton<TriggerInterfaceImpl>::instance();
+    TriggerInterface& ti = Singleton<TriggerInterfaceImpl>::instance();
+	return ti;
 }
 
 //---------------------------------------

@@ -1,5 +1,5 @@
 #include "StdAfxRD.h"
-#include "Particle.h"
+#include "particle.h"
 
 int cParticle::RandomVal=0x83838383;
 
@@ -9,7 +9,7 @@ int cParticle::RandomVal=0x83838383;
 //#define check_vector(v) if(v.x>=1e6 || v.x<-1e6 || v.y>=1e6 || v.y<-1e6 || v.z>=1e6 || v.z<-1e6 ) { __asm { int 3 }; }
 #define check_vector(v)
 
-cParticle::cParticle(float fTimeLife,Vect2f &vTexSize) : cAnimUnkObj(KIND_PARTICLE)
+cParticle::cParticle(float fTimeLife,const Vect2f &vTexSize) : cAnimUnkObj(KIND_PARTICLE)
 {
 	TimeLife=fTimeLife;
 	CurrentTime=0;
@@ -32,7 +32,7 @@ void cParticle::Animate(float dt)
 	CurrentTime+=dt;
 	dTime+=dt;
 	GetFrame()->AddPhase(dt);
-	if(GetRef()>1) return; // çàïðåùåíî óäàëåíèå
+	if(GetRef()>1) return; // Ð·Ð°Ð¿Ñ€ÐµÑ‰ÐµÐ½Ð¾ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ðµ
 	if(Particle.empty()||(CurrentTime-Particle[LastParticle].time*TimeLife)>TimeLife||
 		CurrentTime>30000) 
 		Release();
@@ -59,7 +59,7 @@ void cParticle::PreDraw(cCamera *DrawNode)
 	}
 }
 void cParticle::Update()
-{	// ýâîëþöèÿ ñèñòåìû
+{	// ÑÐ²Ð¾Ð»ÑŽÑ†Ð¸Ñ ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹
 	float dt=(CurrentTime-dTime)/TimeLife;
 	if(Dumping.norm2())
 		if(Force.norm2())
@@ -130,16 +130,16 @@ void cParticle::Draw(cCamera *DrawNode)
 		if((i&0x00000007)>=nLOD) continue;
 		sVertexXYZDT1 *v=&Vertex[nVertex];
 		float phase=dt-Particle[i].time;
-		sParticleKey &key=Key[round(phase*(NumberKey-1))];
+		sParticleKey &key=Key[(int)round(phase*(NumberKey-1))];
 		VISASSERT(0<=phase&&phase<=1);
 		DrawNode->GetMatrix().invXformVect(Vect3f(+key.rotate.x,-key.rotate.y,0),sx);
 		DrawNode->GetMatrix().invXformVect(Vect3f(+key.rotate.y,+key.rotate.x,0),sy);
 
 		Vect3f v0,v1,v2,v3;
-		sColor4c color(round(GetDiffuse().r*key.diffuse.r),
-					   round(GetDiffuse().g*key.diffuse.g),
-					   round(GetDiffuse().b*key.diffuse.b),
-					   round(GetDiffuse().a*key.diffuse.a));
+		sColor4c color((int)round(GetDiffuse().r*key.diffuse.r),
+					   (int)round(GetDiffuse().g*key.diffuse.g),
+					   (int)round(GetDiffuse().b*key.diffuse.b),
+					   (int)round(GetDiffuse().a*key.diffuse.a));
 		
 		v0=Particle[i].pos-sx-sy;
 		v1=Particle[i].pos-sx+sy;
@@ -243,7 +243,7 @@ void CalcNumParticleClass(int& num_object,int& num_particle)
 			num_object++;
 		}
 	}
-#endif C_CHECK_DELETE
+#endif //C_CHECK_DELETE
 }
 
 void cParticle::Free()

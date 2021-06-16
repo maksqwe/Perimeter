@@ -1,11 +1,13 @@
+// TODO: change encoding to utf-8
+
 #include "StdAfxRD.h"
 #include "ForceField.h"
-//#include "..\Util\ProTool.h"
-#include "..\src\Scene.h"
+//#include "../Util/ProTool.h"
+#include "../src/Scene.h"
 
 //#include "PrmEdit.h"
-#include "Scripts\ForceField.hi"
-#include "Scripts\ForceField.cppi"
+#include "Scripts/ForceField.hi"
+#include "Scripts/ForceField.cppi"
 
 FieldDispatcher* field_dispatcher = NULL;
 
@@ -439,7 +441,7 @@ bool FieldDispatcher::checkPlace(const Vect2f& pos, const Vect2f& delta)
 	for(int y = p.y - d.y; y <= p.y + d.y; y++)
 		for(int x = p.x - d.x; x <= p.x + d.x; x++)
 			if(attribute(x, y) != attr || // другой атрибут
-				attr && map(x, y).height_initial < FieldCluster::ZeroGround + force_field_check_place_height) // слишком низко под полем
+				(attr && map(x, y).height_initial < FieldCluster::ZeroGround + force_field_check_place_height)) // слишком низко под полем
 					return false;
 	return true;
 }
@@ -578,7 +580,7 @@ int FieldDispatcher::castRay(const Vect3f& origin, const Vect3f& direction_or_po
 		int a = x2 - x1;
 		int b = y2 - y1;
 		int x = x1;
-		int y = (y1 << F_PREC) + (1 << F_PREC - 1);
+		int y = (y1 << F_PREC) + (1 << (F_PREC - 1));
 		int incr = 1;
 		int k = (b << F_PREC)/a;
 		if(x1 > x2){
@@ -600,7 +602,7 @@ int FieldDispatcher::castRay(const Vect3f& origin, const Vect3f& direction_or_po
 	else{
 		int a = x2 - x1;
 		int b = y2 - y1;
-		int x = (x1 << F_PREC) + (1 << F_PREC - 1);
+		int x = (x1 << F_PREC) + (1 << (F_PREC - 1));
 		int y = y1;
 		int incr = 1;
 		int k = (a << F_PREC)/b;
@@ -628,7 +630,7 @@ int FieldDispatcher::calcPenalty(const Vect3f& center, float radius, float feedb
 {
 	int xc = w2m(center.xi());
 	int yc = w2m(center.yi());
-	int D = (round(radius) >> scale) + 1;
+	int D = ((int)round(radius) >> scale) + 1;
 	float d_best = FLT_INF;
 	int x_best, y_best;
 	const Vect3f* n_best;

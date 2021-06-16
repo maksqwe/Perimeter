@@ -1,7 +1,7 @@
 // TerraCleft.cpp: implementation of the CTerraCleft class.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "terra.h"
 #include "TerraCleft.h"
 
@@ -164,7 +164,7 @@ CTerraCleftSystem::CTerraCleftSystem()
 
 #define ID(i, j) (((i)<<24)|(j))
 
-void CTerraCleftSystem::init_radial(Vect2i& pos1)
+void CTerraCleftSystem::init_radial(const Vect2i& pos1)
 {
 	m_nodes[0] = pos1;
 
@@ -199,7 +199,7 @@ void CTerraCleftSystem::init_radial(Vect2i& pos1)
 	grow_radial(m_clefts.back(), 1, 3);
 }
 
-void CTerraCleftSystem::init_direct(Vect2i& pos1, Vect2i& pos2)
+void CTerraCleftSystem::init_direct(const Vect2i& pos1, const Vect2i& pos2)
 {
 	Vect2f dir  = pos2 - pos1;
 	dir.normalize(1);
@@ -211,7 +211,7 @@ void CTerraCleftSystem::init_direct(Vect2i& pos1, Vect2i& pos2)
 	{
 		Vect2i vc = pos1 + dir*i*cleftSlipSpacing;
 
-		//ðàñøèðåíèå â íà÷àëå
+		//Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ðµ Ð² Ð½Ð°Ñ‡Ð°Ð»Ðµ
 		if(i<cleftSlipWidth/2)
 		{
 			if(i)
@@ -227,7 +227,7 @@ void CTerraCleftSystem::init_direct(Vect2i& pos1, Vect2i& pos2)
 		}
 		else
 		{
-			//ðàñïðîñòðàíåíèå ïîëîñû
+			//Ñ€Ð°ÑÐ¿Ñ€Ð¾ÑÑ‚Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ Ð¿Ð¾Ð»Ð¾ÑÑ‹
 			for(int j=0; j<cleftSlipWidth; j++)
 			{
 				Vect2i v = vc + dirp*(j - cleftSlipWidth/2)*cleftSlipSpacing + Vect2i(_xnoise(), _xnoise());
@@ -244,7 +244,7 @@ void CTerraCleftSystem::init_direct(Vect2i& pos1, Vect2i& pos2)
 	m_clefts.push_back(CTerraCleft(m_nodes[0], m_nodes[ID(1,2)], prcGo));
 	grow_direct(m_clefts.back(), 1, 2);
 }
-void CTerraCleftSystem::init_direct_thin(Vect2i& pos1, Vect2i& pos2)
+void CTerraCleftSystem::init_direct_thin(const Vect2i& pos1, const Vect2i& pos2)
 {
 	Vect2f dir  = pos2 - pos1;
 	dir.normalize(1);
@@ -254,7 +254,7 @@ void CTerraCleftSystem::init_direct_thin(Vect2i& pos1, Vect2i& pos2)
 
 	for(int i=0; i<nSlips; i++)
 	{
-		//ðàñïðîñòðàíåíèå ïîëîñû
+		//Ñ€Ð°ÑÐ¿Ñ€Ð¾ÑÑ‚Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ Ð¿Ð¾Ð»Ð¾ÑÑ‹
 		Vect2i vc = pos1 + dir*i*cleftSlipSpacing;
 		m_nodes[ID(i, 0)] = vc + Vect2i(_xnoise(), _xnoise());
 
@@ -268,7 +268,7 @@ void CTerraCleftSystem::init_direct_thin(Vect2i& pos1, Vect2i& pos2)
 	m_clefts.push_back(CTerraCleft(m_nodes[0], m_nodes[ID(1,0)], prcGo));
 	grow_direct_thin(m_clefts.back(), 1, 0);
 }
-void CTerraCleftSystem::init(int type, Vect2i& pos1, Vect2i& pos2)
+void CTerraCleftSystem::init(int type, const Vect2i& pos1, const Vect2i& pos2)
 {
 	if(type == csysRadial)
 		init_radial(pos1);
@@ -314,14 +314,14 @@ int CTerraCleftSystem::quant()
 	return nstops != m_clefts.size();
 }
 
-#define PUSH(id) {if(b = find_node(id)){m_clefts.push_back(CTerraCleft(*a, *b));}}
+#define PUSH(id) {if((b = find_node(id))){m_clefts.push_back(CTerraCleft(*a, *b));}}
 
 void CTerraCleftSystem::grow_radial(CTerraCleft& par, int i, int j)
 {
 	if(i == cleftRadCount)
 		return;
 
-	if(_xmp.find(ID(i, j)) != _xmp.end()) //óæå âêëþ÷åíî
+	if(_xmp.find(ID(i, j)) != _xmp.end()) //ÑƒÐ¶Ðµ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾
 		return;
 
 	Vect2i* b;
@@ -365,7 +365,7 @@ inline Vect2i* CTerraCleftSystem::find_node(int id)
 
 void CTerraCleftSystem::grow_direct(CTerraCleft& par, int i, int j)
 {
-	if(_xmp.find(ID(i, j)) != _xmp.end()) //óæå âêëþ÷åíî
+	if(_xmp.find(ID(i, j)) != _xmp.end()) //ÑƒÐ¶Ðµ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾
 		return;
 
 	Vect2i* a = find_node(ID(i, j)); 
@@ -376,7 +376,7 @@ void CTerraCleftSystem::grow_direct(CTerraCleft& par, int i, int j)
 
 	if(i<cleftSlipWidth/2)
 	{
-		//ðàñøèðåíèå â íà÷àëå
+		//Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð¸Ðµ Ð² Ð½Ð°Ñ‡Ð°Ð»Ðµ
 		if(j < 2*i)
 		{
 			m_clefts.push_back(CTerraCleft(*a, m_nodes[ID(i, j+1)]));
@@ -397,7 +397,7 @@ void CTerraCleftSystem::grow_direct(CTerraCleft& par, int i, int j)
 	}
 	else
 	{
-		//îñíîâíàÿ ïîëîñà
+		//Ð¾ÑÐ½Ð¾Ð²Ð½Ð°Ñ Ð¿Ð¾Ð»Ð¾ÑÐ°
 		if(i != nSlips-1)
 		{
 			m_clefts.push_back(CTerraCleft(*a, m_nodes[ID(i+1, j)]));

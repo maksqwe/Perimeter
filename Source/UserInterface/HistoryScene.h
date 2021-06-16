@@ -4,15 +4,15 @@
 #define _HISTORYSCENE_H
 
 #include "PlayOgg.h"
-#include "SCodeInterpreter\Interpreter.hpp"
-#include "SCodeInterpreter\Object3D.hpp"
+#include "SCodeInterpreter/Interpreter.hpp"
+#include "SCodeInterpreter/Object3D.hpp"
 #include "Silicon.h"
 #include "HistorySceneCamera.h"
 #include "History3D.h"
 
 class HistoryScene : public Commander {
 	public:
-		HistoryScene(const string& programFileName);
+		HistoryScene();
 		~HistoryScene();
 
 		void init(cVisGeneric* visGeneric, bool bw, bool addBlendAlpha = true);
@@ -105,7 +105,7 @@ class HistoryScene : public Commander {
 		void drawSprites();
 
 
-		World* HistoryScene::traceWorld(const Vect2f& pos);
+		World* traceWorld(const Vect2f& pos);
 		void createSkySphere(bool bw);
 		void updateObjects(float dt);
 

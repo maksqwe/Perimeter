@@ -1,7 +1,7 @@
 #include "StdAfxRD.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// ðåàëèçàöèÿ cFrame
+// Ñ€ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ cFrame
 //////////////////////////////////////////////////////////////////////////////////////////
 cFrame::cFrame()
 {
@@ -22,7 +22,7 @@ void cFrame::Set(float Period,float Start,float Finish)
 void cFrame::AddPhase(float dt)
 { 
 	SetPhase(count+dt*dcount);
-	if(finish>=0)
+	if(finish>=0) {
 		if(dcount>0)
 		{
 			if(count>=finish)
@@ -32,7 +32,8 @@ void cFrame::AddPhase(float dt)
 		{
 			if(count<=finish)
 				SetPhase(finish),dcount=0;
-		}
+        }
+    }
 }
 void cFrame::SetCopy(cFrame *Frame) const
 {

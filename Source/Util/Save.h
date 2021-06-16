@@ -1,18 +1,20 @@
+// TODO: change encoding to utf-8
+
 #ifndef __SAVE_PARSER_H__
 #define __SAVE_PARSER_H__
 
 #ifndef _UNIT_ATTRIBUTE_INL_
 #define _UNIT_ATTRIBUTE_INL_
-#include "..\Scripts\UnitAttribute.inl"
-#include "..\Scripts\SquadShellEnums.inl"
+#include "../Scripts/UnitAttribute.inl"
+#include "../Scripts/SquadShellEnums.inl"
 #endif // _UNIT_ATTRIBUTE_INL_
 
 #include "Serialization.h"
 #include "Handle.h"
 #include "SafeCast.h"
-#include "..\TriggerEditor\TriggerExport.h"
+#include "../TriggerEditor/TriggerExport.h"
 #include "Timers.h"
-#include "..\UserInterface\SoundTrack.h"
+#include "../UserInterface/SoundTrack.h"
 
 typedef vector<Vect2i> Vect2iVect;
 typedef vector<PrmString> PrmStringList;
@@ -2373,6 +2375,8 @@ struct ActionTask : Action // Задача
 	}	
 };
 
+DECLARE_ENUM_DESCRIPTOR_ENCLOSED(ActionTask, Type)
+
 struct ActionSetCameraAtObject : Action // Установить камеру на объект
 {
 	EnumWrapper<terUnitAttributeID> object; 
@@ -2780,6 +2784,8 @@ struct SaveManualData // Данные, редактируемые руками
 private:
 	SaveCameraSplineData* findCameraSpline(const char* name);
 };
+
+DECLARE_ENUM_DESCRIPTOR_ENCLOSED(SaveManualData, OmegaMissionType)
 
 //---------------------------------
 struct SavePrm {

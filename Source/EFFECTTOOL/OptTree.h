@@ -147,13 +147,13 @@ IX_Realtive			=58,
 #define P_L_HEIGHT2 58
 */
 
-#include "TreeList\TreeListCtrl.h"
-#include "TreeList\Null Listeners\NullChangeItemLabelNotifyListener.h"
-#include "TreeList\Null Listeners\NullItemDragdropNotifyListener.h"
-#include "TreeList\Null Listeners\NullItemChangeNotifyListener.h"
-#include "TreeList\Null Listeners\NullItemOperationNotifyListener.h"
-#include "TreeList\Null Listeners\NullTreeListNotifyListener.h"
-#include "TreeList\Null Listeners\NullGeneralNotifyListener.h"
+#include "TreeList/TreeListCtrl.h"
+#include "TreeList/Null Listeners/NullChangeItemLabelNotifyListener.h"
+#include "TreeList/Null Listeners/NullItemDragdropNotifyListener.h"
+#include "TreeList/Null Listeners/NullItemChangeNotifyListener.h"
+#include "TreeList/Null Listeners/NullItemOperationNotifyListener.h"
+#include "TreeList/Null Listeners/NullTreeListNotifyListener.h"
+#include "TreeList/Null Listeners/NullGeneralNotifyListener.h"
 #include "ControlView.h"
 
 enum StyleTreeItem
@@ -178,7 +178,7 @@ class CDataItem
 	bool check;
 	float value;
 	std::vector<ComboStr> combo_stings;
-	//Ó·‡·ÓÚÍ‡
+	//–æ–±—Ä–∞–±–æ—Ç–∫–∞
 	bool is_int;
 	float min_val;
 	float max_val;
@@ -284,7 +284,7 @@ public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	bool SetItemText(DWORD id,CString s);
-	bool SetItem—heck(DWORD id,bool v);
+	bool SetItemCheck(DWORD id,bool v);
 	void SetFps(float fps);
 	void UpDateToolBar();
 	void PutButton(int ix);

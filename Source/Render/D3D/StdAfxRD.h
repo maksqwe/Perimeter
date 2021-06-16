@@ -1,45 +1,48 @@
 #include <my_STL.h>
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
+#endif
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <list>
 #include <stack>
 #include <map>
 
-using namespace std;
-
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "..\inc\umath.h"
-#include "..\..\PluginMAX\src\BaseClass.h"
-#include "..\inc\IVisGenericInternal.h"
+using namespace std;
+
+#include "../inc/Umath.h"
+#include "../../PluginMAX/Src/BaseClass.h"
+#include "../inc/IVisGenericInternal.h"
 #include "RenderDevice.h"
-#include "..\src\VisError.h"
-#include "..\inc\VisGenericDefine.h"
-#include "..\inc\RenderMT.h"
+#include "../src/VisError.h"
+#include "../inc/VisGenericDefine.h"
+#include "../inc/RenderMT.h"
 
-#include "..\src\util.h"
-#include "..\src\TexLibrary.h"
-#include "..\src\Texture.h"
-#include "..\src\Texture.inl"
-#include "..\src\Material.h"
-#include "..\inc\IUnkObj.h"
-#include "..\src\Frame.h"
-#include "..\src\UnkObj.h"
-#include "..\src\ObjNode.h"
-#include "..\src\cCamera.h"
+#include "../src/util.h"
+#include "../src/TexLibrary.h"
+#include "../src/Texture.h"
+#include "../src/texture.inl"
+#include "../src/Material.h"
+#include "../inc/IUnkObj.h"
+#include "../src/Frame.h"
+#include "../src/UnkObj.h"
+#include "../src/ObjNode.h"
+#include "../src/cCamera.h"
 
-#include "..\PluginMax\ZIPStream.h"
+#include "../PluginMAX/ZIPStream.h"
 
-#include "..\saver\saver.h"
-#include "..\saver\saver_render.h"
+#include "../saver/Saver.h"
+#include "../saver/saver_render.h"
 
 template<class TYPE>
 class DebugType
@@ -95,7 +98,7 @@ extern bool Option_IsShadowMap;
 
 extern class cVisGeneric		*gb_VisGeneric;
 
-#include "..\inc\IncTerra.h"
+#include "../inc/IncTerra.h"
 
 #ifdef _DEBUG
 //#define TEXTURE_NOTFREE

@@ -1,7 +1,7 @@
 // CoolDialogBar.cpp : implementation file
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "afxpriv.h"    // for CDockContext
 #include "CoolDialogBar.h"
 #include <algorithm>
@@ -25,7 +25,7 @@ m_clrBtnShadow(::GetSysColor(COLOR_BTNSHADOW))
     m_sizeFloat = CSize(200, 200);
     m_bTracking = FALSE;
     m_bInRecalcNC = FALSE;
-    m_cxEdge = 6;//0  // \|/ Border за который изменяют размер
+    m_cxEdge = 6;//0  // \|/ Border Р·Р° РєРѕС‚РѕСЂС‹Р№ РёР·РјРµРЅСЏСЋС‚ СЂР°Р·РјРµСЂ
 	m_cxBorder = 3;//0
 	m_cxGripper = 20;
 	m_cDialog = NULL;

@@ -23,7 +23,7 @@ class CShellWindow;
 typedef void(*EVENTPROC)(CShellWindow* pWnd, InterfaceEventCode code, int param);
 typedef int(*DYNCALLBACK)(float,float);
 
-//êàðòèêêè â íà çàêëàäêàõ ïàïîê
+//ÐºÐ°Ñ€Ñ‚Ð¸ÐºÐºÐ¸ Ð² Ð½Ð° Ð·Ð°ÐºÐ»Ð°Ð´ÐºÐ°Ñ… Ð¿Ð°Ð¿Ð¾Ðº
 struct SQUAD_ICON
 {
 	cTexture*	texture;
@@ -48,7 +48,7 @@ struct SQUAD_ICON
 };
 
 
-//áàçîâûé êëàññ äëÿ âñåê êîíòðîëîâ
+//Ð±Ð°Ð·Ð¾Ð²Ñ‹Ð¹ ÐºÐ»Ð°ÑÑ Ð´Ð»Ñ Ð²ÑÐµÐº ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ð¾Ð²
 class CShellWindow
 {
 protected:
@@ -221,7 +221,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//ïðîñòàÿ êíîïêà ãëàâíîãî ìåíþ
+//Ð¿Ñ€Ð¾ÑÑ‚Ð°Ñ ÐºÐ½Ð¾Ð¿ÐºÐ° Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 class CShellPushButton : public CShellWindow
 {
 public:
@@ -279,7 +279,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//îñíîâíàÿ êíîïêà èíòåðôåéñà. èñïîëüçóåòñÿ êàê ñàìà, òàê è êàê áàçîâûé êëàññ äëÿ äðóãèõ
+//Ð¾ÑÐ½Ð¾Ð²Ð½Ð°Ñ ÐºÐ½Ð¾Ð¿ÐºÐ° Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ°. Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ ÐºÐ°Ðº ÑÐ°Ð¼Ð°, Ñ‚Ð°Ðº Ð¸ ÐºÐ°Ðº Ð±Ð°Ð·Ð¾Ð²Ñ‹Ð¹ ÐºÐ»Ð°ÑÑ Ð´Ð»Ñ Ð´Ñ€ÑƒÐ³Ð¸Ñ…
 class CShellComplexPushButton : public CShellWindow
 {
 protected:
@@ -362,14 +362,14 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//êíîïêà ïðîèçâîäíûõ þíèòîâ
+//ÐºÐ½Ð¾Ð¿ÐºÐ° Ð¿Ñ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð½Ñ‹Ñ… ÑŽÐ½Ð¸Ñ‚Ð¾Ð²
 class CShellLegionButton : public CShellComplexPushButton
 {
 	cFont*      m_hFontLabel;
 	char		m_cbTotal[5];
 public:
 
-	bool        m_bS, m_bO, m_bT; //õâàòàåò ëè áàçîâûõ
+	bool        m_bS, m_bO, m_bT; //Ñ…Ð²Ð°Ñ‚Ð°ÐµÑ‚ Ð»Ð¸ Ð±Ð°Ð·Ð¾Ð²Ñ‹Ñ…
 
 	CShellLegionButton(int id, CShellWindow* pParent, EVENTPROC p = 0);
 	virtual ~CShellLegionButton();
@@ -384,7 +384,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//êíîïêà çàêàçà áàçîâûõ þíèòîâ è ñòðóêòóð
+//ÐºÐ½Ð¾Ð¿ÐºÐ° Ð·Ð°ÐºÐ°Ð·Ð° Ð±Ð°Ð·Ð¾Ð²Ñ‹Ñ… ÑŽÐ½Ð¸Ñ‚Ð¾Ð² Ð¸ ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€
 class CShellAtomButton : public CShellComplexPushButton
 {
 //	cFont*     m_hFont;
@@ -405,7 +405,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//êíîïêà çàêàçà áðèãàäèðîâ/ïðîðàáîâ
+//ÐºÐ½Ð¾Ð¿ÐºÐ° Ð·Ð°ÐºÐ°Ð·Ð° Ð±Ñ€Ð¸Ð³Ð°Ð´Ð¸Ñ€Ð¾Ð²/Ð¿Ñ€Ð¾Ñ€Ð°Ð±Ð¾Ð²
 class CTerrainBuildButton : public CShellComplexPushButton
 {
 	bool  m_bPointingLeft;
@@ -456,7 +456,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//tabsheets ñêâàäîâ è ñòðîåíèé
+//tabsheets ÑÐºÐ²Ð°Ð´Ð¾Ð² Ð¸ ÑÑ‚Ñ€Ð¾ÐµÐ½Ð¸Ð¹
 class CUITabSheet : public CShellWindow
 {
 	const sqshTabSheet*           m_attr;
@@ -577,7 +577,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//îêíî ñ ìóëüòèòåêñòóðèíãîì - ýêðàíû ãëàâíîãî ìåíþ
+//Ð¾ÐºÐ½Ð¾ Ñ Ð¼ÑƒÐ»ÑŒÑ‚Ð¸Ñ‚ÐµÐºÑÑ‚ÑƒÑ€Ð¸Ð½Ð³Ð¾Ð¼ - ÑÐºÑ€Ð°Ð½Ñ‹ Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 class CMultiTexWindow : public CShellWindow
 {
 public:
@@ -595,7 +595,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//îêîøêî ñ êàðòîé ìèðà â ãëàâíîì ìåíþ
+//Ð¾ÐºÐ¾ÑˆÐºÐ¾ Ñ ÐºÐ°Ñ€Ñ‚Ð¾Ð¹ Ð¼Ð¸Ñ€Ð° Ð² Ð³Ð»Ð°Ð²Ð½Ð¾Ð¼ Ð¼ÐµÐ½ÑŽ
 class CShowMapWindow : public CShellWindow
 {
 public:
@@ -617,7 +617,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//èñïîëüçóåòñÿ êàê ðàìêà äëÿ êíîïîê â ãëàâíîì ìåíþ
+//Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ ÐºÐ°Ðº Ñ€Ð°Ð¼ÐºÐ° Ð´Ð»Ñ ÐºÐ½Ð¾Ð¿Ð¾Ðº Ð² Ð³Ð»Ð°Ð²Ð½Ð¾Ð¼ Ð¼ÐµÐ½ÑŽ
 class CMoveButton : public CShellWindow
 {
 public:
@@ -635,7 +635,7 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//êîíòðîëû ãëàâíîãî ìåíþ
+//ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ñ‹ Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 class CScaleButton : public CShellWindow
 {
 public:
@@ -733,7 +733,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//îêíî ñ êàðòîé â èãðå
+//Ð¾ÐºÐ½Ð¾ Ñ ÐºÐ°Ñ€Ñ‚Ð¾Ð¹ Ð² Ð¸Ð³Ñ€Ðµ
 class CMapWindow : public CShellWindow
 {
 	cTexture*	   m_pMapTexture;
@@ -767,7 +767,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//ïðîñòî òåêñò.
+//Ð¿Ñ€Ð¾ÑÑ‚Ð¾ Ñ‚ÐµÐºÑÑ‚.
 class CTextWindow : public CShellWindow
 {
 
@@ -843,7 +843,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//listbox ãëàâíîãî ìåíþ
+//listbox Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 struct sItem
 {
 	float x;
@@ -967,8 +967,8 @@ class ChatWindow : public CShellWindow {
 	};
 
 	int CheckClick(float _x,float  _y);
-	/// âîçâðàùàåò äëèíó ÷àñòè ñòðîêè, êîòîðàÿ âëåçåò â îêíî ïî øèðèíå
-	/// åñëè ñòðîêà âîéä¸ò öåëèêîì, òî âîçâðàùàåò -1
+	/// Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð´Ð»Ð¸Ð½Ñƒ Ñ‡Ð°ÑÑ‚Ð¸ ÑÑ‚Ñ€Ð¾ÐºÐ¸, ÐºÐ¾Ñ‚Ð¾Ñ€Ð°Ñ Ð²Ð»ÐµÐ·ÐµÑ‚ Ð² Ð¾ÐºÐ½Ð¾ Ð¿Ð¾ ÑˆÐ¸Ñ€Ð¸Ð½Ðµ
+	/// ÐµÑÐ»Ð¸ ÑÑ‚Ñ€Ð¾ÐºÐ° Ð²Ð¾Ð¹Ð´Ñ‘Ñ‚ Ñ†ÐµÐ»Ð¸ÐºÐ¾Ð¼, Ñ‚Ð¾ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ -1
 	int GetStringBreak(const char* str, bool ignore_spaces = false) const;
 
 public:
@@ -1034,7 +1034,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//slider äëÿ ãëàâíîãî ìåíþ
+//slider Ð´Ð»Ñ Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 class CSliderWindow : public CShellWindow
 {
 public:
@@ -1073,7 +1073,7 @@ public:
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//edit  äëÿ ãëàâíîãî ìåíþ
+//edit  Ð´Ð»Ñ Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 class CEditWindow : public CShellWindow
 {
 //	cFont*   m_hFont;
@@ -1130,7 +1130,7 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//combo  äëÿ ãëàâíîãî ìåíþ
+//combo  Ð´Ð»Ñ Ð³Ð»Ð°Ð²Ð½Ð¾Ð³Ð¾ Ð¼ÐµÐ½ÑŽ
 class CComboWindow : public CShellWindow
 {
 public:
@@ -1217,7 +1217,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//ïðîãðåññ áàðû
+//Ð¿Ñ€Ð¾Ð³Ñ€ÐµÑÑ Ð±Ð°Ñ€Ñ‹
 class CProgressEnergy : public CShellWindow
 {
 public:
@@ -1343,7 +1343,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//èíâîðìàöèîííîå îêîøêî
+//Ð¸Ð½Ð²Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ð¾Ð½Ð½Ð¾Ðµ Ð¾ÐºÐ¾ÑˆÐºÐ¾
 
 typedef void (*InfoWndFormatProcType)(char*, void*);
 
@@ -1419,7 +1419,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//background ïîä èíòåðôåéñîì
+//background Ð¿Ð¾Ð´ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ¾Ð¼
 class CBackgroundWindow : public CShellWindow
 {
 
@@ -1432,7 +1432,7 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//êóðñîðû
+//ÐºÑƒÑ€ÑÐ¾Ñ€Ñ‹
 class CShellCursorManager
 {
 	struct CURSOR
@@ -1514,7 +1514,7 @@ public:
 
 enum
 {
-	CBCODE_QUANT = 1, //çàäåðæêà ïî âðåìåíè â delay(ms)
+	CBCODE_QUANT = 1, //Ð·Ð°Ð´ÐµÑ€Ð¶ÐºÐ° Ð¿Ð¾ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ Ð² delay(ms)
 	CBCODE_MOUSEMOVE,
 	CBCODE_LBDOWN,
 	CBCODE_LBUP,
@@ -1665,9 +1665,9 @@ public:
 	CShellWindow*   m_pCtrlHover;
 	int             m_nMouseButtonsState;
 
-	/// true åñëè àêòèâíî ïîëå ââîäà
-	/// ïðè ýòîì îòðàáàòûâàåòñÿ àâòîïîâòîð ïðè óäåðæàíèè êíîïîê
-	/// åñëè false òî àâòîïîâòîð èãíîðèðóåòñÿ
+	/// true ÐµÑÐ»Ð¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¾ Ð¿Ð¾Ð»Ðµ Ð²Ð²Ð¾Ð´Ð°
+	/// Ð¿Ñ€Ð¸ ÑÑ‚Ð¾Ð¼ Ð¾Ñ‚Ñ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ð°Ð²Ñ‚Ð¾Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€ Ð¿Ñ€Ð¸ ÑƒÐ´ÐµÑ€Ð¶Ð°Ð½Ð¸Ð¸ ÐºÐ½Ð¾Ð¿Ð¾Ðº
+	/// ÐµÑÐ»Ð¸ false Ñ‚Ð¾ Ð°Ð²Ñ‚Ð¾Ð¿Ð¾Ð²Ñ‚Ð¾Ñ€ Ð¸Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÑ‚ÑÑ
 	bool			m_editMode;
 
 	bool            m_bEnergyCanBuild;
@@ -2119,7 +2119,7 @@ inline int absoluteY(float y) {
 }
 
 inline string getImageFileName(const sqshImage* image, const char* fileName = 0) {
-	string fullname = fileName ? fileName : image->texture;
+	string fullname = fileName ? fileName : static_cast<string>(image->texture);
 	if ( !fullname.empty() ) {
 		if (image->hasResolutionVersion) {
 			char intBuffer[11 + 1];
@@ -2218,19 +2218,19 @@ inline void drawPointRelative(const Vect2i& a, const sColor4f& c = sColor4f(0, 0
 */
 //absolute-----------------
 inline void DrawSprite(int x, int y, int dx, int dy, float u, float v, float du, float dv,
-		cTexture *Texture, sColor4c &ColorMul = sColor4c(255,255,255,255), float phase = 0, eBlendMode mode = ALPHA_NONE)
+		cTexture *Texture, const sColor4c &ColorMul = sColor4c(255,255,255,255), float phase = 0, eBlendMode mode = ALPHA_NONE)
 {
 	terRenderDevice->DrawSprite(x, y, dx, dy, u, v, du, dv, Texture, ColorMul, phase, mode);
 }
 
 inline void DrawSprite2(int x, int y, int dx, int dy, float u, float v, float du, float dv,
-		cTexture *Tex1, cTexture *Tex2, sColor4c &ColorMul = sColor4c(255,255,255,255), float phase = 0)
+		cTexture *Tex1, cTexture *Tex2, const sColor4c &ColorMul = sColor4c(255,255,255,255), float phase = 0)
 {
 	terRenderDevice->DrawSprite2(x, y, dx, dy, u, v, du, dv, Tex1, Tex2, ColorMul, phase);
 }
 
 inline void DrawSprite2(int x, int y, int dx, int dy, float u, float v, float du, float dv, float u1, float v1, float du1, float dv1,
-		cTexture *Tex1, cTexture *Tex2, sColor4c &ColorMul = sColor4c(255,255,255,255), float phase = 0, eColorMode mode = COLOR_MOD)
+		cTexture *Tex1, cTexture *Tex2, const sColor4c &ColorMul = sColor4c(255,255,255,255), float phase = 0, eColorMode mode = COLOR_MOD)
 {
 	terRenderDevice->DrawSprite2(x, y, dx, dy, u, v, du, dv, u1, v1, du1, dv1, Tex1, Tex2, ColorMul, phase, mode);
 //	terRenderDevice->DrawRectangle(relativeX(x), relativeY(y), relativeX(dx), relativeY(dy), sColor4c(255,255,0,255), true);

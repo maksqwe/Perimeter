@@ -20,16 +20,16 @@ inline double StringToFloat(char *buf)
 	double f_sign,f_int=0,f_fract=0,f_power=0;
 	for(i=0;buf[i]!='+'&&buf[i]!='-'&&buf[i]<'0'&&buf[i]>'9';i++)
 		if(buf[i]) return a;
-	// вычислене целой части
+	// РІС‹С‡РёСЃР»РµРЅРµ С†РµР»РѕР№ С‡Р°СЃС‚Рё
 	if(buf[i]=='-') { f_sign=-1; i++; } else { if(buf[i]=='+') i++; f_sign=1; }
 	for(;buf[i]&&'0'<=buf[i]&&buf[i]<='9';i++)
 		f_int=(f_int*10)+(buf[i]-'0');
 	if(buf[i]==0) 
 	{
-		assert(_finite(a));
+		assert(finite(a));
 		return a=f_sign*f_int;
 	}
-	// вычислене дробной части
+	// РІС‹С‡РёСЃР»РµРЅРµ РґСЂРѕР±РЅРѕР№ С‡Р°СЃС‚Рё
 	if(buf[i]=='.'||buf[i]==',')
 	{ 
 		i++;
@@ -38,17 +38,17 @@ inline double StringToFloat(char *buf)
 	}
 	if(buf[i]==0) 
 	{
-		assert(_finite(a));
+		assert(finite(a));
 		return a=f_sign*(f_int+f_fract);
 	}
-	// вычисление степени числа
+	// РІС‹С‡РёСЃР»РµРЅРёРµ СЃС‚РµРїРµРЅРё С‡РёСЃР»Р°
 	if(buf[i]=='e')
 	{
 		i++;
 		double f_sign_power;
 		if(buf[i]==0) 
 		{
-			assert(_finite(a));
+			assert(finite(a));
 			return a=f_sign*(f_int+f_fract);
 		}
 		if(buf[i]=='-') { f_sign_power=-1; i++; } else { if(buf[i]=='+') i++; f_sign_power=1; }
@@ -56,7 +56,7 @@ inline double StringToFloat(char *buf)
 			f_power=(f_power*10)+(buf[i]-'0');
 		f_power=pow(10.,f_power*f_sign_power);
 	}
-	assert(_finite(a));
+	assert(finite(a));
 	return a=f_sign*(f_int+f_fract)*f_power;
 }
 
@@ -139,7 +139,7 @@ void cStream::seek(int pos)
 {
 	CurrentPos=pos;
 }
-int cStream::write(void *buf,int size)
+int cStream::write(const void *buf,int size)
 {
 	int NewPos=CurrentPos+size;
 	if(NewPos<CurrentSize) 
@@ -207,64 +207,64 @@ cStream& cStream::operator << (char a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ltoa(a,buf,10);
-	write(&ch,strlen(ch));
+	sprintf(buf,"%c",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (unsigned char a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ultoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%c",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (short a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ltoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%hd",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (unsigned short a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ultoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%hu",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (int a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ltoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%d",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (unsigned int a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ultoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%u",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (long a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ltoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%ld",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (unsigned long a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	char *ch=_ultoa(a,buf,10);
-	write(ch,strlen(ch));
+	sprintf(buf,"%lud",a);
+	write(buf,strlen(buf));
 	return *this; 
 }
 cStream& cStream::operator << (float a)
@@ -287,7 +287,7 @@ cStream& cStream::operator << (long double a)
 { 
 	assert(lpBuffer); 
 	char buf[256];
-	sprintf(buf,"%f",a);
+	sprintf(buf,"%Lf",a);
 	write(buf,strlen(buf));
 	return *this; 
 }

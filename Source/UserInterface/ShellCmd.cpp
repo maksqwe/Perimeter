@@ -4,7 +4,7 @@
 #include "InterfaceLogic.h"
 #include "Runtime.h"
 #include "Config.h"
-#include "Terra.h"
+#include "terra.h"
 #include "UnitAttribute.h"
 #include "Universe.h"
 #include "GenericControls.h"
@@ -26,7 +26,7 @@ bool bNoTracking = false;
 
 terUnitSquad* GetSquadByNumber(int n);
 
-//ïðîâåðêà íàëè÷èÿ ïðîðàáîâ/áðèãàäèðîâ, ñîçäàíèå åñëè íåò
+//Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð°Ð»Ð¸Ñ‡Ð¸Ñ Ð¿Ñ€Ð¾Ñ€Ð°Ð±Ð¾Ð²/Ð±Ñ€Ð¸Ð³Ð°Ð´Ð¸Ñ€Ð¾Ð², ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ðµ ÐµÑÐ»Ð¸ Ð½ÐµÑ‚
 void CheckBuildTerrainUnit(terUnitAttributeID nAttrID)
 {
 	MTG();
@@ -67,7 +67,7 @@ void CheckBuildTerrainUnit(terUnitAttributeID nAttrID)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// Ðåäàêòèðîâàíèå ðàáî÷åé îáëàñòè
+// Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ€Ð°Ð±Ð¾Ñ‡ÐµÐ¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸
 
 const float ToolzerCursorMax   = shellCursorAddRegionSize*6;
 const float ToolzerCursorMin   = shellCursorAddRegionSize/6;
@@ -314,7 +314,7 @@ STARFORCE_API_NEW void ToolzerSizeChangeQuant()
 		}
 //	}
 }
-//êîíåö ðåäàêòèðîâàíèÿ ðàáî÷åé îáëàñòè
+//ÐºÐ¾Ð½ÐµÑ† Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ Ñ€Ð°Ð±Ð¾Ñ‡ÐµÐ¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -727,7 +727,7 @@ int Structure2ButtonID(int i)
 
 	return id;
 }
-int Structure2ButtonID_(int i)// òîëüêî äëÿ ïîäñêàçîê ïî ñòðîåíèÿì
+int Structure2ButtonID_(int i)// Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð´Ð»Ñ Ð¿Ð¾Ð´ÑÐºÐ°Ð·Ð¾Ðº Ð¿Ð¾ ÑÑ‚Ñ€Ð¾ÐµÐ½Ð¸ÑÐ¼
 {
 	int id = -1;
 
@@ -1036,7 +1036,7 @@ void OnButtonStructure(CShellWindow* pWnd, InterfaceEventCode code, int param)
 		{
 
 			CInfoWindow* pWndInfo;
-			if(pWndInfo = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+			if((pWndInfo = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID)))
 			{
 				pWndInfo->Show(true);
 				pWndInfo->SetText(qdTextDB::instance().getText("Interface.Tips.no_energy_for_build")); 
@@ -1180,8 +1180,8 @@ void OnButtonSquadMutate(CShellWindow* pWnd, InterfaceEventCode code, int param)
 		CShellLegionButton* pBtn = (CShellLegionButton*)pWnd;
 		if(pBtn->GetStatusNoEnergy())
 		{
-			CInfoWindow* pWndInfo;
-			if(pWndInfo = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+			CInfoWindow* pWndInfo = (CInfoWindow*) _shellIconManager.GetWnd(SQSH_INFOWND_ID);
+            if(pWndInfo)
 			{
 				pWndInfo->Show(true);
 				pWndInfo->SetText(qdTextDB::instance().getText("Interface.Tips.no_mutation_energy")); 
@@ -1193,8 +1193,8 @@ void OnButtonSquadMutate(CShellWindow* pWnd, InterfaceEventCode code, int param)
 		}
 		else if(!(pBtn->m_bS && pBtn->m_bO && pBtn->m_bT))
 		{
-			CInfoWindow* pWndInfo;
-			if(pWndInfo = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+			CInfoWindow* pWndInfo = (CInfoWindow*) _shellIconManager.GetWnd(SQSH_INFOWND_ID);
+            if(pWndInfo)
 			{
 				pWndInfo->Show(true);
 				pWndInfo->SetText(qdTextDB::instance().getText("Interface.Tips.no_basic_units")); 

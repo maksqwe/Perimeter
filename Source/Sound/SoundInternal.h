@@ -50,11 +50,11 @@ public:
 };
 
 namespace SND {
-//vol=0..1, учитывает глобальную громкость
+//vol=0..1, СѓС‡РёС‚С‹РІР°РµС‚ РіР»РѕР±Р°Р»СЊРЅСѓСЋ РіСЂРѕРјРєРѕСЃС‚СЊ
 long ToDirectVolumef(float vol);
 inline float frand(){return rand()/(float)0x7fff;}
 
-void logs(char *format, ...);
+void logs(const char *format, ...);
 
 #define FAIL(hr) if(FAILED(hr))logs("hr=%x in %s(%i)",hr,__FILE__, __LINE__);
 };

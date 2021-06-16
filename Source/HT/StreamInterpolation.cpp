@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
@@ -12,10 +12,10 @@
 #include "StreamInterpolation.h"
 #include "ht.h"
 
-static float timer;//0..1 - èíòåðïîëèðîâàííîå âðåìÿ
+static float timer;//0..1 - Ð¸Ð½Ñ‚ÐµÑ€Ð¿Ð¾Ð»Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ
 float timer_;
 /*
-UpdateVertex - óáðàòü èç ïåðèìåòðà
+UpdateVertex - ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð¸Ð· Ð¿ÐµÑ€Ð¸Ð¼ÐµÑ‚Ñ€Ð°
 */
 
 StreamInterpolator stream_interpolator;
@@ -264,7 +264,8 @@ int fAngleInterpolation(cIUnkObj* cur,void* data)
 //	float angle=p[0]*timer_+p[1]*timer;
 	static float M_PI2=2*M_PI;
 	float angle=cycle(p[0] + getDist(p[1], p[0], M_PI2)*timer, M_PI2);
-	node->SetRotate(&Mat3f(angle,axis));
+    Mat3f m(angle,axis);
+	node->SetRotate(&m);
 
 	return sizeof(float)*2+sizeof(int);
 }

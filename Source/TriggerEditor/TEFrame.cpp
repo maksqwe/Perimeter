@@ -1,7 +1,7 @@
 // TEFrame.cpp : implementation file
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "TEFrame.h"
 #include "resource.h"
 
@@ -46,7 +46,7 @@ TEFrame::TEFrame():
 , triggerEditorView_(NULL)
 , triggerEditor_(NULL)
 {
-	assert(triggerEditor_);//его необходимо задать в другом месте
+	assert(triggerEditor_);//РµРіРѕ РЅРµРѕР±С…РѕРґРёРјРѕ Р·Р°РґР°С‚СЊ РІ РґСЂСѓРіРѕРј РјРµСЃС‚Рµ
 }
 
 TEFrame::~TEFrame()

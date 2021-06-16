@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "HistorySceneCamera.h"
 #include "SafeMath.h"
 #include "Controls.h"
@@ -95,13 +95,16 @@ void HistorySceneCamera::reset() {
 void HistorySceneCamera::setup() {
 	camera->SetAttr(ATTRCAMERA_PERSPECTIVE);
 
-	camera->SetFrustum
-		(                     
-			&Vect2f(0.5f, 0.5f),						// öåíòð êàìåðû
-			&sRectangle4f(-0.5f, -0.5f, 0.5f, 0.5f),	// âèäèìàÿ îáëàñòü êàìåðû
-			&Vect2f(1.0f, 1.0f),						// ôîêóñ êàìåðû
-			&Vect2f(10.0f, 100000.0f)					// áëèæàéøàÿ è äàëüíÿÿ z-ïëîñêîñòè îòñå÷åíèÿ
-		);
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f,-0.5f,0.5f,0.5f);
+    Vect2f focus(1.0f, 1.0f);
+    Vect2f zplane(10.0f, 10000.0f);
+    camera->SetFrustum(
+            &center,								// Ñ†ÐµÐ½Ñ‚Ñ€ ÐºÐ°Ð¼ÐµÑ€Ñ‹
+            &clip,									// Ð²Ð¸Ð´Ð¸Ð¼Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ ÐºÐ°Ð¼ÐµÑ€Ñ‹
+            &focus,									// Ñ„Ð¾ÐºÑƒÑ ÐºÐ°Ð¼ÐµÑ€Ñ‹
+            &zplane									// Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐ°Ñ Ð¸ Ð´Ð°Ð»ÑŒÐ½ÑÑ z-Ð¿Ð»Ð¾ÑÐºÐ¾ÑÑ‚Ð¸ Ð¾Ñ‚ÑÐµÑ‡ÐµÐ½Ð¸Ñ
+    );
 }
 
 void HistorySceneCamera::update() {
@@ -422,7 +425,8 @@ void HistorySceneCamera::addLineToLog(const string& line) {
 }
 
 void HistorySceneCamera::calcRayIntersection(float x, float y, Vect3f& v0, Vect3f& v1) {
-	camera->ConvertorCameraToWorld( &v1, &Vect2f(x,y) );
+    Vect2f v(x,y);
+	camera->ConvertorCameraToWorld( &v1, &v );
 	if ( camera->GetAttr(ATTRCAMERA_PERSPECTIVE) ) {
 		MatXf matrix;
 		camera->GetPosition(&matrix);

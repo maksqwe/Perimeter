@@ -2,7 +2,7 @@
 #include "StdAfx.h"
 #include "Config.h"
 #include "Runtime.h"
-#include "Terra.h"
+#include "terra.h"
 #include "GenericControls.h"
 #include "Universe.h"
 #include "UniverseInterface.h"
@@ -12,7 +12,7 @@
 #include "MainMenu.h"
 
 #include "BGScene.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 
 #include "MessageBox.h"
 
@@ -450,16 +450,12 @@ void setFrm(CComboWindow* combo, int number) {
 				break;
 			case BELLIGERENT_HARKBACKHOOD0:
 			case BELLIGERENT_HARKBACKHOOD1:
-				combo->pos = 0;
-				gameShell->getNetClient()->changePlayerBelligerent(number, BELLIGERENT_EXODUS0);
-/*
-				#ifndef _DEMO_
+				#if defined(_DEMO_) || defined(_PERIMETER_ADDON_)
 					combo->pos = 2;
 				#else
 					combo->pos = 0;
 					gameShell->getNetClient()->changePlayerBelligerent(number, BELLIGERENT_EXODUS0);
 				#endif
-*/
 				break;
 			case BELLIGERENT_EMPIRE0:
 			case BELLIGERENT_EMPIRE1:
@@ -494,13 +490,11 @@ void setupFrm(CComboWindow* combo, int number, bool direction) {
 		case 1:
 			curBelligerent = BELLIGERENT_EMPIRE0;
 			break;
-/*
 #ifndef _DEMO_
 		case 2:
 			curBelligerent = BELLIGERENT_HARKBACKHOOD0;
 			break;
 #endif
-*/
 	}
 	gameShell->getNetClient()->changePlayerBelligerent(number, curBelligerent);
 }

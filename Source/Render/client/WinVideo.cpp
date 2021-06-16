@@ -1,5 +1,7 @@
-#include "StdAfxRD.h"
+// do not define "namespace std" before <amstream.h> include, otherwise compile error: 'byte': ambiguous symbol
 #include <amstream.h>	// DirectShow multimedia stream interfaces
+
+#include "StdAfxRD.h"
 #include <control.h>
 #include <uuids.h>
 #include <assert.h>
@@ -9,7 +11,7 @@
 #if (_MSC_VER < 1300)
 #pragma comment(lib,"strmbase")
 #else
-#pragma comment(lib,"strmiids")
+//#pragma comment(lib,"strmiids")
 #endif
 
 void sWinVideo::Init()
@@ -123,7 +125,7 @@ void sWinVideo::Close()
     if(pVideoWindow) 
 	{
 		pVideoWindow->put_Visible(FALSE);
-//		pVideoWindow->put_Owner(NULL);   // может произойти потеря фокуса в полноэкранном режиме
+//		pVideoWindow->put_Owner(NULL);   // РјРѕР¶РµС‚ РїСЂРѕРёР·РѕР№С‚Рё РїРѕС‚РµСЂСЏ С„РѕРєСѓСЃР° РІ РїРѕР»РЅРѕСЌРєСЂР°РЅРЅРѕРј СЂРµР¶РёРјРµ
 	}
     if(pMediaControl)
 	{

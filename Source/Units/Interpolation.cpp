@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
@@ -83,7 +83,7 @@ void terAnimationPhaseIteratorType::setEndPhase(float endPhase, bool cycled)
 int terAnimationPhaseIteratorType::Quant()
 {
 	phase_ += deltaPhase_;
-	if(deltaPhase_ > 0 && phase_ > endPhase_ || deltaPhase_ < 0 && phase_ < endPhase_){
+	if((deltaPhase_ > 0 && phase_ > endPhase_) || (deltaPhase_ < 0 && phase_ < endPhase_)){
 		if(cycled_){
 			phase_ -= SIGN(deltaPhase_);
 		}
@@ -374,7 +374,7 @@ void NodeController::requestChain(ChainID requestedChainID, float phase)
 
 	xassert(currentChain());
 
-	// Ïðîâåðêà íà ðåâåðñ ìåæäó äâóìÿ ñìåæíûìè öåïî÷êàìè
+	// ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ñ€ÐµÐ²ÐµÑ€Ñ Ð¼ÐµÐ¶Ð´Ñƒ Ð´Ð²ÑƒÐ¼Ñ ÑÐ¼ÐµÐ¶Ð½Ñ‹Ð¼Ð¸ Ñ†ÐµÐ¿Ð¾Ñ‡ÐºÐ°Ð¼Ð¸
 	if(currentChain()->enableReverse){
 		const AnimationChain* requestedChain = animationData_->find(requestedChainID);
 		xassert(requestedChain);

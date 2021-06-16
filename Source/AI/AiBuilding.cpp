@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
@@ -14,10 +14,10 @@
 #include "GenericControls.h"
 #include "Universe.h"
 
-#include "AiMain.h"
+#include "AIMain.h"
 #include "Installer.h"
 #include "RigidBody.h"
-#include "AiPrm.h"
+#include "AIPrm.h"
 #include "PlaceOperators.h"
 #include "Triggers.h"
 
@@ -99,7 +99,7 @@ void AIPlayer::BuildingQuant()
 		break;
 
 	case Digging: {
-		Vect2f& position = place_scan_op->bestPosition();
+		Vect2f position = place_scan_op->bestPosition();
 		building_installer->SetBuildPosition(To3D(position), 0, 0);
 		if(building_installer->valid())
 			builder_state = DiggingCompleted;
@@ -180,7 +180,7 @@ void AIPlayer::findWhereToDigQuant()
 				if(place_scan_op->found()) {
 					if(scanStep_ > ai_scan_step_min) {
 						Vect2i pos = place_scan_op->bestPosition(); 
-						Vect2i off(round(ai_scan_size_of_step_factor*scanStep_), round(ai_scan_size_of_step_factor*scanStep_));
+						Vect2i off((int)round(ai_scan_size_of_step_factor*scanStep_), (int)round(ai_scan_size_of_step_factor*scanStep_));
 						startPlace(place_scan_op, pos - off, pos + off, scanStep_/2);
 					}
 					else{
@@ -221,7 +221,7 @@ void AIPlayer::finishPlacement()
 	xassert(place_scan_op->attributeID() < UNIT_ATTRIBUTE_STRUCTURE_MAX);
 
 	if(place_scan_op->lastCheck()){
-		Vect2f& position = place_scan_op->bestPosition();
+		Vect2f position = place_scan_op->bestPosition();
 		//building_installer->SetBuildPosition(To3D(position), 0, 0);
 		//xassert(building_installer->Valid);
 		terBuilding* building = BuildStructure(place_scan_op->attributeID(), Vect3f(place_scan_op->bestPosition().x,place_scan_op->bestPosition().y,0));
@@ -264,7 +264,7 @@ void AIPlayer::CircleShape::make(int radius_)
 
 int AIPlayer::calcWork(Circle& c) // circle in map's scale!
 {
-	//НЕ копать близко к границе
+	//РќР• РєРѕРїР°С‚СЊ Р±Р»РёР·РєРѕ Рє РіСЂР°РЅРёС†Рµ
 	if(c.x - c.radius < ai_border_offset || c.y - c.radius < ai_border_offset || 
 	  c.x + c.radius >= clear_map.sizeX() - ai_border_offset || c.y + c.radius >= clear_map.sizeY() - ai_border_offset)
 		return -1;
@@ -295,7 +295,7 @@ int AIPlayer::calcWork(const Vect2i& left_top_, const Vect2i& size)
 	Vect2i left_top = clear_map.w2mFloor(left_top_);	 
 	Vect2i right_bottom = clear_map.w2mCeil(left_top_ + size);
 
-	//НЕ копать близко к границе
+	//РќР• РєРѕРїР°С‚СЊ Р±Р»РёР·РєРѕ Рє РіСЂР°РЅРёС†Рµ
 	if(left_top.x < ai_border_offset || left_top.y < ai_border_offset || 
 	  right_bottom.x >= clear_map.sizeX() - ai_border_offset || right_bottom.y >= clear_map.sizeY() - ai_border_offset)
 		return -1;

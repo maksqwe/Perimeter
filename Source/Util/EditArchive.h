@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #ifndef __EDIT_ARCHIVE_H__
 #define __EDIT_ARCHIVE_H__
 #pragma once
@@ -5,6 +7,22 @@
 #include "Serialization.h"
 #include "TreeInterface.h"
 #include "SerializationImpl.h"
+
+template<class Base>
+class EditClassDescriptor;
+
+inline string getEnumToken(XBuffer& buffer)
+{
+    while(buffer() == ' ' || buffer() == '|')
+        ++buffer;
+    const char* marker = &buffer();
+    while(buffer() != '|' && buffer() != 0)
+        ++buffer;
+    string str(marker, &buffer() - marker);
+    while(str.size() && str[str.size() - 1] == ' ')
+        str.pop_back();
+    return str;
+}
 
 class EditOArchive 
 {
@@ -49,16 +67,16 @@ public:
 
 		setType<T>();
 
-        typedef WrapperTraits<T>::unwrapped_type U;
+        typedef typename WrapperTraits<T>::unwrapped_type U;
 
 		using namespace SerializationHelpers;
 		using SerializationHelpers::Identity;
 
         Select<IsPrimitive<U>,
             Identity<save_primitive_impl<U> >,
-            Select<is_pointer<U>, 
+            Select<boost::is_pointer<U>, 
                 Identity<save_pointer_impl<U> >,
-                Select<is_array<U>, 
+                Select<boost::is_array<U>, 
                     Identity<save_array_impl<U> >,
                     Identity<save_non_primitive_impl<U> >
                 >
@@ -188,12 +206,12 @@ private:
 	void savePointer(const T* t)
     {
 		currentNode_->setComboList(TreeNode::POLYMORPHIC, EditClassDescriptor<T>::instance().comboListAlt().c_str());
-		typedef EditClassDescriptor<remove_const<T>::type> Descriptor;
+		typedef EditClassDescriptor<typename boost::remove_const<T>::type> Descriptor;
 		currentNode_->setTreeNodeFunc(Descriptor::instance().treeNodeFunc);
 		if(!t)
 			return;
-		const char* name = typeid(*t).name();
-		Descriptor::SerializerBase& serializer = Descriptor::instance().find(name);
+		const char* name = get_type_id<T>().c_str();
+		typename Descriptor::SerializerBase& serializer = Descriptor::instance().find(name);
 		serializer.save(*this, t);		
 		currentNode_->setValue(serializer.nameAlt());
 		//node->setType((node->type() + "*").c_str());
@@ -205,7 +223,7 @@ private:
 		setType<T>();
 		setDefaultTreeNode<T>(TreeNode::STATIC);
 		int i = 0;
-		vector<T, A>::const_iterator it;
+		typename vector<T, A>::const_iterator it;
 		FOR_EACH(cont, it){
 			XBuffer buf;
 			buf < "[" <= i++ < "]";
@@ -220,7 +238,7 @@ private:
 		setType<T>();
 		setDefaultTreeNode<T>(TreeNode::STATIC);
 		int i = 0;
-		list<T, A>::const_iterator it;
+        typename list<T, A>::const_iterator it;
 		FOR_EACH(cont, it){
 			XBuffer buf;
 			buf < "[" <= i++ < "]";
@@ -360,15 +378,15 @@ public:
     {				   
 		openNode(t.name());
 
-        typedef WrapperTraits<T>::unwrapped_type U;
+        typedef typename WrapperTraits<T>::unwrapped_type U;
 		using namespace SerializationHelpers;
 		using SerializationHelpers::Identity;
 
         Select<IsPrimitive<U>,
             Identity<load_primitive_impl<U> >,
-            Select<is_pointer<U>, 
+            Select<boost::is_pointer<U>, 
                 Identity<load_pointer_impl<U> >,
-                Select<is_array<U>, 
+                Select<boost::is_array<U>, 
                     Identity<load_array_impl<U> >,
                     Identity<load_non_primitive_impl<U> >
                 >
@@ -464,7 +482,7 @@ private:
 			}
 			return;
 		}
-		typedef EditClassDescriptor<remove_const<T>::type> Descriptor;
+		typedef EditClassDescriptor<typename boost::remove_const<T>::type> Descriptor;
 		if(t){
 			if(typeName == Descriptor::instance().nameAlt(*t)){
 				Descriptor::instance().findAlt(typeName.c_str()).load(*this, t);
@@ -491,7 +509,7 @@ private:
 			}
 		}
 		else{
-			vector<T, A>::iterator i;
+            typename vector<T, A>::iterator i;
 			FOR_EACH(cont, i)
 				(*this) & TRANSLATE_NAME(*i, "", "");
 		}
@@ -510,7 +528,7 @@ private:
 			}
 		} 
 		else{
-			list<T, A>::iterator i;
+            typename list<T, A>::iterator i;
 			FOR_EACH(cont, i)
 				(*this) & TRANSLATE_NAME(*i, "", "");
 		}
@@ -635,11 +653,11 @@ class EditClassDescriptor : public ClassDescriptor<Base, EditOArchive, EditIArch
 {
 public:
 	template<class Derived>
-	struct EditSerializer : ClassDescriptor<Base, EditOArchive, EditIArchive>::Serializer<Derived>
+	struct EditSerializer : ClassDescriptor<Base, EditOArchive, EditIArchive>::template Serializer<Derived>
 	{
 		EditSerializer(const char* nameAlt) {
 			nameAlt_ = nameAlt;
-			instance().add(*this, typeid(Derived).name(), nameAlt);
+			instance().add(*this, get_type_id<Derived>().c_str(), nameAlt);
 		}
 
 		const TreeNode* treeNode() {
@@ -663,6 +681,9 @@ public:
 		const char* nameAlt_;
 	};
 
+    typedef typename ClassDescriptor<Base, EditOArchive, EditIArchive>::SerializerBase SerializerBase;
+    typedef map<string, SerializerBase*> Map;
+
 	void add(SerializerBase& serializer, const char* name, const char* nameAlt) {
 		ClassDescriptor<Base, EditOArchive, EditIArchive>::add(serializer, name, nameAlt);
 		mapAlt_[nameAlt] = &serializer;
@@ -673,11 +694,11 @@ public:
 	}
 
 	const EditClassDescriptor& operator=(const EditClassDescriptor& rhs) {
-		map_ = rhs.map_;
+		this->map_ = rhs.map_;
 		mapAlt_ = rhs.mapAlt_;
 		mapNameToNameAlt_ = rhs.mapNameToNameAlt_;
 		comboListAlt().clear();
-		Map::iterator i;
+		typename Map::iterator i;
 		FOR_EACH(mapAlt_, i){
 			if(!comboListAlt().empty())
 				comboListAlt() += "|";
@@ -686,22 +707,22 @@ public:
 		return *this;
 	}
 
-	SerializerBase& findAlt(const char* nameAlt) {
-		Map::iterator i = mapAlt_.find(nameAlt);
+    SerializerBase& findAlt(const char* nameAlt) {
+		typename Map::iterator i = mapAlt_.find(nameAlt);
 		if(i == mapAlt_.end()){
 			xassertStr(0 && "Unregistered class", nameAlt);
-			ErrH.Abort("Unregistered class", XERR_USER, 0, nameAlt);
+			ErrH.Abort("EditClassDescriptor::findAlt Unregistered class", XERR_USER, 0, nameAlt);
 		}
 		return *i->second;
 	}
 
 	template<class T>
 	const char* nameAlt(const T& t) const {
-		const char* name = typeid(t).name();
+		const char* name = get_type_id<T>().c_str();
 		map<string, string>::const_iterator i = mapNameToNameAlt_.find(name);
 		if(i == mapNameToNameAlt_.end()){
 			xassertStr(0 && "Unregistered class", name);
-			ErrH.Abort("Unregistered class", XERR_USER, 0, name);
+			ErrH.Abort("EditClassDescriptor::nameAlt Unregistered class", XERR_USER, 0, name);
 		}
 		return i->second.c_str();
 	}
@@ -733,18 +754,5 @@ private:
 	Map mapAlt_;
 	map<string, string> mapNameToNameAlt_;
 };
-
-inline string getEnumToken(XBuffer& buffer)
-{
-	while(buffer() == ' ' || buffer() == '|')
-		++buffer;
-	const char* marker = &buffer();
-	while(buffer() != '|' && buffer() != 0)
-		++buffer;
-	string str(marker, &buffer() - marker);
-	while(str.size() && str[str.size() - 1] == ' ')
-		str.pop_back();
-	return str;
-}
 
 #endif //__EDIT_ARCHIVE_H__

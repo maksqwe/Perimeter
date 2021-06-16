@@ -1,35 +1,41 @@
 #ifndef __QD_TEXTDB_H__
 #define __QD_TEXTDB_H__
 
-#include <hash_map>
+// hash_map is an old and non-standard MS extension
+// see https://docs.microsoft.com/en-us/cpp/standard-library/hash-map?view=msvc-160
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#include <hash_map> 
+#else
+#include <unordered_map>
+#endif
 #include <string>
 #include <list>
-/// База данных с текстами.
+/// Р‘Р°Р·Р° РґР°РЅРЅС‹С… СЃ С‚РµРєСЃС‚Р°РјРё.
 class qdTextDB
 {
 public:
 	qdTextDB();
 	~qdTextDB();
 
-	/// Очистка базы.
+	/// РћС‡РёСЃС‚РєР° Р±Р°Р·С‹.
 	void clear(){ texts_.clear(); }
 
-	/// Возвращает текст с идентификатором text_id.
+	/// Р’РѕР·РІСЂР°С‰Р°РµС‚ С‚РµРєСЃС‚ СЃ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј text_id.
 	/**
-	Если текст не найден - вернет пустую строку.
+	Р•СЃР»Рё С‚РµРєСЃС‚ РЅРµ РЅР°Р№РґРµРЅ - РІРµСЂРЅРµС‚ РїСѓСЃС‚СѓСЋ СЃС‚СЂРѕРєСѓ.
 	*/
 	const char* getText(const char* text_id) const;
 
-	/// Возвращает звук к тексту с идентификатором text_id.
+	/// Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РІСѓРє Рє С‚РµРєСЃС‚Сѓ СЃ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј text_id.
 	const char* getSound(const char* text_id) const;
 
-	/// Возвращает комментарий текста с идентификатором text_id.
+	/// Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРјРјРµРЅС‚Р°СЂРёР№ С‚РµРєСЃС‚Р° СЃ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј text_id.
 	const char* getComment(const char* text_id) const;
 
-	/// Загрузка базы.
+	/// Р—Р°РіСЂСѓР·РєР° Р±Р°Р·С‹.
 	/**
-	Если clear_old_texts == true, то загруженная в данный момент база очищается.
-	В финальной версии база комментариев игнорируется.
+	Р•СЃР»Рё clear_old_texts == true, С‚Рѕ Р·Р°РіСЂСѓР¶РµРЅРЅР°СЏ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ Р±Р°Р·Р° РѕС‡РёС‰Р°РµС‚СЃСЏ.
+	Р’ С„РёРЅР°Р»СЊРЅРѕР№ РІРµСЂСЃРёРё Р±Р°Р·Р° РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ.
 	*/
 	bool load(const char* file_name,const char* comments_file_name = NULL,bool clear_old_texts = true);
 
@@ -51,7 +57,14 @@ private:
 #endif
 	};
 
-	typedef std::hash_map<std::string,qdText> qdTextMap;
+	// hash_map is an old and non-standard MS extension
+	// see https://docs.microsoft.com/en-us/cpp/standard-library/hash-map?view=msvc-160
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+	typedef std::hash_map<std::string, qdText> qdTextMap;
+#else
+	typedef std::unordered_map<std::string, qdText> qdTextMap;
+#endif
+	
 	qdTextMap texts_;
 };
 

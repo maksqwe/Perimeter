@@ -13,6 +13,16 @@
 #include "Config.h"
 #include "IronClusterUnit.h"
 
+bool removeNotAliveMonk(MonkList& unitList)
+{
+    auto i = remove_if(unitList.begin(), unitList.end(), not_fn(&terUnitMonk::alive));
+    if(i != unitList.end()){
+        unitList.erase(i, unitList.end());
+        return true;
+    }
+    return false;
+}
+
 terProtector::terProtector(const UnitTemplate& data) : terBuildingEnergy(data)
 {
 	fieldState_ = FIELD_STOPPED;
@@ -27,7 +37,7 @@ terProtector::~terProtector()
 
 terUnitMonk* terProtector::createMonk()
 {
-	//Поривет Шуре, не забыть переписать.
+	//РџРѕСЂРёРІРµС‚ РЁСѓСЂРµ, РЅРµ Р·Р°Р±С‹С‚СЊ РїРµСЂРµРїРёСЃР°С‚СЊ.
 	UnitTemplate data(Player->unitAttribute(UNIT_ATTRIBUTE_MONK),Player);
 	terUnitMonk* p=universe()->monks.create(data);
 	p->setPosition(position());
@@ -39,7 +49,7 @@ void terProtector::setPose(const Se3f& poseIn, bool initPose)
 {
 	terBuildingEnergy::setPose(poseIn, initPose);
 
-	//Неожиданно криво, привет Шуре.
+	//РќРµРѕР¶РёРґР°РЅРЅРѕ РєСЂРёРІРѕ, РїСЂРёРІРµС‚ РЁСѓСЂРµ.
 	if(initPose && monks_.empty())
 	for(int i = 0; i < fieldPrm.monksPerCore; i++)
 	{
@@ -109,7 +119,11 @@ void terProtector::MoveQuant()
 	switch(fieldState()){
 	case FIELD_STARTING: 
 		if(find_if(monks_.begin(), monks_.end(), 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 			compose1(bind2nd(not_equal_to<int>(), MONK_MODE_GUARD), mem_fun(&terUnitMonk::monkMode))) == monks().end())
+#else
+			[](terUnitMonk* monk) { return monk->monkMode() != MONK_MODE_GUARD; }) == monks().end())
+#endif
 				fieldState_ = FIELD_STARTED;
 		break;
 
@@ -120,7 +134,11 @@ void terProtector::MoveQuant()
 
 	case FIELD_STOPPING: 
 		if(find_if(monks_.begin(), monks_.end(), 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 			compose1(bind2nd(not_equal_to<int>(), MONK_MODE_SLEEP), mem_fun(&terUnitMonk::monkMode))) == monks().end())
+#else
+			[](terUnitMonk* monk) { return monk->monkMode() != MONK_MODE_SLEEP; }) == monks().end())
+#endif
 				fieldState_ = FIELD_STOPPED;
 		break;
 
@@ -233,7 +251,9 @@ void terProtector::executeCommand(const UnitCommand& command)
 	case COMMAND_ID_FIELD_STOP:
 		stopField();
 		soundEvent(SOUND_VOICE_PSHIELD_LOCAL_OFF);
-		break;
+        break;
+    default:
+        break;
 	}
 }
 
@@ -241,7 +261,7 @@ bool terProtector::isBuildingEnable() const
 {
 	if(reinitZeroCounter_ == 3)
 		return false;
-	return __super::isBuildingEnable();
+	return terBuildingEnergy::isBuildingEnable();
 }
 
 void terProtector::showDebugInfo()

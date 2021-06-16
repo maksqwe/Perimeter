@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #include "StdAfx.h"
 
 #include "CameraManager.h"
@@ -92,7 +94,7 @@ installer_(1)
 
 void terFrame::setRealModel(int modelIndex, float scale)
 {
-	__super::setRealModel(modelIndex, 1);
+    terUnitReal::setRealModel(modelIndex, 1);
 
 	pillar_ = avatar()->animationGroup(ANIMATION_GROUP_PILLAR);
 	animate_ = avatar()->animationGroup(ANIMATION_GROUP_ANIMATE);
@@ -832,9 +834,9 @@ bool terFrame::canTeleportate() const
 
 bool terFrame::analyzeTerrain()
 {
-	int D = clamp(round(Vect2f(BodyPoint->boxMax()).norm()) >> kmGrid, 1, 1000);
-	int x0 = round(position().x) >> kmGrid;
-	int y0 = round(position().y) >> kmGrid;
+	int D = clamp((int)round(Vect2f(BodyPoint->boxMax()).norm()) >> kmGrid, 1, 1000);
+	int x0 = (int)round(position().x) >> kmGrid;
+	int y0 = (int)round(position().y) >> kmGrid;
 	int z0 = vMap.hZeroPlast;
 	int dzMax = attr().heightMax;
 	for(int y = -D; y <= D; y++)

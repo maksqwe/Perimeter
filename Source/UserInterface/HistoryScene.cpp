@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "HistoryScene.h"
 #include "Runtime.h"
 #include "GameShell.h"
@@ -15,7 +15,7 @@ extern float terSoundVolume;
 
 extern MpegSound gb_Music;
 
-HistoryScene::HistoryScene(const string& programFileName) {
+HistoryScene::HistoryScene() {
 	scene = 0;
 	sceneSky = 0;
 	cameraSky = 0;
@@ -43,7 +43,6 @@ HistoryScene::HistoryScene(const string& programFileName) {
 
 	interpreter = new Interpreter(this);
 	historyCamera = new HistorySceneCamera(interpreter);
-	loadProgram(programFileName.c_str());
 
 	fnt = 0;
 	logFnt = 0;
@@ -109,17 +108,21 @@ void HistoryScene::init(cVisGeneric* visGeneric, bool bw, bool addBlendAlphaMode
 	cameraSky = sceneSky->CreateCamera();
 	cameraSky->SetAttr(ATTRCAMERA_PERSPECTIVE);
 
-	cameraSky->SetFrustum
-		(                     
-			&Vect2f(0.5f, 0.5f),						// öåíòð êàìåðû
-			&sRectangle4f(-0.5f, -0.5f, 0.5f, 0.5f),	// âèäèìàÿ îáëàñòü êàìåðû
-			&Vect2f(1.0f, 1.0f),						// ôîêóñ êàìåðû
-			&Vect2f(10.0f, 100000.0f)					// áëèæàéøèé è äàëüíèé z-ïëîñêîñòè îòñå÷åíèÿ
-		);
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f, -0.5f, 0.5f, 0.5f);
+    Vect2f focus(1.0f, 1.0f);
+    Vect2f zplane(10.0f,100000.0f);
+    cameraSky->SetFrustum(
+            &center,									// Ñ†ÐµÐ½Ñ‚Ñ€ ÐºÐ°Ð¼ÐµÑ€Ñ‹
+            &clip,										// Ð²Ð¸Ð´Ð¸Ð¼Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ ÐºÐ°Ð¼ÐµÑ€Ñ‹
+            &focus,										// Ñ„Ð¾ÐºÑƒÑ ÐºÐ°Ð¼ÐµÑ€Ñ‹
+            &zplane										// Ð±Ð»Ð¸Ð¶Ð°Ð¹ÑˆÐ¸Ð¹ Ð¸ Ð´Ð°Ð»ÑŒÐ½Ð¸Ð¹ z-Ð¿Ð»Ð¾ÑÐºÐ¾ÑÑ‚Ð¸ Ð¾Ñ‚ÑÐµÑ‡ÐµÐ½Ð¸Ñ
+    );
 
 	lightSky = sceneSky->CreateLight(ATTRLIGHT_DIRECTION);
 	lightSky->SetPosition( MatXf(Mat3f::ID, Vect3f(0, 0, 0)) );
-	lightSky->SetColor( &sColor4f(1, 1, 1, 1), &sColor4f(1, 1, 1, 1) );
+    sColor4f color(1,1,1,1);
+	lightSky->SetColor( &color, &color );
 	lightSky->SetDirection( Vect3f(0, 0, -1) );
 
 	if (bw) {
@@ -723,7 +726,8 @@ void HistoryScene::updateNomadMarker(const Vect3f& cameraPos, float dt) {
 		} else {
 			nomadMarker->ClearAttr(ATTRUNKOBJ_IGNORE);
 			float f = 1.0f - distance / SPHERE_VISIBLE_DISTANCE;
-			nomadMarker->SetColor( 0, &sColor4f(1, 1, 1, f) );
+            sColor4f color(1, 1, 1, f);
+			nomadMarker->SetColor( 0, &color );
 		}
 		timer += dt;
 		nomadMarker->SetPhase(fmod(timer, NOMAD_MARKER_PERIOD) / NOMAD_MARKER_PERIOD, true);

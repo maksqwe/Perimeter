@@ -1,6 +1,8 @@
 // EffectToolDoc.cpp : implementation of the CEffectToolDoc class
 //
 
+// TODO: change encoding to utf-8
+
 #include "stdafx.h"
 #include "EffectTool.h"
 
@@ -1471,7 +1473,7 @@ int CEffectToolDoc::Release3DModel(void)
 	return 0;
 }
 
-#include "..\Terra\terra.h"
+#include "../Terra/terra.h"
 
 void CEffectToolDoc::MoveEffectCenter(float dx, float dy)
 {

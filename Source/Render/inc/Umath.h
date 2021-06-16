@@ -55,13 +55,13 @@ struct sColor4f
 	inline sColor4f	operator * (const sColor4f &color) const	{ sColor4f tmp(r*color.r,g*color.g,b*color.b,a*color.a); return tmp; }
 	inline sColor4f	operator * (float f) const 		{ sColor4f tmp(r*f,g*f,b*f,a*f); return tmp; }
 	inline sColor4f	operator / (float f) const 		{ if(f!=0.f) f=1/f; else f=0.001f; sColor4f tmp(r*f,g*f,b*f,a*f); return tmp; }
-	inline int GetR() const 						{ return round(255*r); }
-	inline int GetG() const 						{ return round(255*g); }
-	inline int GetB() const 						{ return round(255*b); }
-	inline int GetA() const 						{ return round(255*a); }
-	inline DWORD RGBA() const 						{ return (round(255*r) << 16) | (round(255*g) << 8) | round(255*b) | (round(255*a) << 24); }
-	inline DWORD GetRGB() const 					{ return (round(255*r) << 16) | (round(255*g) << 8) | round(255*b); }
-	inline DWORD RGBGDI() const 					{ return round(255*r) | (round(255*g) << 8) | (round(255*b) << 16); }
+	inline int GetR() const 						{ return (int)round(255*r); }
+	inline int GetG() const 						{ return (int)round(255*g); }
+	inline int GetB() const 						{ return (int)round(255*b); }
+	inline int GetA() const 						{ return (int)round(255*a); }
+	inline DWORD RGBA() const 						{ return ((int)round(255*r) << 16) | ((int)round(255*g) << 8) | (int)round(255*b) | ((int)round(255*a) << 24); }
+	inline DWORD GetRGB() const 					{ return ((int)round(255*r) << 16) | ((int)round(255*g) << 8) | (int)round(255*b); }
+	inline DWORD RGBGDI() const 					{ return (int)round(255*r) | ((int)round(255*g) << 8) | ((int)round(255*b) << 16); }
 	inline void interpolate(const sColor4f &u,const sColor4f &v,float f) { r=u.r+(v.r-u.r)*f; g=u.g+(v.g-u.g)*f; b=u.b+(v.b-u.b)*f; a=u.a+(v.a-u.a)*f; }
 	inline void interpolate3(const sColor4f &u,const sColor4f &v,float f) { r=u.r+(v.r-u.r)*f; g=u.g+(v.g-u.g)*f; b=u.b+(v.b-u.b)*f; }
 	inline bool operator == (const sColor4f &color) const { return (r == color.r) && (g == color.g) && (b == color.b) && (a == color.a); }
@@ -163,7 +163,7 @@ struct sPlane4f
 	sPlane4f()												{ }
 	sPlane4f(float a,float b,float c,float d)				{ A=a,B=b,C=c,D=d; }
 	sPlane4f(const Vect3f& a,const Vect3f& b,const Vect3f& c)
-	{ // инициализация плоскости по трем точкам
+	{ // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР»РѕСЃРєРѕСЃС‚Рё РїРѕ С‚СЂРµРј С‚РѕС‡РєР°Рј
 		A=(b.y-a.y)*(c.z-a.z)-(c.y-a.y)*(b.z-a.z);
 		B=(b.z-a.z)*(c.x-a.x)-(c.z-a.z)*(b.x-a.x);
 		C=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y);
@@ -171,7 +171,7 @@ struct sPlane4f
 		D=-A*a.x-B*a.y-C*a.z;
 	}
 	inline void Set(const Vect3f& a,const Vect3f& b,const Vect3f& c)
-	{ // инициализация плоскости по трем точкам
+	{ // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР»РѕСЃРєРѕСЃС‚Рё РїРѕ С‚СЂРµРј С‚РѕС‡РєР°Рј
 		A=(b.y-a.y)*(c.z-a.z)-(c.y-a.y)*(b.z-a.z);
 		B=(b.z-a.z)*(c.x-a.x)-(c.z-a.z)*(b.x-a.x);
 		C=(b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y);
@@ -179,15 +179,15 @@ struct sPlane4f
 		D=-A*a.x-B*a.y-C*a.z;
 	}
 	inline float GetDistance(const Vect3f& a)
-	{ // расстояние от точки до плоскости
+	{ // СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ С‚РѕС‡РєРё РґРѕ РїР»РѕСЃРєРѕСЃС‚Рё
 		float t=A*a.x+B*a.y+C*a.z+D;
 		return t;
 	}
 	inline float GetCross(const Vect3f& a,const Vect3f& b)
-	{ // поиск пересечения данной плоскости с прямой заданной двумя точками a и b
+	{ // РїРѕРёСЃРє РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґР°РЅРЅРѕР№ РїР»РѕСЃРєРѕСЃС‚Рё СЃ РїСЂСЏРјРѕР№ Р·Р°РґР°РЅРЅРѕР№ РґРІСѓРјСЏ С‚РѕС‡РєР°РјРё a Рё b
 		Vect3f v=a-b;
 		float t=A*v.x+B*v.y+C*v.z;
-		if(t==0) return 0;			// прямая и плоскость параллельны
+		if(t==0) return 0;			// РїСЂСЏРјР°СЏ Рё РїР»РѕСЃРєРѕСЃС‚СЊ РїР°СЂР°Р»Р»РµР»СЊРЅС‹
 		t=(A*a.x+B*a.y+C*a.z+D)/t;
 		return t;
 	}
@@ -208,7 +208,7 @@ struct sPlane4f
 		out=in*RefSurface;
 	}
 	inline void GetReflectionVector(const Vect3f& in,Vect3f& out)
-	{ // out - поиск отражение вектора от плоскости
+	{ // out - РїРѕРёСЃРє РѕС‚СЂР°Р¶РµРЅРёРµ РІРµРєС‚РѕСЂР° РѕС‚ РїР»РѕСЃРєРѕСЃС‚Рё
 		out=in-2*dot(GetNormal(),in)*GetNormal();
 	}
 };
@@ -425,7 +425,7 @@ inline void RightToLeft(QuatF &q)
 	q.set(XR2L(YR2L(ZR2L(q.s()))),XR2L(q.x()),YR2L(q.y()),ZR2L(q.z()));
 }
 inline void BuildMatrixProjectByPlane(MatXf &m,const sPlane4f &p,const Vect3f& v)
-{ // построение матрицы проецирования объекта на плоскость по направлению 
+{ // РїРѕСЃС‚СЂРѕРµРЅРёРµ РјР°С‚СЂРёС†С‹ РїСЂРѕРµС†РёСЂРѕРІР°РЅРёСЏ РѕР±СЉРµРєС‚Р° РЅР° РїР»РѕСЃРєРѕСЃС‚СЊ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ 
 	float dot=p.A*v.x+p.B*v.y+p.C*v.z;
 	m.rot()[0][0]=dot-v.x*p.A;
 	m.rot()[0][1]=0.f-v.x*p.B;
@@ -446,6 +446,18 @@ const float _0_47 = 0.47f;
 const float _1_47 = 1.47f;
 inline float FastInvSqrt(float x)
 { // return 1/sqrt(x)
+    const float x2 = x * 0.5F;
+    const float threehalfs = 1.5F;
+
+    union {
+        float f;
+        uint32_t i;
+    } conv  = { x };
+    conv.i  = 0x5f3759df - ( conv.i >> 1 );
+    conv.f  *= threehalfs - ( x2 * conv.f * conv.f );
+    return conv.f;
+
+    /*
 	float y;
 	_asm
 	{
@@ -470,7 +482,8 @@ inline float FastInvSqrt(float x)
 		and     y, 07FFFFFFFh
 	}
 	return y;
-//	return (3.0f-x*(y*y))*y*0.5f; // для повышенной точности
+//	return (3.0f-x*(y*y))*y*0.5f; // РґР»СЏ РїРѕРІС‹С€РµРЅРЅРѕР№ С‚РѕС‡РЅРѕСЃС‚Рё
+     */
 }
 inline void FastNormalize(Vect2f &v)
 { 

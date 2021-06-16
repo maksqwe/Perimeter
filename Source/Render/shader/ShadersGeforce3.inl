@@ -60,7 +60,8 @@ void VSGeforce3Scene::Select(const D3DXMATRIX* pmatlight,float shadow_map_size,
 
 void VSGeforce3TileMapScene::SetWorldSize(Vect2f sz)
 {
-	SetVector(fInvWorldSize,&D3DXVECTOR4(1/sz.x,1/sz.y,0,0));
+    D3DXVECTOR4 v(1/sz.x,1/sz.y,0,0);
+	SetVector(fInvWorldSize,&v);
 }
 
 void VSGeforce3TileMapScene::GetHandle()
@@ -71,20 +72,20 @@ void VSGeforce3TileMapScene::GetHandle()
 
 void VSGeforce3TileMapScene::RestoreShader()
 {
-	#include "Geforce3\o\tile_map_scene.vl"
+	#include "Geforce3/o/tile_map_scene.vl"
 }
 
 void PSGeforce3TileMapScene::Restore()
 {
-	#include "Geforce3\o\tile_map_scene.ph"
+	#include "Geforce3/o/tile_map_scene.ph"
 }
 
 
 void VSGeforce3ObjectSceneLight::RestoreShader()
 {
-	#include "Geforce3\o\object_scene_light.vl"
-	#include "Geforce3\o\object_scene_light_p1.vl"
-	#include "Geforce3\o\object_scene_light_p2.vl"
+	#include "Geforce3/o/object_scene_light.vl"
+	#include "Geforce3/o/object_scene_light_p1.vl"
+	#include "Geforce3/o/object_scene_light_p2.vl"
 }
 
 void VSGeforce3Scene::GetHandle()
@@ -108,7 +109,8 @@ void VSGeforce3Scene::GetHandle()
 
 void VSGeforce3Scene::SetFog()
 {
-	SetVector(vFog,&gb_RenderDevice3D->dtAdvance->GetFogParam());
+    D3DXVECTOR4 v = gb_RenderDevice3D->dtAdvance->GetFogParam();
+	SetVector(vFog,&v);
 }
 
 void VSGeforce3ObjectSceneLight::GetHandle()
@@ -142,42 +144,45 @@ void VSGeforce3ObjectSceneLight::SetMaterial(sDataRenderMaterial *Data)
 	SetVector(vAmbient,(D3DXVECTOR4*)&Data->Ambient);
 	SetVector(vDiffuse,(D3DXVECTOR4*)&Data->Diffuse);
 	SetVector(vSpecular,(D3DXVECTOR4*)&Data->Specular);
-	SetVector(fSpecularPower,&D3DXVECTOR4(Data->Power,Data->Power,Data->Power,Data->Power));
+    D3DXVECTOR4 sp(Data->Power,Data->Power,Data->Power,Data->Power);
+	SetVector(fSpecularPower,&sp);
 	Vect3f p=gb_RenderDevice3D->GetDrawNode()->GetPos();
-	SetVector(vCameraPos,&D3DXVECTOR4(p.x,p.y,p.z,0));
+    D3DXVECTOR4 cam(p.x,p.y,p.z,0);
+	SetVector(vCameraPos,&cam);
 	Vect3f l;
 	gb_RenderDevice3D->GetDrawNode()->GetLighting(l);
-	SetVector(vLightDirection,&D3DXVECTOR4(l.x,l.y,l.z,0));
+    D3DXVECTOR4 light(l.x,l.y,l.z,0);
+	SetVector(vLightDirection,&light);
 }
 
 void PSGeforce3ObjectSceneLight::Restore()
 {
-	#include "Geforce3\o\object_scene_light.ph"
+	#include "Geforce3/o/object_scene_light.ph"
 }
 
 void PSGeforce3ObjectSceneLight2::Restore()
 {
-	#include "Geforce3\o\object_scene_light2.ph"
+	#include "Geforce3/o/object_scene_light2.ph"
 }
 
 void VSGeforce3ObjectScene::RestoreShader()
 {
-	#include "Geforce3\o\object_scene.vl"
+	#include "Geforce3/o/object_scene.vl"
 }
 
 void PSGeforce3ObjectScene::Restore()
 {
-	#include "Geforce3\o\object_scene.ph"
+	#include "Geforce3/o/object_scene.ph"
 }
 
 void VSGeforce3ObjectSceneLightT::RestoreShader()
 {
-	#include "Geforce3\o\object_scene_lightT.vl"
+	#include "Geforce3/o/object_scene_lightT.vl"
 }
 
 void VSGeforce3ObjectSceneLight2::RestoreShader()
 {
-	#include "Geforce3\o\object_scene_light2.vl"
+	#include "Geforce3/o/object_scene_light2.vl"
 }
 
 void VSGeforce3ObjectSceneLightT::SetTextureTransform(MatXf& m)
@@ -210,7 +215,8 @@ void VSGeforce3ObjectSceneBump::Select(const D3DXMATRIX* matlight,float shadow_m
 
 	D3DXVec3TransformNormal(&out,(D3DXVECTOR3*)&l,&mat);
 	D3DXVec3Normalize(&out,&out);
-	SetVector(vLightDirectionInvWorld,&D3DXVECTOR4(out.x,out.y,out.z,0));
+    D3DXVECTOR4 lv(out.x,out.y,out.z,0);
+	SetVector(vLightDirectionInvWorld,&lv);
 
 	if(light)
 	{
@@ -236,32 +242,34 @@ void VSGeforce3ObjectSceneBump::GetHandle()
 void VSGeforce3ObjectSceneBump::SetMaterial(sDataRenderMaterial *Data)
 {
 	Vect3f p=gb_RenderDevice3D->GetDrawNode()->GetPos();
-	SetVector(vCameraPos,&D3DXVECTOR4(p.x,p.y,p.z,0));
+	D3DXVECTOR4 cam(p.x,p.y,p.z,0);
+	SetVector(vCameraPos,&cam);
 	Vect3f l;
 	gb_RenderDevice3D->GetDrawNode()->GetLighting(l);
-	SetVector(vLightDirection,&D3DXVECTOR4(l.x,l.y,l.z,0));
+	D3DXVECTOR4 light(l.x,l.y,l.z,0);
+	SetVector(vLightDirection,&light);
 }
 
 void VSGeforce3ObjectSceneBump::RestoreShader()
 {
-#include "Geforce3\o\object_scene_bump.vl"
-#include "Geforce3\o\object_scene_bump_p1.vl"
-#include "Geforce3\o\object_scene_bump_p2.vl"
+#include "Geforce3/o/object_scene_bump.vl"
+#include "Geforce3/o/object_scene_bump_p1.vl"
+#include "Geforce3/o/object_scene_bump_p2.vl"
 }
 
 void PSGeforce3ObjectSceneBump::Restore()
 {
-#include "Geforce3\o\object_scene_bump.ph"
+#include "Geforce3/o/object_scene_bump.ph"
 }
 
 void VSGeforce3ObjectSceneBumpNoShadow::RestoreShader()
 {
-#include "Geforce3\o\object_scene_bump_no_shadow.vl"
-#include "Geforce3\o\object_scene_bump_no_shadow_p1.vl"
-#include "Geforce3\o\object_scene_bump_no_shadow_p2.vl"
+#include "Geforce3/o/object_scene_bump_no_shadow.vl"
+#include "Geforce3/o/object_scene_bump_no_shadow_p1.vl"
+#include "Geforce3/o/object_scene_bump_no_shadow_p2.vl"
 }
 
 void PSGeforce3ObjectSceneBumpNoShadow::Restore()
 {
-#include "Geforce3\o\object_scene_bump_no_shadow.ph"
+#include "Geforce3/o/object_scene_bump_no_shadow.ph"
 }

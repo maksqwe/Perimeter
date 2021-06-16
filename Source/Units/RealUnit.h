@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #ifndef __REALUNIT_H__
 #define __REALUNIT_H__
 
@@ -85,7 +87,7 @@ public:
 
 	template<class Archive>
 	void serialize(Archive& ar) {
-		__super::serialize(ar);
+        AttributeBase::serialize(ar);
 		if(ar.openBlock("attributeReal", "Real unit")){
 			ar & TRANSLATE_OBJECT(dockingSlots, "Слоты");
 			ar & TRANSLATE_OBJECT(productionConsumption, "Энергия на производство");
@@ -119,7 +121,7 @@ public:
 	virtual ~terUnitReal();
 
 	const AttributeReal& attr() const {
-		return safe_cast_ref<const AttributeReal&>(__super::attr());
+		return safe_cast_ref<const AttributeReal&>(terUnitGeneric::attr());
 	}
 
 	void Start();

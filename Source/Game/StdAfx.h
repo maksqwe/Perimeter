@@ -1,9 +1,11 @@
 #pragma once
 #include <my_STL.h>
 
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #define _WIN32_WINNT  0x0400
 #include <windows.h>
+#endif
 
 // Standart includes
 #include <string.h>
@@ -13,30 +15,52 @@
 #include <time.h>
 #include <direct.h>
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+// non-standard header : https://developercommunity.visualstudio.com/t/msvc-142328019-is-missing-include-typeinfoh/734566
 #include <typeinfo.h>
+#else
+#include <typeinfo>
+#endif
 #include <float.h>
 #include <mmsystem.h>
 #include <commctrl.h>
 #include <dplay8.h>
 
 // STL
-#include <vector> 
+#include <random>
+#include <vector>
 #include <list>
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+// non-standard header
 #include <slist>
-#include <hash_map>
+#else
+#define slist list
+#endif
+
+// hash_map is an old and non-standard MS extension
+// see https://docs.microsoft.com/en-us/cpp/standard-library/hash-map?view=msvc-160
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#include <hash_map> 
+#else
+#include <unordered_map>
+#endif
+
 #include <map>
 #include <string>
 #include <deque>
 #include <algorithm>
+#include <d3d9.h>
+#include <d3dx9.h>
 
 using namespace std;
 
 // XTool
 #include "xutil.h"
+#include "Serialization.h"
 #include "xmath.h"
 #include "Timers.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IRenderDevice.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
@@ -48,7 +72,8 @@ using namespace std;
 #include "EventBufferDP.h"
 #include "CommonEvents.h"
 
-#define _STARFORCE_
+//TODO maybe we should remove STARFORCE stuff?
+//#define _STARFORCE_
 
 #ifdef _STARFORCE_
 #define STARFORCE_API extern "C" __declspec(dllexport)

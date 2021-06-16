@@ -1,4 +1,4 @@
-#include "stdafxrd.h"
+#include "StdAfxRD.h"
 
 #include <set>
 #include <vector>
@@ -204,7 +204,7 @@ bool CMesh::GetOpenPolyline(const CFace& face,int& start,int& final)
 
 
 void CMesh::BuildPolygon(APolygons& p)
-{//Самый простой метод, некоторые точки могут не использоваться.
+{//РЎР°РјС‹Р№ РїСЂРѕСЃС‚РѕР№ РјРµС‚РѕРґ, РЅРµРєРѕС‚РѕСЂС‹Рµ С‚РѕС‡РєРё РјРѕРіСѓС‚ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ.
 	p.points.resize(V.size());
 	int i;
 	for(i=0;i<V.size();i++)

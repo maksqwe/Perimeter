@@ -1,12 +1,20 @@
 //////////////////////////////////////////////////////////////////////////////
-// 2D сетка для оптимизации поиска объектов.
-// Доступ 
+// 2D СЃРµС‚РєР° РґР»СЏ РѕРїС‚РёРјРёР·Р°С†РёРё РїРѕРёСЃРєР° РѕР±СЉРµРєС‚РѕРІ.
+// Р”РѕСЃС‚СѓРї 
 //////////////////////////////////////////////////////////////////////////////
 #ifndef __GRID_2D__
 #define __GRID_2D__
 
-// Прямоугольная область для сканироавния 
-// и 2D баундов
+
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+// non-standard header
+// FIXME : should be here? it's in stdafx.h already...
+#define slist list
+#endif
+
+// РџСЂСЏРјРѕСѓРіРѕР»СЊРЅР°СЏ РѕР±Р»Р°СЃС‚СЊ РґР»СЏ СЃРєР°РЅРёСЂРѕР°РІРЅРёСЏ 
+// Рё 2D Р±Р°СѓРЅРґРѕРІ
 struct GridRectangle 
 {
 	int x0, y0, x1, y1;
@@ -17,7 +25,7 @@ struct GridRectangle
 	friend XStream& operator<= (XStream& s,const GridRectangle& r){ s <= r.x0 < " " <= r.y0 < " " <= r.x1 < " " <= r.y1 < " ";  return s; }
 };
 
-// Базовый класс для объектов, помещаемых в сетку
+// Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ РѕР±СЉРµРєС‚РѕРІ, РїРѕРјРµС‰Р°РµРјС‹С… РІ СЃРµС‚РєСѓ
 class GridElementType
 {
 	mutable int PassCounter;
@@ -33,8 +41,8 @@ public:
 	void decrInsertion() const { --insert_counter; }
 };
 
-// Вспомогательный класс для учета 
-// вызовов при сканировании
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ СѓС‡РµС‚Р° 
+// РІС‹Р·РѕРІРѕРІ РїСЂРё СЃРєР°РЅРёСЂРѕРІР°РЅРёРё
 class GridPassDispatcher
 {
 	mutable int PassCounter;
@@ -50,39 +58,39 @@ public:
 	static void setRectangle(const GridElementType& el, const GridRectangle& rect) { el.rectangle = rect; }
 };
 
-// Шаблон для создания сетки из  векторов
-// Быстрее работает, но занимает больше памяти
+// РЁР°Р±Р»РѕРЅ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃРµС‚РєРё РёР·  РІРµРєС‚РѕСЂРѕРІ
+// Р‘С‹СЃС‚СЂРµРµ СЂР°Р±РѕС‚Р°РµС‚, РЅРѕ Р·Р°РЅРёРјР°РµС‚ Р±РѕР»СЊС€Рµ РїР°РјСЏС‚Рё
 template<class T, int reserve_size = 0>
 class GridVector : public vector<T*>
 {
 public:
-	GridVector() { if(reserve_size) reserve(reserve_size); }
-	void insert(T* obj) { push_back(obj); obj->incrInsertion(); }
-	void remove(T* obj) 
-	{  // Ищем для удаления в обратную сторону,
-		// т.к. более подвижные объекты лежат в конце.
-		xassert(!empty()); // всегда не пустой
-		for(iterator i = end() - 1; i >= begin(); --i)
+	GridVector() { if(reserve_size) this->reserve(reserve_size); }
+	void insert(T* obj) { this->push_back(obj); obj->incrInsertion(); }
+	void remove(T* obj)
+    {  // РС‰РµРј РґР»СЏ СѓРґР°Р»РµРЅРёСЏ РІ РѕР±СЂР°С‚РЅСѓСЋ СЃС‚РѕСЂРѕРЅСѓ,
+        // С‚.Рє. Р±РѕР»РµРµ РїРѕРґРІРёР¶РЅС‹Рµ РѕР±СЉРµРєС‚С‹ Р»РµР¶Р°С‚ РІ РєРѕРЅС†Рµ.
+        xassert(!this->empty()); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		for(typename vector<T*>::iterator i = this->end() - 1; i >= this->begin(); --i)
 			if(*i == obj)
-			{ 
-				erase(i); 
+			{
+                this->erase(i); 
 				obj->decrInsertion();
 				return;
 			} 
 	}
 };
 
-// Шаблон для создания сетки из списков
+// РЁР°Р±Р»РѕРЅ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СЃРµС‚РєРё РёР· СЃРїРёСЃРєРѕРІ
 template<class T>
 class GridSingleList : public slist<T*>
 {
 public:
-	void insert(T* obj) { push_front(obj); obj->incrInsertion(); }
+	void insert(T* obj) { this->push_front(obj); obj->incrInsertion(); }
 	void remove(T* obj) { obj->decrInsertion(); slist<T*>::remove(obj); }
 };
 
 
-//	Сетка
+//	РЎРµС‚РєР°
 template <class T, int cell_size_len, class CellList >	
 class Grid2D : GridPassDispatcher
 {
@@ -172,14 +180,14 @@ public:
 	int size() const // for Debug purpose mostly
 	{
 		int sz = 0;
-		for(int y = 0;y < sy;y++)
-			for(int x = 0;x < sx;x++)
+		for(int y = 0;y < size_y;y++)
+			for(int x = 0;x < size_x;x++)
 				sz += cell_table[y][x].size();
 		return sz;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
-	//   Операции доступа и сканирования
+	//   РћРїРµСЂР°С†РёРё РґРѕСЃС‚СѓРїР° Рё СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ
 	////////////////////////////////////////////////////////////////////////////////////
 	template <class Op>
 	void Scan(const Vect2i& position, int side, Op& op) const { Scan(position.x - side, position.y - side, position.x + side, position.y + side, op); }
@@ -196,7 +204,7 @@ public:
 		for(int y = rect.y0;y <= rect.y1;y++)
 			for(int x = rect.x0;x <= rect.x1;x++){
 				CellList& root = table(x, y);
-				CellList::iterator i;
+				typename CellList::iterator i;
 				FOR_EACH(root, i)
 					if(doPass(**i))
 						op(*i);
@@ -215,7 +223,7 @@ public:
 		for(int y = rect.y0;y <= rect.y1;y++)
 			for(int x = rect.x0;x <= rect.x1;x++){
 				CellList& root = table(x, y);
-				CellList::iterator i;
+				typename CellList::iterator i;
 				FOR_EACH(root, i)
 					if(doPass(**i))
 						if(!(op(*i)))
@@ -230,7 +238,7 @@ public:
 		if(insideMap(x, y))
 		{
 			CellList& root = table(x, y);
-			CellList::iterator i;
+			typename CellList::iterator i;
 			FOR_EACH(root, i)
 				if(doPass(**i))
 					op(*i);
@@ -243,7 +251,7 @@ public:
 		if(insideMap(x, y))
 		{
 			CellList& root = table(x, y);
-			CellList::iterator i;
+			typename CellList::iterator i;
 			FOR_EACH(root, i)
 				if(doPass(**i))
 					if(!(op(*i)))
@@ -434,7 +442,7 @@ public:
 		}		
 
 		int vals_up = 0;
-		for(i = 1; i < n; i++)
+		for(int i = 1; i < n; i++)
 			if(pY[vals_up] > pY[i])
 				vals_up = i;
 
@@ -549,7 +557,7 @@ public:
 		}
 
 		int vals_up = 0;
-		for(i = 1; i < n; i++)
+		for(int i = 1; i < n; i++)
 			if(pY[vals_up] > pY[i])
 				vals_up = i;
 
@@ -739,9 +747,9 @@ private:
 	int size_x, size_y;
 //	int m_mask_x, m_mask_y;
 
-	// Реализован Clamped-режим:
-	// объекты за пределами границ карты не рассматриваются,
-	// сканироание происходит строго в пределах карты.
+	// Р РµР°Р»РёР·РѕРІР°РЅ Clamped-СЂРµР¶РёРј:
+	// РѕР±СЉРµРєС‚С‹ Р·Р° РїСЂРµРґРµР»Р°РјРё РіСЂР°РЅРёС† РєР°СЂС‚С‹ РЅРµ СЂР°СЃСЃРјР°С‚СЂРёРІР°СЋС‚СЃСЏ,
+	// СЃРєР°РЅРёСЂРѕР°РЅРёРµ РїСЂРѕРёСЃС…РѕРґРёС‚ СЃС‚СЂРѕРіРѕ РІ РїСЂРµРґРµР»Р°С… РєР°СЂС‚С‹.
 	int mask_x(int x) const { return x; }
 	int mask_y(int y) const { return y; }
 	int clamp_x(int x) const { return x > 0 ? (x < size_x ? x : size_x - 1) : 0; }
@@ -757,7 +765,7 @@ private:
 
 	CellList& table(int x, int y) const { xassert(x >= 0 && x < size_x && y >= 0 && y < size_y); return cell_table[mask_y(y)][mask_x(x)]; }
 
-	// Подготовка области для сканирования
+	// РџРѕРґРіРѕС‚РѕРІРєР° РѕР±Р»Р°СЃС‚Рё РґР»СЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ
 	void prepRectangle(GridRectangle& rectangle)  const
 	{
 		rectangle.x0 = clamp_x(rectangle.x0 >> cell_size_len);

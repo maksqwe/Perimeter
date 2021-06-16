@@ -1,4 +1,4 @@
-#ifndef _PARAMBLOCK_H_//Чтение параметров
+#ifndef _PARAMBLOCK_H_//Р§С‚РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ
 #define _PARAMBLOCK_H_
 #include <stdio.h>
 
@@ -208,4 +208,4 @@ inline void ParamBlock::Print(std::ostream& o,char* sp)
 
 #pragma warning(default:4200)
 #pragma pack()
-#endif  _PARAMBLOCK_H_
+#endif //_PARAMBLOCK_H_

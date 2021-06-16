@@ -4,7 +4,7 @@
 #include "Runtime.h"
 #include "CameraManager.h"
 #include "Config.h"
-#include "Terra.h"
+#include "terra.h"
 #include "UnitAttribute.h"
 #include "Universe.h"
 #include "GenericControls.h"
@@ -13,8 +13,8 @@
 #include "GameShell.h"
 #include "PerimeterShellUI.h"
 
-#include "..\sound\PerimeterSound.h"
-#include "..\Game\MusicManager.h"
+#include "../Sound/PerimeterSound.h"
+#include "../Game/MusicManager.h"
 
 #define _RELEASE(p) if(p) {(p)->Release(); (p) = 0;}
 
@@ -30,12 +30,12 @@ STARFORCE_API_NEW terUnitAttributeID Button2StructureID(int nBtnID);
 
 terUnitSquad* GetSquadByNumber(int n);
 
-//цвета для кнопок
+//С†РІРµС‚Р° РґР»СЏ РєРЅРѕРїРѕРє
 sColor4c clrNormal(255, 255, 255, 255);
 sColor4c clrMark(255, 0, 0, 255);
 sColor4c clrDisabled(128, 128, 128, 255);
 
-//фонты для кнопок главного меню
+//С„РѕРЅС‚С‹ РґР»СЏ РєРЅРѕРїРѕРє РіР»Р°РІРЅРѕРіРѕ РјРµРЅСЋ
 cFont* hFontMainmenu1 = 0;
 cFont* hFontMainmenu2 = 0;
 cFont* hFontMainmenu3 = 0;
@@ -423,12 +423,12 @@ void CShellWindow::OnLButtonHold()
 void CShellWindow::OnRButtonDown(float _x, float _y)
 {
 	//SND2DPlaySound( m_sound, x );
-	if(m_handler /*&& (state & SQSH_ENABLED)*/ && m_effect == 0) //нужен правый клик в задизабленые кнопки!
+	if(m_handler /*&& (state & SQSH_ENABLED)*/ && m_effect == 0) //РЅСѓР¶РµРЅ РїСЂР°РІС‹Р№ РєР»РёРє РІ Р·Р°РґРёР·Р°Р±Р»РµРЅС‹Рµ РєРЅРѕРїРєРё!
 		m_handler(this, EVENT_RPRESSED, 0);
 }
 void CShellWindow::OnRButtonUp(float _x, float _y)
 {
-	if(m_handler /*&& (state & SQSH_ENABLED)*/ && m_effect == 0)// нужен правый клик в задизабленые кнопки!
+	if(m_handler /*&& (state & SQSH_ENABLED)*/ && m_effect == 0)// РЅСѓР¶РµРЅ РїСЂР°РІС‹Р№ РєР»РёРє РІ Р·Р°РґРёР·Р°Р±Р»РµРЅС‹Рµ РєРЅРѕРїРєРё!
 		m_handler(this, EVENT_RUNPRESSED, 0);
 }
 
@@ -931,14 +931,15 @@ void CShellPushButton::OnRButtonUp(float _x, float _y)
 }
 void CShellPushButton::OnWindow(int enable)
 {
-	if( state & SQSH_ENABLED )
-		if ( enable ) {
-			flag |= active;
-			SND2DPlaySound( "menu_toggle");
-		} else {
-			flag &= ~active;
-			flag &= ~pressed;
-		}
+	if( state & SQSH_ENABLED ) {
+        if (enable) {
+            flag |= active;
+            SND2DPlaySound("menu_toggle");
+        } else {
+            flag &= ~active;
+            flag &= ~pressed;
+        }
+    }
 }
 
 //general wnd
@@ -1084,10 +1085,8 @@ void CDialogWindow::draw(int bFocus)
 			terRenderDevice->SetFont(hFontMainmenu1);
 		}
 
-		if( state & SQSH_ENABLED )
-			OutText(x+m_attr->txt_dx, y+m_attr->txt_dy, m_attr->text, &sColor4f(0.7f, 0.7f, 0.7f, 1.f), m_attr->txt_align);
-		else
-			OutText(x+m_attr->txt_dx, y+m_attr->txt_dy, m_attr->text, &sColor4f(0.3f, 0.3f, 0.3f, 1.f), m_attr->txt_align);
+        sColor4f color = state & SQSH_ENABLED ? sColor4f(0.7f, 0.7f, 0.7f, 1.f) : sColor4f(0.3f, 0.3f, 0.3f, 1.f);
+        OutText(x+m_attr->txt_dx, y+m_attr->txt_dy, m_attr->text, &color, m_attr->txt_align);
 
 		terRenderDevice->SetFont(0);
 	}
@@ -1330,8 +1329,8 @@ void CShellComplexPushButton::OnWindow(int enable)
 
 	if(ID == SQSH_WORKAREA3_ID || ID == SQSH_WORKAREA2_ID || ID == SQSH_WORKAREA4_ID)
 	{
-		CInfoWindow* pWnd;
-		if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+		CInfoWindow* pWnd = (CInfoWindow*) _shellIconManager.GetWnd(SQSH_INFOWND_ID);
+        if(pWnd)
 		{
 			pWnd->Show(enable);
 
@@ -1426,14 +1425,16 @@ void CShellComplexPushButton::draw(int bFocus)
 
 	if (m_bPaused) {
 		terRenderDevice->SetFont(m_hFont);
-		OutText(x + sx/2, y+sy/2 - m_hFont->GetHeight()/2, _shellIconManager.hold.c_str(), &sColor4f(1,1,0,1), 0);
+		sColor4f color(1,1,0,1);
+		OutText(x + sx/2, y+sy/2 - m_hFont->GetHeight()/2, _shellIconManager.hold.c_str(), &color, 0);
 		terRenderDevice->SetFont(0);
 	} else if (bDiagramm) {
 		terRenderDevice->SetFont(m_hFontLabel);
 		int ph = round(m_fphase * 100);
 		char buff[11];
 		sprintf(buff, "%d%%", ph);
-		OutText(x + sx / 2, y + sy / 2 - m_hFontLabel->GetHeight() / 2, buff, &sColor4f(1, 1, 0, 1), 0);
+		sColor4f color(1, 1, 0, 1);
+		OutText(x + sx / 2, y + sy / 2 - m_hFontLabel->GetHeight() / 2, buff, &color, 0);
 		terRenderDevice->SetFont(0);
 	}
 
@@ -1459,7 +1460,7 @@ STARFORCE_API_NEW void FormatLegionPopup(const sqshControl* pAttr, char* cbBuffe
 	terPlayer* player = universe()->activePlayer();
 	const AttributeBase* attrUnit = universe()->activePlayer()->unitAttribute(nAttrID);
 
-	//необходимые строения
+	//РЅРµРѕР±С…РѕРґРёРјС‹Рµ СЃС‚СЂРѕРµРЅРёСЏ
 	string sRequired;
 	const EnableData& mutationElement = player->GetMutationElement(nAttrID);
 	const AttributeLegionary& attrL = *safe_cast<const AttributeLegionary*>(player->unitAttribute(nAttrID));
@@ -1483,7 +1484,7 @@ STARFORCE_API_NEW void FormatLegionPopup(const sqshControl* pAttr, char* cbBuffe
 	static char cbTemp[256];
 	PopupFormatAttack(attrUnit, cbTemp, false);
 	if(pSquad){
-		//наличие базовых юнитов
+		//РЅР°Р»РёС‡РёРµ Р±Р°Р·РѕРІС‹С… СЋРЅРёС‚РѕРІ
 		DamageMolecula damage_molecula(player->unitAttribute(nAttrID)->damageMolecula);
 		bool bSold = pSquad->soldierButton.val >= damage_molecula[0];
 		bool bOff  = pSquad->officerButton.val >= damage_molecula[1];
@@ -1784,9 +1785,11 @@ void CShellAtomButton::draw(int bFocus)
 			if (m_bTextLeft) {
 				terRenderDevice->DrawRectangle(x + 1, y, terRenderDevice->GetFontLength(m_cb1), sy * _button_atom5_y + 1, sColor4c(0, 0, 0, 196));
 				terRenderDevice->FlushPrimitive2D();
-				OutText(x + 1, y, m_cb1, &sColor4f(0,1,1,1));
+				sColor4f color(0,1,1,1);
+				OutText(x + 1, y, m_cb1, &color);
 			} else {
-				OutText(x+button_atom_x, y+button_atom_y, m_cb1, &sColor4f(1,1,0,1));
+			    sColor4f color(1,1,0,1);
+				OutText(x+button_atom_x, y+button_atom_y, m_cb1, &color);
 			}
 			terRenderDevice->SetFont(0);
 		}
@@ -1911,7 +1914,7 @@ void CTerrainBuildButton::draw(int bFocus)
 				}
 			}
 
-			//диаграмма производства вещ-ва
+			//РґРёР°РіСЂР°РјРјР° РїСЂРѕРёР·РІРѕРґСЃС‚РІР° РІРµС‰-РІР°
 
 			if (partDisable != 1) {
 				draw_rect(Vect2i(x, y), Vect2i(x + int(productionPhase * half_sx), y + sy), sColor4c(255, 255, 0, 64));
@@ -2091,26 +2094,28 @@ void CUITabSheet::SwitchPage(int nNewPage, bool bForceSelectUnit)
 	if((m_nEnabledPagesBits & (1 << nNewPage)) == 0)
 		return;
 
-	//спрятать контролы деактивируемой страницы
+	//СЃРїСЂСЏС‚Р°С‚СЊ РєРѕРЅС‚СЂРѕР»С‹ РґРµР°РєС‚РёРІРёСЂСѓРµРјРѕР№ СЃС‚СЂР°РЅРёС†С‹
 	const sqshTabElement* pOldPageAttr = tabAttrs[m_nActivePage];
 	for(i=0; i<pOldPageAttr->ctrls.size(); i++)
 	{
 		if(pOldPageAttr->ctrls[i] < 0)
 			break;
 
-		if(pWnd = _shellIconManager.GetWnd(pOldPageAttr->ctrls[i]))
+        pWnd = _shellIconManager.GetWnd(pOldPageAttr->ctrls[i]);
+        if(pWnd)
 			pWnd->Show(false);
 	}
 
 
-	//показать контролы активируемой страницы
+	//РїРѕРєР°Р·Р°С‚СЊ РєРѕРЅС‚СЂРѕР»С‹ Р°РєС‚РёРІРёСЂСѓРµРјРѕР№ СЃС‚СЂР°РЅРёС†С‹
 	const sqshTabElement* pNewPageAttr = tabAttrs[nNewPage];
 	for(i=0; i<pNewPageAttr->ctrls.size(); i++)
 	{
 		if(pNewPageAttr->ctrls[i] < 0)
 			break;
 
-		if(pWnd = _shellIconManager.GetWnd(pNewPageAttr->ctrls[i]))
+        pWnd = _shellIconManager.GetWnd(pNewPageAttr->ctrls[i]);
+        if(pWnd)
 			pWnd->Show(true);
 	}
 
@@ -2128,7 +2133,8 @@ void CUITabSheet::setActivePageChildrenVisible(bool visible) {
 			break;
 		}
 
-		if ( pWnd = _shellIconManager.GetWnd(aPageAttr->ctrls[i]) ) {
+        pWnd = _shellIconManager.GetWnd(aPageAttr->ctrls[i]);
+		if (pWnd) {
 			pWnd->Show(visible);
 		}
 	}
@@ -2499,7 +2505,7 @@ void CUITabSheet::draw(int bFocus)
 			}
 		}
 		
-		//цифры на страницах
+		//С†РёС„СЂС‹ РЅР° СЃС‚СЂР°РЅРёС†Р°С…
 		if(!m_page_numbers[i].empty())
 		{
 			terRenderDevice->SetFont(m_hFont);
@@ -2507,7 +2513,8 @@ void CUITabSheet::draw(int bFocus)
 			char* str = (char*)m_page_numbers[i].c_str();
 			terRenderDevice->DrawRectangle(tabXs[i] + dx + 1, tabYs[i] + dy, terRenderDevice->GetFontLength(str), tabSYs[i] * _button_atom6_y + 1, sColor4c(0, 0, 0, 196));
 			terRenderDevice->FlushPrimitive2D();
-			OutText(tabXs[i] + dx + 2, tabYs[i] + dy, str, &sColor4f(0, 1, 1, 1));
+            sColor4f color(0, 1, 1, 1);
+			OutText(tabXs[i] + dx + 2, tabYs[i] + dy, str, &color);
 
 			terRenderDevice->SetFont(0);
 		}
@@ -2541,8 +2548,8 @@ void CUITabSheet::OnWindow(int enable)
 		terUnitBase* frame = player->frame();
 		if(frame)
 		{
-			CInfoWindow* pWnd;
-			if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID)){
+			CInfoWindow* pWnd = (CInfoWindow*) _shellIconManager.GetWnd(SQSH_INFOWND_ID);
+            if(pWnd){
 				pWnd->Show(enable);
 
 				if(enable){
@@ -2751,7 +2758,7 @@ void CMapWindow::draw(int bFocus)
 
 			universe()->MapUnitInfo(); 
 
-			//отрисовка кластеров
+			//РѕС‚СЂРёСЃРѕРІРєР° РєР»Р°СЃС‚РµСЂРѕРІ
 			drawBitmap(m_bitmap);
 */
 			if(terCamera->restricted())
@@ -3363,13 +3370,13 @@ void CListBoxWindow::draw(int bFocus)
 	if (m_bScroller) {
 		m_fScrollerThumbPos = y + vScrollSY + 1 + float(m_nTopItem)/(m_pItem[0].m_data.size() - int(sy/m_fStringHeight))*(sy - 2*vScrollSY - vScrollThmbSY);
 	}
-	//контур
+	//РєРѕРЅС‚СѓСЂ
 //	draw_rect_empty(Vect2f(x, y), Vect2f(x+sx, y+sy), sColor4f(1, 1, 1, Alpha));
 
 	float _sx_client = sx - vScrollSX;
 	if(m_bScroller)
 	{
-		//нужен скроллер
+		//РЅСѓР¶РµРЅ СЃРєСЂРѕР»Р»РµСЂ
 
 //		draw_rect_empty(Vect2f(x + sx - vScrollSX, y), Vect2f(x+sx, y+sy), sColor4f(0.5f, 0.5f, 0.5f, Alpha));
 //		draw_line(Vect2f(x + sx - vScrollSX, y + vScrollSY), Vect2f(x + sx, y + vScrollSY), sColor4f(0.5f, 0.5f, 0.5f, Alpha));
@@ -3394,7 +3401,7 @@ void CListBoxWindow::draw(int bFocus)
 		draw_rect_empty( Vect2i(x, y), Vect2i(x + sx,y + sy), sColor4f(1, 1, 0, 1) );
 	}
 
-	//подсветка выделенного элемента
+	//РїРѕРґСЃРІРµС‚РєР° РІС‹РґРµР»РµРЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 	if ((m_nCurSel - m_nTopItem >= 0)) {
 		if (m_attr->alnum) {
 			float _y = y + (m_nCurSel - m_nTopItem)*m_fStringHeight;
@@ -3442,21 +3449,22 @@ void CListBoxWindow::draw(int bFocus)
 
 			float yS = y_str + m_fStringHeight / 2 - m_hFont->GetHeight() / 2;
 
+            sColor4f color(1, 1, 1, Alpha);
 			if (m_hTextureBG) {
 				terRenderDevice->OutText(
 					x+sx*m_pItem[nItem].x + txtdx,
 //					x+m_fStringHeight/2+sx*m_pItem[nItem].x + txtdx,
-					yS, (char*)toStr.c_str(), sColor4f(1, 1, 1, Alpha), SHELL_ALIGN_LEFT, ALPHA_ADDBLENDALPHA, m_hTextureBG, COLOR_MOD, uv, dudv, fmodf(m_ftime,1000)/1000, pushButtonTextureWeight);
+					yS, (char*)toStr.c_str(), color, SHELL_ALIGN_LEFT, ALPHA_ADDBLENDALPHA, m_hTextureBG, COLOR_MOD, uv, dudv, fmodf(m_ftime,1000)/1000, pushButtonTextureWeight);
 			} else if (m_attr->alnum) {
 				OutText(
 					x+sx*m_pItem[nItem].x + txtdx, 
 //					x+m_fStringHeight/2+sx*m_pItem[nItem].x + txtdx, 
-					yS, (char*)toStr.c_str(), &sColor4f(1, 1, 1, Alpha));
+					yS, (char*)toStr.c_str(), &color);
 			} else {
 				OutText(
 					x + sx * m_pItem[nItem].x + txtdx + width / 2, 
 //					x + m_fStringHeight/2 + sx * m_pItem[nItem].x + txtdx + width / 2, 
-					yS, (char*)toStr.c_str(), &sColor4f(1, 1, 1, Alpha), SHELL_ALIGN_CENTER);
+					yS, (char*)toStr.c_str(), &color, SHELL_ALIGN_CENTER);
 			}
 			y_str += m_fStringHeight;
 		}
@@ -3607,7 +3615,7 @@ void CStatListBoxWindow::draw(int bFocus) {
 		{ Alpha=1.0f; if (!OnEffectStop(m_effect)) return; }
 
 
-	//контур
+	//РєРѕРЅС‚СѓСЂ
 	if (debug_show_intf_borders) {
 		draw_rect_empty( Vect2i(x, y), Vect2i(x + sx,y + sy), sColor4f(1, 1, 0, 1) );
 	}
@@ -3639,11 +3647,12 @@ void CStatListBoxWindow::draw(int bFocus) {
 			} else {
 				string toStr = getValidatedText(m_pItem[nItem].m_data[i], width);
 
+                sColor4f color(1, 1, 1, Alpha);
 				OutText(
 					x + sx * m_pItem[nItem].x + txtdx + width / 2, 
 					y_str + txtdy,
 					toStr.c_str(),
-					&sColor4f(1, 1, 1, Alpha),
+					&color,
 					SHELL_ALIGN_CENTER
 				);
 				if (debug_show_intf_borders) {
@@ -3877,7 +3886,7 @@ void ChatWindow::draw(int bFocus)
 	float _sx_client = sx - vScrollSX;
 	if(m_bScroller)
 	{
-		//нужен скроллер
+		//РЅСѓР¶РµРЅ СЃРєСЂРѕР»Р»РµСЂ
 
 		if (m_hTextureBG) {
 			terRenderDevice->DrawSprite2(
@@ -3917,14 +3926,15 @@ void ChatWindow::draw(int bFocus)
 
 		float yS = y_str + m_fStringHeight / 2 - m_hFont->GetHeight() / 2;
 
+        sColor4f color(1, 1, 1, Alpha);
 		if (m_hTextureBG) {
 			terRenderDevice->OutText(
 				x + txtdx,
-				yS, (char*)toStr.c_str(), sColor4f(1, 1, 1, Alpha), SHELL_ALIGN_LEFT, ALPHA_ADDBLENDALPHA, m_hTextureBG, COLOR_MOD, uv, dudv, fmodf(m_ftime,1000)/1000, pushButtonTextureWeight);
+				yS, (char*)toStr.c_str(), color, SHELL_ALIGN_LEFT, ALPHA_ADDBLENDALPHA, m_hTextureBG, COLOR_MOD, uv, dudv, fmodf(m_ftime,1000)/1000, pushButtonTextureWeight);
 		} else if (m_attr->alnum) {
 			OutText(
 				x + txtdx, 
-				yS, (char*)toStr.c_str(), &sColor4f(1, 1, 1, Alpha));
+				yS, (char*)toStr.c_str(), &color);
 		}
 		y_str += m_fStringHeight;
 	}
@@ -4806,7 +4816,7 @@ void CEditWindow::draw(int bFocus)
 {
 	if(state & SQSH_VISIBLE)
 	{
-		//контур
+		//РєРѕРЅС‚СѓСЂ
 //		draw_rect_empty(Vect2f(x, y), Vect2f(x+sx, y+sy), sColor4f(0.5f, 0.5f, 0.5f, 1));
 		m_ftime += frame_time.delta();
 
@@ -4925,7 +4935,7 @@ void CChatInGameEditWindow::draw(int bFocus) {
 			Show(0);
 			_shellIconManager.hideChatInfo();
 		} else {
-				//контур
+				//РєРѕРЅС‚СѓСЂ
 		//		draw_rect_empty(Vect2f(x, y), Vect2f(x+sx, y+sy), sColor4f(0.5f, 0.5f, 0.5f, 1));
 				m_ftime += frame_time.delta();
 
@@ -5201,8 +5211,8 @@ void CProgressEnergy::OnWindow(int enable)
 	if(!terShowTips)
 		return;
 
-	CInfoWindow* pWnd;
-	if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+	CInfoWindow* pWnd = (CInfoWindow*) _shellIconManager.GetWnd(SQSH_INFOWND_ID);
+    if(pWnd)
 	{
 		pWnd->Show(enable);
 
@@ -5273,11 +5283,12 @@ void CProgressCollected::draw(int bFocus)
 
 		XBuffer buffer;
 		buffer.SetDigits(1);
-		if(accumulated < 1.0f)
-			buffer <= accumulated;
-		else
-			buffer <= round(accumulated);
-		buffer < " / " <= round(capacity);
+		if(accumulated < 1.0f) {
+            buffer <= accumulated;
+        } else {
+            buffer <= (int)round(accumulated);
+        }
+		buffer < " / " <= (int)round(capacity);
 
 /*
 		float accL = terRenderDevice->GetFontLength((char*)acc.c_str());
@@ -5306,8 +5317,8 @@ void CProgressCollected::OnWindow(int enable)
 	if(!terShowTips)
 		return;
 
-	CInfoWindow* pWnd;
-	if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+	CInfoWindow* pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID);
+	if(pWnd)
 	{
 		pWnd->Show(enable);
 
@@ -5350,8 +5361,8 @@ void CProgressShield::OnWindow(int enable)
 	if(!terShowTips)
 		return;
 
-	CInfoWindow* pWnd;
-	if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID)){
+    CInfoWindow* pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID);
+    if(pWnd) {
 		pWnd->Show(enable);
 
 		if(enable){
@@ -5370,8 +5381,8 @@ void CProgressTerrain::OnWindow(int enable)
 	if(!terShowTips)
 		return;
 
-	CInfoWindow* pWnd;
-	if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+    CInfoWindow* pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID);
+    if(pWnd)
 	{
 		pWnd->Show(enable);
 
@@ -5417,8 +5428,8 @@ void CProgressMutation::OnWindow(int enable)
 	if(!terShowTips)
 		return;
 
-	CInfoWindow* pWnd;
-	if(pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID))
+    CInfoWindow* pWnd = (CInfoWindow*)_shellIconManager.GetWnd(SQSH_INFOWND_ID);
+    if(pWnd)
 	{
 		terUnitSquad* pSquad = GetSquadByNumber(ID - SQSH_BAR_SQUAD1_ID);
 		if(pSquad)
@@ -5736,7 +5747,7 @@ void CShellIconManager::Effect(int effect, CShellWindow* pWnd)
 	if(pWnd)
 		eff = EffectControls(pWnd, effect);
 
-	//установить время работы эффекта
+	//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµРјСЏ СЂР°Р±РѕС‚С‹ СЌС„С„РµРєС‚Р°
 	switch(effect)
 	{
 	case effectButtonsFadeIn:
@@ -6029,7 +6040,8 @@ void CCreditsWindow::draw(int bFocus)
 				fmodf(m_ftime,1000)/1000,
 				pushButtonTextureWeight);
 		} else {
-			OutText(txtX, txtY, textData.c_str(), &sColor4f(1, 1, 1, Alpha), txtAlign );
+            sColor4f c(1, 1, 1, Alpha);
+			OutText(txtX, txtY, textData.c_str(), &c, txtAlign );
 		}
 		terRenderDevice->SetFont(0);
 
@@ -6105,7 +6117,7 @@ void CReplayPlayerPushButton::draw(int bFocus)
 
 
 //////////////////////////////////////////
-#include "silicon.h"
+#include "Silicon.h"
 #include "HistoryScene.h"
 #include "BGScene.h"
 

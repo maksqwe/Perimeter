@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #include "StdAfx.h"
 #include "RootExport.h"
 #include "Interpolate.h"
@@ -5,7 +7,7 @@
 #include "DebugDlg.h"
 #include "ExportMaterial.h"
 #include "ExportBasement.h"
-#include "..\render\inc\umath.h"
+#include "../Render/inc/Umath.h"
 
 RootExport::RootExport()
 {

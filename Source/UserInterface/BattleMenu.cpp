@@ -3,21 +3,21 @@
 #include "MainMenu.h"
 #include "Config.h"
 #include "Runtime.h"
-#include "Terra.h"
+#include "terra.h"
 #include "GenericControls.h"
 #include "Universe.h"
 #include "UniverseInterface.h"
 #include "GameShell.h"
 #include "PerimeterShellUI.h"
 #include "Controls.h"
-#include "..\sound\PerimeterSound.h"
+#include "../Sound/PerimeterSound.h"
 #include "GraphicsOptions.h"
 
-#include "silicon.h"
+#include "Silicon.h"
 #include "HistoryScene.h"
 #include "BGScene.h"
 #include "MonoSelect.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 #include "qd_textdb.h"
 
 extern MpegSound gb_Music;
@@ -267,9 +267,9 @@ void onMMBattleFrmButton(CShellWindow* pWnd, InterfaceEventCode code, int param)
 		CComboWindow *pCombo = (CComboWindow*) pWnd;
 		pCombo->Array.push_back( getItemTextFromBase("Exodus").c_str() );
 		pCombo->Array.push_back( getItemTextFromBase("Empire").c_str() );
-//		#ifndef _DEMO_
-//			pCombo->Array.push_back( getItemTextFromBase("Harkback").c_str() );
-//		#endif
+#if !defined(_DEMO_) && !defined(_PERIMETER_ADDON_)
+        pCombo->Array.push_back( getItemTextFromBase("Harkback").c_str() );
+#endif
 		pCombo->size = pCombo->Array.size();
 		pCombo->pos = 0;
 	}

@@ -1,11 +1,11 @@
-#include "stdafx.h"
-#include "mutation.h"
-#include "runtime.h"
+#include "StdAfx.h"
+#include "Mutation.h"
+#include "Runtime.h"
 #include "RigidBody.h"
 #include "terra.h"
 #include "PerimeterSound.h"
 #include "Universe.h"
-#include "Scripts\Mutation.hi"
+#include "Scripts/Mutation.hi"
 
 static float volume_power = 3;
 static float Volume(float radius) { return 4./3*M_PI*pow(radius/debuScales.spheres, 3); }
@@ -31,7 +31,7 @@ void MutationProcess::Sphere::create(float volume, const Vect3f& position_, bool
 	scale1 = Radius(volume)/radius0;
 	radius = radius0*scale1;
 	geometry->SetScale(Vect3f::ZERO);
-	pose.set(MatXf(Mat3f::ID, position = position_));
+	pose = MatXf(Mat3f::ID, position = position_);
 	if(placeOnTheGround)
 		pose.trans().z = position.z = calcZ();
 	displacement = Vect3f::ZERO;
@@ -110,7 +110,7 @@ void MutationProcess::start(const Vect3f& position)
 	phase_time = scale_time();
 	
 	int time = 0;
-	for(int j = 0; j <= MutationPhaseMax; j++) // ïàóçà ïîñëå ïðîöåññà
+	for(int j = 0; j <= MutationPhaseMax; j++) // Ð¿Ð°ÑƒÐ·Ð° Ð¿Ð¾ÑÐ»Ðµ Ð¿Ñ€Ð¾Ñ†ÐµÑÑÐ°
 		time += mutation_times[j];
 	logic_timer.start(time);
 
@@ -148,8 +148,12 @@ void MutationProcess::show_quant()
 		case PreMelting:
 			{
 				MTAuto lock(getLock());
-				FOR_EACH(source, bi)
-					(*bi)->geometry->SetColor(0, &((*bi)->diffuse_color*sColor4f(1 - t, 1 - t, 1 - t, 1)), &(sColor4f(mutation_specular_color)*t));
+				FOR_EACH(source, bi) {
+				    RigidBody* body = *bi;
+                    sColor4f d = body->get_diffuse_color() * sColor4f(1 - t, 1 - t, 1 - t, 1);
+                    sColor4f s = sColor4f(mutation_specular_color) * t;
+                    body->get_geometry()->SetColor(0, &d, &s);
+                }
 			}
 			break;
 
@@ -210,8 +214,12 @@ void MutationProcess::show_quant()
 		case PostFreesing:
 			{
 				MTAuto lock(getLock());
-				FOR_EACH(target, bi)
-					(*bi)->geometry->SetColor(0, &((*bi)->diffuse_color*sColor4f(t, t, t, 1)), &(sColor4f(mutation_specular_color)*(1 - t)));
+                FOR_EACH(source, bi) {
+                    RigidBody* body = *bi;
+                    sColor4f d = body->get_diffuse_color()*sColor4f(t, t, t, 1);
+                    sColor4f s = sColor4f(mutation_specular_color)*(1 - t);
+                    body->get_geometry()->SetColor(0, &d, &s);
+                }
 			}
 			break;
 		}
@@ -288,20 +296,26 @@ void MutationProcess::show_quant()
 				{
 					MTAuto lock(getLock());
 					SND3DPlaySound(forward ? "transforming_units_appear" : "transforming_base_appear", &center);
-					FOR_EACH(target, bi){
-						(*bi)->geometry->ClearAttr(ATTRUNKOBJ_IGNORE);
-						(*bi)->geometry->SetColor(0, &sColor4f(0,0,0,1), &sColor4f(mutation_specular_color));
-						}
+					FOR_EACH(target, bi) {
+                        RigidBody* body = *bi;
+                        sColor4f d(0,0,0,1);
+                        sColor4f s(mutation_specular_color);
+						body->get_geometry()->ClearAttr(ATTRUNKOBJ_IGNORE);
+                        body->get_geometry()->SetColor(0, &d, &s);
+                    }
 				}
 				break;
 	
 			case MutationPhaseMax:
 				{
 					MTAuto lock(getLock());
-					FOR_EACH(target, bi){
-						(*bi)->setScale(Vect3f::ID);
-						(*bi)->geometry->SetColor(0, &(*bi)->diffuse_color, &sColor4f(0,0,0,0));
-						}
+                    FOR_EACH(source, bi) {
+                        RigidBody* body = *bi;
+                        body->setScale(Vect3f::ID);
+                        sColor4f d = body->get_diffuse_color();
+                        sColor4f s(0,0,0,0);
+                        body->get_geometry()->SetColor(0, &d, &s);
+                    }
 				}
 				break;
 			}

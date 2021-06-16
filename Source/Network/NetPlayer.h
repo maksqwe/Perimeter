@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #ifndef __PERIMETER_PLAYER_H__
 #define __PERIMETER_PLAYER_H__
 
@@ -13,6 +15,8 @@ enum RealPlayerType {
 	REAL_PLAYER_TYPE_AI,
 	REAL_PLAYER_TYPE_WORLD
 };
+
+DECLARE_ENUM_DESCRIPTOR(RealPlayerType)
 
 struct PlayerData {
 	enum  {

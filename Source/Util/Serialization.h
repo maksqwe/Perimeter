@@ -5,6 +5,40 @@
 #include <string>
 #include <typeinfo>
 #include "Handle.h"
+#include <boost/type_index.hpp>
+
+static bool startsWith(const std::string& str, const std::string& prefix)
+{
+    return str.size() >= prefix.size() && 0 == str.compare(0, prefix.size(), prefix);
+}
+
+static bool endsWith(const std::string& str, const std::string& suffix)
+{
+    return str.size() >= suffix.size() && 0 == str.compare(str.size()-suffix.size(), suffix.size(), suffix);
+}
+
+
+//Previously typeid(CLASS_T).name() was used which is not portable, so we attempt to ignore the extra struct/class
+
+static void extract_type_name(string& name) {
+    if (startsWith(name, "struct ")) {
+        name.erase(0, 7);
+    } else if (startsWith(name, "class ")) {
+        name.erase(0, 6);
+    }
+}
+
+
+template<class CLASS_T>
+static string get_type_id() {
+    string name = boost::typeindex::type_id<CLASS_T>().pretty_name();
+#ifdef _MSC_VER
+    //Remove type name since MSVC adds it 
+    extract_type_name(name);
+#endif
+    //printf("%s = %s -> %s\n", typeid(CLASS_T).name(), boost::typeindex::type_id<CLASS_T>().pretty_name().c_str(), name.c_str());
+    return name;
+}
 
 /////////////////////////////////////////////////
 enum ArchiveType 
@@ -22,9 +56,9 @@ enum ArchiveType
 #endif
 
 /////////////////////////////////////////////////
-//	Обертка для всех объектов при архивировании
-//  name == 0 - игнорируется обертывание полностью
-//  nameAlt == 0 - не выводится в edit-архивах
+//	РћР±РµСЂС‚РєР° РґР»СЏ РІСЃРµС… РѕР±СЉРµРєС‚РѕРІ РїСЂРё Р°СЂС…РёРІРёСЂРѕРІР°РЅРёРё
+//  name == 0 - РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ РѕР±РµСЂС‚С‹РІР°РЅРёРµ РїРѕР»РЅРѕСЃС‚СЊСЋ
+//  nameAlt == 0 - РЅРµ РІС‹РІРѕРґРёС‚СЃСЏ РІ edit-Р°СЂС…РёРІР°С…
 /////////////////////////////////////////////////
 template<class T>
 class ObjectWrapper 
@@ -58,7 +92,7 @@ inline const ObjectWrapper<T> makeObjectWrapper(const T& t, const char* name, co
 }
 
 /////////////////////////////////////////////////
-// Traits для убирания скобок в текстовых архивах
+// Traits РґР»СЏ СѓР±РёСЂР°РЅРёСЏ СЃРєРѕР±РѕРє РІ С‚РµРєСЃС‚РѕРІС‹С… Р°СЂС…РёРІР°С…
 /////////////////////////////////////////////////
 template<class T>
 struct SuppressBracket
@@ -76,7 +110,7 @@ public:
 	ComboListDescriptor(const char* type_name) : typeName_(type_name) { add(0,""); }
 
 	T objectByName(const char* name) const {
-		NameToObject::const_iterator it = nameToObject_.find(name);
+		typename NameToObject::const_iterator it = nameToObject_.find(name);
 		if(it != nameToObject_.end())
 			return it -> second;
 
@@ -85,7 +119,7 @@ public:
 	}
 
 	const char* name(const T& object) const {
-		ObjectToName::const_iterator it = objectToName_.find(object);
+		typename ObjectToName::const_iterator it = objectToName_.find(object);
 		if(it != objectToName_.end())
 			return it -> second.c_str();
 
@@ -130,7 +164,7 @@ public:
 	EnumDescriptor(const char* typeName) : typeName_(typeName) {}
 
 	const char* name(Enum key) const {
-		KeyToName::const_iterator i = keyToName.find(key);
+		typename KeyToName::const_iterator i = keyToName.find(key);
 		if(i != keyToName.end())
 			return i->second.c_str();
 		xassert(0 && "Unregistered enum key");
@@ -138,7 +172,7 @@ public:
 	}
 
 	const char* nameAlt(Enum key) const {
-		KeyToName::const_iterator i = keyToNameAlt.find(key);
+		typename KeyToName::const_iterator i = keyToNameAlt.find(key);
 		if(i != keyToNameAlt.end())
 			return i->second.c_str();
 		xassert(0 && "Unregistered enum key");
@@ -163,7 +197,7 @@ public:
 
 	string nameCombination(int bitVector) const {
 		string value;
-		for(KeyToName::const_iterator i = keyToName.begin(); i != keyToName.end(); ++i)
+		for(typename KeyToName::const_iterator i = keyToName.begin(); i != keyToName.end(); ++i)
 			if((bitVector & i->first) == i->first){
 				bitVector &= ~i->first;
 				if(!value.empty())
@@ -175,7 +209,7 @@ public:
 
 	string nameAltCombination(int bitVector) const {
 		string value;
-		for(KeyToName::const_iterator i = keyToNameAlt.begin(); i != keyToNameAlt.end(); ++i)
+		for(typename KeyToName::const_iterator i = keyToNameAlt.begin(); i != keyToNameAlt.end(); ++i)
 			if((bitVector & i->first) == i->first){
 				bitVector &= ~i->first;
 				if(!value.empty())
@@ -247,7 +281,7 @@ private:
 };
 
 /////////////////////////////////////////////////
-//		Обертка для enums
+//		РћР±РµСЂС‚РєР° РґР»СЏ enums
 /////////////////////////////////////////////////
 template<class Enum>
 class EnumWrapper
@@ -266,7 +300,7 @@ private:
 };
 
 /////////////////////////////////////////////////
-//	Вектор энумерованных бит
+//	Р’РµРєС‚РѕСЂ СЌРЅСѓРјРµСЂРѕРІР°РЅРЅС‹С… Р±РёС‚
 /////////////////////////////////////////////////
 template<class Enum, class Value = int>
 class BitVector
@@ -284,8 +318,8 @@ private:
 };
 
 /////////////////////////////////////////////////
-//	Строка: const char* снаружи, string внутри
-//	При редактировании "\0" означает нулевую строку
+//	РЎС‚СЂРѕРєР°: const char* СЃРЅР°СЂСѓР¶Рё, string РІРЅСѓС‚СЂРё
+//	РџСЂРё СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРё "\0" РѕР·РЅР°С‡Р°РµС‚ РЅСѓР»РµРІСѓСЋ СЃС‚СЂРѕРєСѓ
 /////////////////////////////////////////////////
 class PrmString
 {
@@ -313,7 +347,7 @@ private:
 
 
 //////////////////////////////////////////////////////////////
-//	Строка с вызовом пользовательской функции редактирования
+//	РЎС‚СЂРѕРєР° СЃ РІС‹Р·РѕРІРѕРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕР№ С„СѓРЅРєС†РёРё СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ
 //////////////////////////////////////////////////////////////
 typedef const char* (*CustomValueFunc)(HWND hWndParent, const char* initialString);
 
@@ -337,7 +371,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////
-//	Строка с редактируемыми значениями из списка
+//	РЎС‚СЂРѕРєР° СЃ СЂРµРґР°РєС‚РёСЂСѓРµРјС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РёР· СЃРїРёСЃРєР°
 //////////////////////////////////////////////////////////////
 class ComboListString
 {
@@ -362,7 +396,7 @@ private:
 // Map: typeid -> virtual constructor
 /////////////////////////////////////////////////
 template<class Base, class Derived>
-class ObjectCreator // Для подстановки параметров в конструктор
+class ObjectCreator // Р”Р»СЏ РїРѕРґСЃС‚Р°РЅРѕРІРєРё РїР°СЂР°РјРµС‚СЂРѕРІ РІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 {
 public:
 	static Base* create() { 
@@ -393,7 +427,7 @@ public:
 		Serializer() {
 		}
 		Serializer(const char* nameAlt) {
-			instance().add(*this, typeid(Derived).name(), nameAlt);
+			instance().add(*this, get_type_id<Derived>().c_str(), nameAlt);
 		}
 		void save(OArchive& ar, const Base* t) {
 			ar << makeObjectWrapper(static_cast<const Derived&>(*t), 0, 0);
@@ -413,10 +447,12 @@ public:
 	}
 
 	SerializerBase& find(const char* name) {
-		Map::iterator i = map_.find(name);
+	    string input = name;
+        extract_type_name(input);
+		typename Map::iterator i = map_.find(input.c_str());
 		if(i == map_.end()){
 			xassertStr(0 && "Unregistered class", name);
-			ErrH.Abort("Unregistered class", XERR_USER, 0, name);
+			ErrH.Abort("ClassDescriptor::find Unregistered class", XERR_USER, 0, name);
 		}
 		return *i->second;
 	}
@@ -437,14 +473,14 @@ protected:
 };
 
 ////////////////////////////////////////////////////////////////
-//	Синглетон с загрузкой и редактированием, т.е. при первом
-//  обрашении к нему он читает себя из файла, если в командной 
-//  строке указать sectionName, то сразу запускается редактирование.
-//  При разрушении он себя записывает (если были изменения).
-//	Обязательное инстанцирование с помощью макроса:
+//	РЎРёРЅРіР»РµС‚РѕРЅ СЃ Р·Р°РіСЂСѓР·РєРѕР№ Рё СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµРј, С‚.Рµ. РїСЂРё РїРµСЂРІРѕРј
+//  РѕР±СЂР°С€РµРЅРёРё Рє РЅРµРјСѓ РѕРЅ С‡РёС‚Р°РµС‚ СЃРµР±СЏ РёР· С„Р°Р№Р»Р°, РµСЃР»Рё РІ РєРѕРјР°РЅРґРЅРѕР№ 
+//  СЃС‚СЂРѕРєРµ СѓРєР°Р·Р°С‚СЊ sectionName, С‚Рѕ СЃСЂР°Р·Сѓ Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ.
+//  РџСЂРё СЂР°Р·СЂСѓС€РµРЅРёРё РѕРЅ СЃРµР±СЏ Р·Р°РїРёСЃС‹РІР°РµС‚ (РµСЃР»Рё Р±С‹Р»Рё РёР·РјРµРЅРµРЅРёСЏ).
+//	РћР±СЏР·Р°С‚РµР»СЊРЅРѕРµ РёРЅСЃС‚Р°РЅС†РёСЂРѕРІР°РЅРёРµ СЃ РїРѕРјРѕС‰СЊСЋ РјР°РєСЂРѕСЃР°:
 //	SINGLETON_PRM(Type, "sectionName", "fileName") type;
-//  Define вместе с частичной специализацией позволяет избежать
-//  включения XPrm и EditArchive
+//  Define РІРјРµСЃС‚Рµ СЃ С‡Р°СЃС‚РёС‡РЅРѕР№ СЃРїРµС†РёР°Р»РёР·Р°С†РёРµР№ РїРѕР·РІРѕР»СЏРµС‚ РёР·Р±РµР¶Р°С‚СЊ
+//  РІРєР»СЋС‡РµРЅРёСЏ XPrm Рё EditArchive
 ////////////////////////////////////////////////////////////////
 class EditArchive;
 template<class T> void loadParameters(T& t);
@@ -458,9 +494,11 @@ public:
 		return saveParameters(instance());
 	}
 
+	/* troublesome, since EditArchive is declared on another .h which requires this header, we use normal edit(ea)
 	static bool edit() {
 		return edit(EditArchive());
 	}
+    */
 
 	static bool edit(EditArchive& ea) {
 		return editParameters(instance(), ea);
@@ -481,13 +519,22 @@ public:
 	}
 };
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+#define DEFINE_SINGLETON_PRM(Type) \
+void loadParameters(Type& t); \
+void saveParameters(Type& t); \
+bool editParameters(Type& t, EditArchive& ea);
+#endif
+
+
 #define SINGLETON_PRM(Type, sectionName, fileName)						\
 void loadParameters(Type& t) {											\
 	XPrmIArchive ia;													\
 	if(ia.open(fileName))												\
 		ia >> makeObjectWrapper(t, sectionName, 0);						\
 	if(check_command_line(sectionName)){								\
-		editParameters(t, EditArchive());								\
+		EditArchive ea = EditArchive();                              	\
+		editParameters(t, ea);											\
 		ErrH.Exit();													\
 	}																	\
 }																		\
@@ -504,26 +551,26 @@ bool editParameters(Type& t, EditArchive& ea) {							\
 SingletonPrm<Type> 
 
 /////////////////////////////////////////////////
-//    Заворачивание объектов для архивации
+//    Р—Р°РІРѕСЂР°С‡РёРІР°РЅРёРµ РѕР±СЉРµРєС‚РѕРІ РґР»СЏ Р°СЂС…РёРІР°С†РёРё
 /////////////////////////////////////////////////
-// Завернуть без перевода с указанием имени
+// Р—Р°РІРµСЂРЅСѓС‚СЊ Р±РµР· РїРµСЂРµРІРѕРґР° СЃ СѓРєР°Р·Р°РЅРёРµРј РёРјРµРЅРё
 #define WRAP_NAME(object, name) \
 	makeObjectWrapper(object, name, 0)
 
-// Завернуть без перевода с именем == имени объекта
+// Р—Р°РІРµСЂРЅСѓС‚СЊ Р±РµР· РїРµСЂРµРІРѕРґР° СЃ РёРјРµРЅРµРј == РёРјРµРЅРё РѕР±СЉРµРєС‚Р°
 #define WRAP_OBJECT(object) \
 	makeObjectWrapper(object, #object, 0)
 
-// Завернуть с переводом и указанием основного имени
+// Р—Р°РІРµСЂРЅСѓС‚СЊ СЃ РїРµСЂРµРІРѕРґРѕРј Рё СѓРєР°Р·Р°РЅРёРµРј РѕСЃРЅРѕРІРЅРѕРіРѕ РёРјРµРЅРё
 #define TRANSLATE_NAME(object, name, nameAlt) \
 	makeObjectWrapper(object, name, nameAlt)
 													
-// Завернуть с переводом без указания основного имени
+// Р—Р°РІРµСЂРЅСѓС‚СЊ СЃ РїРµСЂРµРІРѕРґРѕРј Р±РµР· СѓРєР°Р·Р°РЅРёСЏ РѕСЃРЅРѕРІРЅРѕРіРѕ РёРјРµРЅРё
 #define TRANSLATE_OBJECT(object, nameAlt) \
 	makeObjectWrapper(object, #object, nameAlt)
 
 /////////////////////////////////////////////////
-//		Регистрация enums
+//		Р РµРіРёСЃС‚СЂР°С†РёСЏ enums
 /////////////////////////////////////////////////
 template<class Enum>
 const EnumDescriptor<Enum>& getEnumDescriptor(const Enum& key);
@@ -542,7 +589,7 @@ const EnumDescriptor<Enum>& getEnumDescriptor(const Enum& key);
 		return descriptor;	\
 	}
 
-// Для enums, закрытых классами
+// Р”Р»СЏ enums, Р·Р°РєСЂС‹С‚С‹С… РєР»Р°СЃСЃР°РјРё
 #define BEGIN_ENUM_DESCRIPTOR_ENCLOSED(nameSpace, enumType, enumName)	\
 	struct Enum##nameSpace##enumType : EnumDescriptor<nameSpace::enumType> { Enum##nameSpace##enumType(); }; \
 	Enum##nameSpace##enumType::Enum##nameSpace##enumType() : EnumDescriptor<nameSpace::enumType>(enumName) {
@@ -557,9 +604,19 @@ const EnumDescriptor<Enum>& getEnumDescriptor(const Enum& key);
 		return descriptor;	\
 	}
 
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+#define DECLARE_ENUM_DESCRIPTOR(enumType)	\
+	const EnumDescriptor<enumType>& getEnumDescriptor(const enumType& key);
+#endif
+
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+#define DECLARE_ENUM_DESCRIPTOR_ENCLOSED(nameSpace, enumType)	\
+	const EnumDescriptor<nameSpace::enumType>& getEnumDescriptor(const nameSpace::enumType& key);
+#endif
 
 /////////////////////////////////////////////////
-//	Вспомогательные функции для отображения
+//	Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ
 /////////////////////////////////////////////////
 template<class Enum>
 const char* getEnumName(const Enum& key) {

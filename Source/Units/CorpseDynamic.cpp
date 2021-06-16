@@ -13,7 +13,7 @@
 #include "ScanPoly.h"
 #include "GameShell.h"
 #include "CameraManager.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 
 #include "CorpseDynamic.h"
 
@@ -54,8 +54,8 @@ void terCorpseDynamic::setParent(terUnitBase* p)
 				effect->SetPosition(avatar()->matrix());
 				effect_data=OriginalAttribute->effectsData.effects[i];
 
-				//Да, не радует меня эта строчка, хоть класс terEffectController
-				//копируй
+				//Р”Р°, РЅРµ СЂР°РґСѓРµС‚ РјРµРЅСЏ СЌС‚Р° СЃС‚СЂРѕС‡РєР°, С…РѕС‚СЊ РєР»Р°СЃСЃ terEffectController
+				//РєРѕРїРёСЂСѓР№
 				effect_data.effectID=EFFECT_ID_LASER_HIT;
 				effectControllers_.push_back(terEffectController(&effect_data,effect));
 			}

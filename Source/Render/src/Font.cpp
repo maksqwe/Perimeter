@@ -1,7 +1,7 @@
 #include "StdAfxRD.h"
 #include "Font.h"
 #include "FileImage.h"
-#include "..\..\PluginMAX\src\StreamBuffer.h"
+#include "../../PluginMAX/Src/StreamBuffer.h"
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -15,8 +15,8 @@
 #define ASSERT(x) VISASSERT(x)
 #endif 
 
-#include "..\gemsiii\filter.h"
-//#include "..\..\Terra\tgai.h"
+#include "../gemsiii/filter.h"
+//#include "../../Terra/tgai.h"
 
 static char* cache_dir="cache_font";
 
@@ -46,7 +46,7 @@ public:
 		return 0;
 	}
 
-	//Если убрать &, то начинает падать в release в VC7.1 (Microsoft Visual C++ .NET   69586-335-0000007-18787) 
+	//Р•СЃР»Рё СѓР±СЂР°С‚СЊ &, С‚Рѕ РЅР°С‡РёРЅР°РµС‚ РїР°РґР°С‚СЊ РІ release РІ VC7.1 (Microsoft Visual C++ .NET   69586-335-0000007-18787) 
 	virtual void Create(BYTE* gray_in,const Vect2i& size)
 	{
 		x=size.x;
@@ -106,14 +106,18 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 	VISASSERT(char_min<char_max);
 	VISASSERT(char_min<=256);//VISASSERT(char_min>=0 && char_min<=256);
 	VISASSERT(char_max<=256);//VISASSERT(char_max>=0 && char_max<=256);
+#ifdef _MSC_VER
 #pragma pack(push,1)
+#endif
 	struct OneChar
 	{
 		int width;
 		int real_width;
 		BYTE* bits;
 	};
+#ifdef _MSC_VER
 #pragma pack(pop,1)
+#endif
 	OneChar chars[256];
 	int i;
 	for(i=0;i<256;i++)
@@ -133,7 +137,7 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 	}
 	rd.close();
 
-	//Рассчитываем величину текстуры
+	//Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РІРµР»РёС‡РёРЅСѓ С‚РµРєСЃС‚СѓСЂС‹
 	Vect2i sizes[]={
 		Vect2i(128,128),
 		Vect2i(256,128),
@@ -147,7 +151,7 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 	Vect2i size(0,0);
 
 	float mul=height/float(real_height);
-	int yborder=max(round(2*mul),2);
+	int yborder=max((int)round(2*mul),2);
 	int sz;
 	for(sz=0;sz<sizes_size;sz++)
 	{
@@ -157,7 +161,7 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 		for(i=char_min;i<char_max;i++)
 		{
 
-			int dx=round(chars[i].width*mul+2);
+			int dx=(int)round(chars[i].width*mul+2);
 			if(x+dx>size.x)
 			{
 				y+=(height+yborder);
@@ -180,7 +184,7 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 
 	FontHeight=height/float(size.y);
 
-	//Создаём текстуру
+	//РЎРѕР·РґР°С‘Рј С‚РµРєСЃС‚СѓСЂСѓ
 	Vect2i real_size(round(size.x/mul),round(size.y/mul));
 	BYTE* gray_in=new BYTE[real_size.x*real_size.y];
 	memset(gray_in,0,real_size.x*real_size.y);
@@ -197,7 +201,7 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 			x=0;
 		}
 
-		//Рисуем
+		//Р РёСЃСѓРµРј
 		int realx=int(x/mul),realy=int(y/mul);
 		for(int yy=0;yy<real_height;yy++)
 		for(int xx=0;xx<w;xx++)
@@ -206,7 +210,7 @@ bool cFontInternal::CreateImage(LPCSTR filename,LPCSTR fontname,int height,class
 			int curx=xx+realx;
 
 			int bit=xx+yy*chars[i].real_width*8;
-			int b=chars[i].bits[bit>>3]&(1<<(7-bit&7));
+			int b=chars[i].bits[bit>>3]&(1<<((7-bit)&7));
 
 			if(curx<real_size.x && cury<real_size.y)
 				gray_in[curx+cury*real_size.x]=b?255:0;
@@ -368,7 +372,7 @@ bool cFontInternal::Create(LPCSTR root_dir,LPCSTR language_dir,LPCSTR fname,int 
 {
 	int ScreenY=gb_RenderDevice->GetSizeY();
 
-	int height=round((h*ScreenY)/768.0f);
+	int height=(int)round((float)(h*ScreenY)/768.0f);
 	statement_height=h;
 
 	char prefix[_MAX_PATH];

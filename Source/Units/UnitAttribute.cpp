@@ -1,10 +1,12 @@
-#include "stdafx.h"
+// TODO: change encoding to utf-8
+
+#include "StdAfx.h"
 
 #include "EditArchive.h"
 #include "XPrmArchive.h"
 #include "BinaryArchive.h"
 
-#include "RunTime.h"
+#include "Runtime.h"
 #include "Save.h"
 #include "qd_textdb.h"
 #include "UnitAttribute.h"

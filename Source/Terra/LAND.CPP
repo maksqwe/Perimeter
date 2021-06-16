@@ -1,6 +1,4 @@
 #include "stdafxTr.h"
-
-
 #include "fastmath.h"
 
 #include <algorithm>
@@ -199,9 +197,10 @@ void vrtMap::deltaZone(sToolzerPMO& var) //(int x,int y,int rad,int smth,int dh,
 					cy=YCYCL(y+yy[j]);
 					cx = XCYCL(x + xx[j]);
 					h = GetAlt(cx,cy);
-					if(abs(h - mean) < eql)
-						if(h > mean) voxSet(cx,cy,-1);
-						else if(h < mean) voxSet(cx,cy,1);
+					if(abs(h - mean) < eql) {
+                        if (h > mean) voxSet(cx, cy, -1);
+                        else if (h < mean) voxSet(cx, cy, 1);
+                    }
 				}
 			}
 			for(i=r+1, dd=1.0-d; i <= rad; i++,dd -= d){
@@ -218,9 +217,10 @@ void vrtMap::deltaZone(sToolzerPMO& var) //(int x,int y,int rad,int smth,int dh,
 						cy=YCYCL(y+yy[j]);
 						cx = XCYCL(x + xx[j]);
 						h = GetAlt(cx,cy);
-						if(abs(h - mean) < eql)
-							if(h > mean) voxSet(cx,cy,-1);
-							else if(h < mean) voxSet(cx,cy,1);
+						if(abs(h - mean) < eql) {
+                            if (h > mean) voxSet(cx, cy, -1);
+                            else if (h < mean) voxSet(cx, cy, 1);
+                        }
 						s -= 1.0;
 						}
 			}
@@ -467,7 +467,8 @@ void vrtMap::gaussFilter(int _x,int _y,int _rad, double _filter_scaling)
 	const int yBeg=YCYCL(_y-_rad);
 
 	if(flag_record_operation) {
-		containerPMO.push_back( ElementPMO(WrapPMO<sBlurPMO>(_x,_y,_rad,_filter_scaling)) );
+        WrapPMO pmo = WrapPMO<sBlurPMO>(_x,_y,_rad,_filter_scaling);
+		containerPMO.push_back( ElementPMO(pmo) );
 	}
 	UndoDispatcher_PutPreChangedArea(xBeg, yBeg, XCYCL(xBeg + Diameter), YCYCL(yBeg + Diameter));
 	//Блок обработки радиуса
@@ -736,7 +737,7 @@ int vrtMap::renderBox(int LowX,int LowY,int HiX,int HiY, int changed)//int sizeX
 }
 
 #ifdef _PERIMETER_
-//#include "statistics.h"
+//#include "Statistics.h"
 #endif
 
 static bool operator< (const sRect& lo, const sRect& ro){
@@ -1220,7 +1221,7 @@ int vrtMap::RenderStr(int XL, int Y, int dx)
 			*(pa+i)&=~At_SHADOW;
 
 //расчет - full int
-			int A=((Vr<<2)-(V<<2)),B=((V<<2)-(Vh<<2)), C=-1<<8; //C=-1<<7//7дробных! //сдвиг на 8для большей плавности рельефа т.к. точность была потеряна при переходе на VX_FRACTION=5
+			int A=((Vr<<2)-(V<<2)),B=((V<<2)-(Vh<<2)), C=-(1<<8); //C=-1<<7//7дробных! //сдвиг на 8для большей плавности рельефа т.к. точность была потеряна при переходе на VX_FRACTION=5
 			//float A=(float)(Vr-V)/(float)(1<<VX_FRACTION);
 			//float B=(float)(V-Vh)/(float)(1<<VX_FRACTION);
 			//float C=-1;
@@ -1241,7 +1242,7 @@ int vrtMap::RenderStr(int XL, int Y, int dx)
 				if( h_s > ((int)V<<16)) {
 					//float cosAS=(A*A_lightS + B*B_lightS + C*C_lightS)/256.;
 					int icosAS=(A*iA_lightS + B*iB_lightS + C*iC_lightS)/L;
-					int shI=h_s-((int)V<<16)>>(16+2); 
+					int shI=(h_s-((int)V<<16))>>(16+2); 
 					//if(shI > 31) shI=31;
 					//lght=round(AmbientLight*cosAS*shL[31-shI]) + round((Light*cosA+AmbientLight)*shL[shI]);
 					//lght=( (AmbientLight*icosAS*shI) + ((Light*icosA+(AmbientLight<<15))*(31-shI)) )>>(15+5);

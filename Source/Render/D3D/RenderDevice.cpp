@@ -3,10 +3,10 @@
 
 #include "Font.h"
 
-#pragma comment(lib,"dxguid.lib")
+//#pragma comment(lib,"dxguid.lib")
 //#pragma comment(lib,"ddraw.lib")
-#pragma comment(lib,"d3dx9.lib")
-#pragma comment(lib,"d3d9.lib")
+//#pragma comment(lib,"d3dx9.lib")
+//#pragma comment(lib,"d3d9.lib")
 
 FILE* fRD=NULL;
 
@@ -252,7 +252,7 @@ void BuildBumpMap(int xs,int ys,void *pSrc,void *pDst,int fmtBumpMap)
         }
 }
 void BuildDot3Map(int xs,int ys,void *pSrc,void *pDst)
-{ // трансформация карты цветов в карту нормалей
+{ // С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёСЏ РєР°СЂС‚С‹ С†РІРµС‚РѕРІ РІ РєР°СЂС‚Сѓ РЅРѕСЂРјР°Р»РµР№
 	float scale=255*2*0.1f;
 	Vect3f TexNormal(0.5f*255,0.5f*255,0.5f*255);
 	unsigned int *dst=(unsigned int *)pDst,*src=(unsigned int *)pSrc;
@@ -267,7 +267,7 @@ void BuildDot3Map(int xs,int ys,void *pSrc,void *pDst)
 			Vect3f a(scale,0,hr-hl),b(0,scale,hu-hd);
 			Vect3f n; n.cross(a,b); n.normalize(); 
 			n=(n+Vect3f(1,1,1))*TexNormal;
-			dst[i+j*xs]=(round(n.x)<<16)|(round(n.y)<<8)|(round(n.z)<<0);
+			dst[i+j*xs]=((int)round(n.x)<<16)|((int)round(n.y)<<8)|((int)round(n.z)<<0);
 		}
 }
 

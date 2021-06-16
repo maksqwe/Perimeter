@@ -1,9 +1,13 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "Region.h"
 #include "PrmEdit.h"
 #include "ForceField.h"
 #include "Config.h"
-#include "Terra.h"
+#include "terra.h"
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+#include <functional> // bind
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //			Region
@@ -271,7 +275,7 @@ void CellLine::analyze(CellLine& line1, CellLine& line2, SeedList& seeds)
 		if(i1 == line1.end()){				   //	 --i1--
 			do {							   //	         --i2--  ----
 				i2->l_cw = &*i2;			   
-				seeds.push_back(&*i2);	// начало положительного региона 			  
+				seeds.push_back(&*i2);	// РЅР°С‡Р°Р»Рѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРіРѕ СЂРµРіРёРѕРЅР° 			  
 			} while(++i2 != line2.end());
 			break;
 		}
@@ -282,7 +286,7 @@ void CellLine::analyze(CellLine& line1, CellLine& line2, SeedList& seeds)
 		}
 		else if(i2->xr < i1->xl){ 			  //		 --i1--
 			i2->l_cw = &*i2;				  //  --i2--
-			seeds.push_back(&*i2);	// начало положительного региона 			  
+			seeds.push_back(&*i2);	// РЅР°С‡Р°Р»Рѕ РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРіРѕ СЂРµРіРёРѕРЅР° 			  
 			++i2;				  
 			target = 0;
 			target_flag = false;
@@ -293,7 +297,7 @@ void CellLine::analyze(CellLine& line1, CellLine& line2, SeedList& seeds)
 			i2->l_cw = target;
 			target = &*i2;
 			if(target_flag)
-				seeds.push_back(&*i2); // начало отрицательного региона (дырки)	   ---- hole --hanle--
+				seeds.push_back(&*i2); // РЅР°С‡Р°Р»Рѕ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРіРѕ СЂРµРіРёРѕРЅР° (РґС‹СЂРєРё)	   ---- hole --hanle--
 			target_flag = true;
 
 			while(i1 != line1.end() && i1->xr < i2->xr)		 //  --i1-- ---- --x---
@@ -545,12 +549,12 @@ void Column::operateByCycledHermite(CycledHermite& hermite, int add)
 	Vect2sVect::iterator i;
 	FOR_EACH(border, i){
 		Vect2sVect::iterator i1 = i + 1 != border.end() ? i + 1 : border.begin();
-		if(i1->y < i->y){ // Скачек вверх 
+		if(i1->y < i->y){ // РЎРєР°С‡РµРє РІРІРµСЂС… 
 			Vect2sVect::iterator k;
 			Vect2sVect::iterator k_best = border.end();
 			Vect2sVect::iterator k0 = border.end() - 1;
 			int d, dist = 0x7fffffff;
-			FOR_EACH(border, k){ // Находим ближайший скачек вниз справа
+			FOR_EACH(border, k){ // РќР°С…РѕРґРёРј Р±Р»РёР¶Р°Р№С€РёР№ СЃРєР°С‡РµРє РІРЅРёР· СЃРїСЂР°РІР°
 				if(i->y == k->y && k0->y < k->y && (d = k->x - i->x) > 0 && d < dist){
 					k_best = k;
 					dist = d;
@@ -560,15 +564,16 @@ void Column::operateByCycledHermite(CycledHermite& hermite, int add)
 
 			//xassert(k_best != border.end());
 
-			if(k_best == border.end()) // могут теряться 1-интервалы
+			if(k_best == border.end()) // РјРѕРіСѓС‚ С‚РµСЂСЏС‚СЊСЃСЏ 1-РёРЅС‚РµСЂРІР°Р»С‹
 				continue;
 			
 			int y = i->y;
-			if(y >= 0 && y < size())
-				if(add)
-					(*this)[y].add(Interval(i->x, k_best->x));
-				else
-					(*this)[y].sub(Interval(i->x, k_best->x));
+			if(y >= 0 && y < size()) {
+                if (add)
+                    (*this)[y].add(Interval(i->x, k_best->x));
+                else
+                    (*this)[y].sub(Interval(i->x, k_best->x));
+            }
 		}
 	}
 }
@@ -754,14 +759,14 @@ void Region::getBorder(borderCall call,void* data, bool recursive) const
 
 			call(data,p0);
 
-			if(p0.y < p1.y && p0.x < p1.x || p0.y > p1.y && p0.x > p1.x)
-				p0.y = p1.y;
-			else if(p0.y == p1.y && cell != cell_prev)
-				if(p0.x < p1.x)
-					++p0.y;
-				else
-					--p0.y;
-			
+			if((p0.y < p1.y && p0.x < p1.x) || (p0.y > p1.y && p0.x > p1.x)) {
+                p0.y = p1.y;
+            } else if(p0.y == p1.y && cell != cell_prev) {
+                if (p0.x < p1.x)
+                    ++p0.y;
+                else
+                    --p0.y;
+            }
 			if(p0.x < p1.x){
 				while(++p0.x != p1.x)
 					call(data,p0);
@@ -1016,16 +1021,20 @@ void RegionDispatcher::vectorize(int minimalRegionSize, bool initSpline)
 	Region::clear();
 
 	int analyze_cnt = 0;
-	if(edit_column.front().changed())
-		CellLine::analyze(CellLine(), edit_column.front(), seeds);
+	if(edit_column.front().changed()) {
+	    CellLine line = CellLine();
+        CellLine::analyze(line, edit_column.front(), seeds);
+    }
 	Column::iterator i, i_next;
 	for(i = i_next = edit_column.begin(), ++i_next; i_next != edit_column.end(); i = i_next, ++i_next)
 		if(i->changed() || i_next->changed()){
 			CellLine::analyze(*i,*i_next, seeds);
 			analyze_cnt++;
 		}
-	if(edit_column.back().changed())
-		CellLine::analyze(edit_column.back(), CellLine(), seeds);
+    if(edit_column.back().changed()) {
+        CellLine line = CellLine();
+        CellLine::analyze(edit_column.back(), line, seeds);
+    }
 
 	statistics_add(analyze_cnt, STATISTICS_GROUP_NUMERIC, analyze_cnt);
 
@@ -1211,7 +1220,7 @@ Vect2f CycledHermite::inward_normal(float t)
 
 void CycledHermite::getBorder(vector<Vect2s>& border, float scale)
 {
-	// Создаем четырехсвязную границу.
+	// РЎРѕР·РґР°РµРј С‡РµС‚С‹СЂРµС…СЃРІСЏР·РЅСѓСЋ РіСЂР°РЅРёС†Сѓ.
 	border.clear();
 
 	Vect2s v0 = (*this)(0)*scale;
@@ -1224,7 +1233,7 @@ void CycledHermite::getBorder(vector<Vect2s>& border, float scale)
 		Vect2s v = vf;
 		
 		float ddt = dt;
-		while((v - v0).norm2() > 2) // скачек, больший 1
+		while((v - v0).norm2() > 2) // СЃРєР°С‡РµРє, Р±РѕР»СЊС€РёР№ 1
 		{
 			v = vf = (*this)(t -= (ddt /= 2))*scale;
 			if(ddt < FLT_EPS)
@@ -1249,14 +1258,14 @@ void CycledHermite::getBorder(vector<Vect2s>& border, float scale)
 		v0 = v;
 	}
 
-	// Удаляем добавочные точки, чтобы точно сшить границу.
+	// РЈРґР°Р»СЏРµРј РґРѕР±Р°РІРѕС‡РЅС‹Рµ С‚РѕС‡РєРё, С‡С‚РѕР±С‹ С‚РѕС‡РЅРѕ СЃС€РёС‚СЊ РіСЂР°РЅРёС†Сѓ.
 	while(!border.empty() && !(border.front() == border.back()))
 	{
 		border.pop_back();
 	}
 
 	xassert(!border.empty());
-	border.pop_back(); // удаляем совпадающую с началом точку
+	border.pop_back(); // СѓРґР°Р»СЏРµРј СЃРѕРІРїР°РґР°СЋС‰СѓСЋ СЃ РЅР°С‡Р°Р»РѕРј С‚РѕС‡РєСѓ
 }
 
 
@@ -1269,17 +1278,10 @@ void FieldDispatcher::setBorder(FieldCluster* cluster, CycledHermite& hermite)
 	setBorder(cluster, cluster->border_);
 }
 
-static
-void FieldDispatcherBorderCall(void* data,Vect2f& p)
-{
-	FieldCluster* cluster=(FieldCluster*)data;
-	cluster->border_.push_back(p);
-}
-
 void FieldDispatcher::setBorder(FieldCluster* cluster, const Region& region)
 {
 	cluster->border_.clear();
-	region.getBorder(FieldDispatcherBorderCall,cluster);
+	region.getBorder(FieldCluster::FieldDispatcherBorderCall,cluster);
 	setBorder(cluster, cluster->border_);
 }
 
@@ -1355,7 +1357,13 @@ void Region::rasterize(Column& rast_column)
 		
 		vector<vector<int> > column(y1 - y0 + 1);
 
-		#define PUT(x, y) { if(y >= y0 && y <= y1){ vector<int>& line = column[y - y0]; line.insert(find_if(line.begin(), line.end(), bind1st(less<int>(), x)), x); } }
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define LESS(x) bind1st(less<int>(), x)
+#else
+#define LESS(x) std::bind(less<int>(), x, std::placeholders::_1)
+#endif
+
+		#define PUT(x, y) { if(y >= y0 && y <= y1){ vector<int>& line = column[y - y0]; line.insert(find_if(line.begin(), line.end(), LESS(x)), x); } }
 	
 		spline().set_offset(t_up);
 		float dt = spline().suggest_dt(rasterize_dlen);
@@ -1433,15 +1441,16 @@ void Region::rasterize(Column& rast_column)
 			vector<int>::iterator li;
 			//xassert(!(ci->size() & 1));
 			FOR_EACH(*ci, li){
-				int xl = *li;
-				if(++li == ci->end())
-					break;
-				int xr = *li;
-				if(xl != xr)
-					if(positive())
-						rast_column[y + y0].add(Interval(xl, xr), this);
-					else 
-						rast_column[y + y0].sub(Interval(xl, xr), this);
+                    int xl = *li;
+                    if(++li == ci->end())
+                        break;
+                    int xr = *li;
+                    if(xl != xr) {
+                        if (positive())
+                            rast_column[y + y0].add(Interval(xl, xr), this);
+                        else
+                            rast_column[y + y0].sub(Interval(xl, xr), this);
+                    }
 				}
 			y++;
 			}
@@ -1763,7 +1772,7 @@ void RegionDispatcher::clip_by_circle(const Point& p, float clip_radius, int sav
 }
 
 //////////////////////////////////////////////////////////
-//	Контейнер слоев
+//	РљРѕРЅС‚РµР№РЅРµСЂ СЃР»РѕРµРІ
 //////////////////////////////////////////////////////////
 RegionMetaDispatcher::RegionMetaDispatcher(int layers, int sy,bool multithreaded_) 
 { 

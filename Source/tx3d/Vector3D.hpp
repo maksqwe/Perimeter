@@ -13,8 +13,8 @@
 #ifndef _TX3D_VECTORC3D_H
 #define _TX3D_VECTORC3D_H
 
-#include <my_stl.h>
-#include <math.h>
+#include <my_STL.h>
+#include <cmath>
 
 namespace tx3d {
 

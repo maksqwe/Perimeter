@@ -31,7 +31,8 @@ void VSWater::Select()
 {
 	SetMatrix(mVP,gb_RenderDevice3D->GetDrawNode()->matViewProj);
 	Vect3f p=gb_RenderDevice3D->GetDrawNode()->GetPos();
-	SetVector(vCameraPos,&D3DXVECTOR4(p.x,p.y,p.z,0));
+    D3DXVECTOR4 cam(p.x,p.y,p.z,0);
+	SetVector(vCameraPos,&cam);
 	cVertexShader::Select();
 }
 
@@ -50,14 +51,14 @@ void VSWater::RestoreShader()
 {
 	if(technique==2)
 	{
-		#include "Water\o\water_cube.vl"
+		#include "Water/o/water_cube.vl"
 	}else
 	if(technique==1)
 	{
-		#include "Water\o\water_easy.vl"
+		#include "Water/o/water_easy.vl"
 	}else
 	{
-		#include "Water\o\water.vl"
+		#include "Water/o/water.vl"
 	}
 }
 
@@ -70,14 +71,14 @@ void PSWater::Restore()
 {
 	if(technique==2)
 	{
-		#include "Water\o\water_cube.ph"
+		#include "Water/o/water_cube.ph"
 	}else
 	if(technique==1)
 	{
-		#include "Water\o\water_easy.ph"
+		#include "Water/o/water_easy.ph"
 	}else
 	{
-		#include "Water\o\water.ph"
+		#include "Water/o/water.ph"
 	}
 }
 

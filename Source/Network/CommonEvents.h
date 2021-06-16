@@ -3,13 +3,13 @@
 
 
 const char SIMPLE_GAME_CURRENT_VERSION[]= 
-#include "..\version.h" 
+#include "../version.h"
 ;
 
 extern const unsigned int INTERNAL_BUILD_VERSION;
 //-------------------------------
 
-// Àäàïòàöèÿ ñòðîê äëÿ ïåðåäà÷è ïî ñåòè
+// ÐÐ´Ð°Ð¿Ñ‚Ð°Ñ†Ð¸Ñ ÑÑ‚Ñ€Ð¾Ðº Ð´Ð»Ñ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ Ð¿Ð¾ ÑÐµÑ‚Ð¸
 class StringInWrapper
 {
 	string& value_;
@@ -26,7 +26,8 @@ public:
 	const string& operator()() const { return value_; }
 };
 
-inline XBuffer& operator > (XBuffer& in, StringInWrapper& str) { str() = in(in.tell()); in += str().size() + 1; return in; }
+//old inline XBuffer& operator > (XBuffer& in, StringInWrapper& str) { str() = in(in.tell()); in += str().size() + 1; return in; }
+inline XBuffer& operator > (XBuffer& in, StringInWrapper str) { str() = in(in.tell()); in += str().size() + 1; return in; }
 inline XBuffer& operator < (XBuffer& out, const StringOutWrapper& str) { out < str().c_str() < '\0'; return out; }
 
 
@@ -35,7 +36,7 @@ inline XBuffer& operator < (XBuffer& out, const StringOutWrapper& str) { out < s
 #include "CommonCommands.h"
 
 #include "NetPlayer.h"
-#include "..\Units\UnitAttribute.h"
+#include "../Units/UnitAttribute.h"
 
 
 
@@ -163,7 +164,7 @@ public:
 	bool operator == (const netCommandGame &secop) const;
 };
 
-//Âíèìàíèå ! ìîæíî çàùèòèòü ïðîñòûì "ïëàâàþùèì" ïàðîëåì
+//Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸Ðµ ! Ð¼Ð¾Ð¶Ð½Ð¾ Ð·Ð°Ñ‰Ð¸Ñ‚Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¾ÑÑ‚Ñ‹Ð¼ "Ð¿Ð»Ð°Ð²Ð°ÑŽÑ‰Ð¸Ð¼" Ð¿Ð°Ñ€Ð¾Ð»ÐµÐ¼
 class netCommand4G_ForcedDefeat : public netCommandGame
 {
 public:
@@ -436,7 +437,7 @@ public:
 	}
 
 	bool operator == (const netCommand4H_BackGameInformation2 &secop) const {
-		//lagQuant íå ñðàâíèâàåòñÿ !
+		//lagQuant Ð½Ðµ ÑÑ€Ð°Ð²Ð½Ð¸Ð²Ð°ÐµÑ‚ÑÑ !
 		return ( (quant_ == secop.quant_) && 
 			(signature_== secop.signature_) );
 	}
@@ -611,7 +612,7 @@ struct terEventError : netCommandGeneral
 };
 
 
-//Ñåé÷àñ ôàêòè÷åñêè íå èñïîëüçóåòñÿ ò.ê. çàïóñêàåòñÿ å¸ âíóòðåííèé àíàëîã - ExecuteInternalCommand(PNC_COMMAND__START_HOST_AND_CREATE_GAME_AND_STOP_FIND_HOST, true);
+//Ð¡ÐµÐ¹Ñ‡Ð°Ñ Ñ„Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸ Ð½Ðµ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ Ñ‚.Ðº. Ð·Ð°Ð¿ÑƒÑÐºÐ°ÐµÑ‚ÑÑ ÐµÑ‘ Ð²Ð½ÑƒÑ‚Ñ€ÐµÐ½Ð½Ð¸Ð¹ Ð°Ð½Ð°Ð»Ð¾Ð³ - ExecuteInternalCommand(PNC_COMMAND__START_HOST_AND_CREATE_GAME_AND_STOP_FIND_HOST, true);
 struct netCommand4H_CreateGame : netCommandGeneral {
 	MissionDescription missionDescription_;
 	PlayerData createPlayerData_;

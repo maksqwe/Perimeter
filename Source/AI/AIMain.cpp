@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
@@ -16,13 +16,13 @@
 #include "RigidBody.h"
 #include "ForceField.h"
 
-#include "AiMain.h"
+#include "AIMain.h"
 
 #include "GenericUnit.h"
 #include "RealUnit.h"
 #include "IronFrame.h"
 #include "Squad.h"
-#include "AiPrm.h"
+#include "AIPrm.h"
 #include "Installer.h"
 #include "PlaceOperators.h"
 #include "GameShell.h"
@@ -237,7 +237,7 @@ void AIPlayer::FrameQuant()
 void AIPlayer::MoveBrigadiersToPoint(const Vect2f& pos,float radius)
 {
 //	return;
-	//Даёт указание list двигаться в точку не доезжая radius до pos 
+	//Р”Р°С‘С‚ СѓРєР°Р·Р°РЅРёРµ list РґРІРёРіР°С‚СЊСЃСЏ РІ С‚РѕС‡РєСѓ РЅРµ РґРѕРµР·Р¶Р°СЏ radius РґРѕ pos 
 	Vect2f dir = pos - GetBrigadierCenter();
 	dir /= FLT_EPS + dir.norm();
 	Vect2f target = pos - dir*radius;

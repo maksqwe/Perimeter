@@ -4,7 +4,7 @@
 #include "InterfaceLogic.h"
 #include "Runtime.h"
 #include "UnitAttribute.h"
-#include "Terra.h"
+#include "terra.h"
 #include "Universe.h"
 #include "GenericControls.h"
 #include "Config.h"
@@ -17,10 +17,10 @@
 
 #include "PerimeterShellUI.h"
 
-#include "..\sound\PerimeterSound.h"
+#include "../Sound/PerimeterSound.h"
 #include "ExternalShow.h"
 #include "fps.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 
 extern int mt_interface_quant;
 CShellLogicDispatcher* _pShellDispatcher = 0;
@@ -173,14 +173,14 @@ void CShellLogicDispatcher::quant(bool game_active)
 		{
 			if(!m_bToolzerSizeChangeMode)
 			{
-				//начало изменения размера
+				//РЅР°С‡Р°Р»Рѕ РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР°
 				m_bToolzerSizeChangeMode = true;
 				gameShell->setMousePressControl(Vect2f(m_fMouseCurrentX, m_fMouseCurrentY));
 			}
 		}
 		else if(m_bToolzerSizeChangeMode)
 		{
-			//конец изменения размера
+			//РєРѕРЅРµС† РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР°
 			gameShell->setCursorPosition(Vect2f(gameShell->mousePressControl().x - 0.5f, gameShell->mousePressControl().y - 0.5f));
 			gameShell->MouseMove(Vect2f(gameShell->mousePressControl().x - 0.5f, gameShell->mousePressControl().y - 0.5f));
 			m_bToolzerSizeChangeMode = false;
@@ -258,13 +258,13 @@ void CShellLogicDispatcher::draw()
 		terRenderDevice->SetFont(0);
 	}
 
-#ifndef _FINAL_VERSION_
+#ifdef PERIMETER_DEBUG
 	if (universe() && universe()->activePlayer() && universe()->activePlayer()->isAI()) {
 		terRenderDevice->SetFont( m_hFontUnitsLabel );
 		terRenderDevice->OutText(950,24,universe()->activePlayer()->difficultyPrm().name,sColor4f(1,1,1,1));
 		terRenderDevice->SetFont( NULL );
 	}
-#endif // _FINAL_VERSION_
+#endif // PERIMETER_DEBUG
 
 	if(_shellIconManager.IsInterface())
 	{
@@ -298,7 +298,7 @@ int CShellLogicDispatcher::OnMouseMove(float x, float y)
 		{
 			if(!m_bToolzerSizeChangeMode)
 			{
-				//начало изменения размера
+				//РЅР°С‡Р°Р»Рѕ РёР·РјРµРЅРµРЅРёСЏ СЂР°Р·РјРµСЂР°
 				m_bToolzerSizeChangeMode = true;
 				gameShell->setMousePressControl(Vect2f(m_fMouseCurrentX, m_fMouseCurrentY));
 			}
@@ -308,7 +308,7 @@ int CShellLogicDispatcher::OnMouseMove(float x, float y)
 	}
 
 	if (m_nState == STATE_TRACKING) {
-		//track rect (будет нарисован в draw()
+		//track rect (Р±СѓРґРµС‚ РЅР°СЂРёСЃРѕРІР°РЅ РІ draw()
 		int x0 = (m_fMousePressX-0.5f)*terScreenSizeX + terScreenSizeX/2;
 		int y0 = (m_fMousePressY-0.5f)*terScreenSizeY + terScreenSizeY/2;
 		int x1 = (x-0.5f)*terScreenSizeX + terScreenSizeX/2;
@@ -328,7 +328,7 @@ int CShellLogicDispatcher::OnMouseMove(float x, float y)
 	if(!universe())
 		return 0;
 
-	if(!gameShell->BuildingInstaller.inited()) //если не тащим здание
+	if(!gameShell->BuildingInstaller.inited()) //РµСЃР»Рё РЅРµ С‚Р°С‰РёРј Р·РґР°РЅРёРµ
 	{
 		terPlayer* pPlayer = universe()->activePlayer();
 		if(pPlayer){
@@ -342,7 +342,7 @@ int CShellLogicDispatcher::OnMouseMove(float x, float y)
 				if (!editWorkArea) {
 					if(_pUnitHover->playerID() == pPlayer->playerID())
 					{
-						//свой
+						//СЃРІРѕР№
 						if(GetSelectedUnit() == _pUnitHover() && !bMultiSel)
 							OnOverUnit(_pUnitHover());
 						else
@@ -356,7 +356,7 @@ int CShellLogicDispatcher::OnMouseMove(float x, float y)
 					}
 					else //if(GetSelectedUnitsCount())
 					{
-						//чужой
+						//С‡СѓР¶РѕР№
 						OnOverEnemy(_pUnitHover());
 					}
 				}
@@ -436,8 +436,8 @@ bool CShellLogicDispatcher::TranslatePickAction()
 			if(pUnit){
 				if(_pUnitHover() && universe()->select.canSelectionAttackUnit(_pUnitHover()))
 					universe()->select.makeCommandWithCanAttackFilter(_pUnitHover());
-//				else if (_pShellDispatcher->m_nPickData == 1) { // Стреляет по земле
-				else { // Стреляет по земле
+//				else if (_pShellDispatcher->m_nPickData == 1) { // РЎС‚СЂРµР»СЏРµС‚ РїРѕ Р·РµРјР»Рµ
+				else { // РЎС‚СЂРµР»СЏРµС‚ РїРѕ Р·РµРјР»Рµ
 					if (pUnit->attr().ID == UNIT_ATTRIBUTE_SQUAD) {
 						universe()->select.makeCommandWithCanAttackFilter(v);
 					} else {
@@ -516,20 +516,20 @@ int CShellLogicDispatcher::OnLButtonDown(float x, float y)
 	int ret = 0;
 
 	if (m_nState == STATE_DEFAULT && !(m_nMouseButtonsState & MK_RBUTTON)) {
-		//без рамки и тулзеров и правая кнопка не холдится
+		//Р±РµР· СЂР°РјРєРё Рё С‚СѓР»Р·РµСЂРѕРІ Рё РїСЂР°РІР°СЏ РєРЅРѕРїРєР° РЅРµ С…РѕР»РґРёС‚СЃСЏ
 		if (!TranslatePickAction()) {
-			//не выполнялась команда по кнопке
+			//РЅРµ РІС‹РїРѕР»РЅСЏР»Р°СЃСЊ РєРѕРјР°РЅРґР° РїРѕ РєРЅРѕРїРєРµ
 			if (!_pUnitHover()) {
-				//на пустом месте
+				//РЅР° РїСѓСЃС‚РѕРј РјРµСЃС‚Рµ
 				SetState(STATE_TRACKING);
 			} else {
-				//над юнитом
+				//РЅР°Рґ СЋРЅРёС‚РѕРј
 				if (_pUnitHover->playerID() == pPlayer->playerID()) {
-					//свой
+					//СЃРІРѕР№
 					universe()->select.unitToSelection(_pUnitHover(), isShiftPressed() ? COMMAND_SELECTED_MODE_NEGATIVE : COMMAND_SELECTED_MODE_SINGLE);
 					SoundOnUnitPick(_pUnitHover());
 				} else {
-					//чужой
+					//С‡СѓР¶РѕР№
 				}
 			}
 		}
@@ -574,7 +574,7 @@ int CShellLogicDispatcher::OnLButtonUp(float x, float y)
 			SoundOnUnitPick(_pUnitHover());
 		}
 	
-		OnMouseMove(x, y); //нужно для смены курсора
+		OnMouseMove(x, y); //РЅСѓР¶РЅРѕ РґР»СЏ СЃРјРµРЅС‹ РєСѓСЂСЃРѕСЂР°
 		SetState(STATE_DEFAULT);
 	}
 	
@@ -737,7 +737,7 @@ void CShellLogicDispatcher::SetEditRegion(int rg)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// модели в окошке 
+// РјРѕРґРµР»Рё РІ РѕРєРѕС€РєРµ 
 string GetBelligerentTexturePath(terBelligerent belligerent);
 void CShellLogicDispatcher::SetUnitView(const AttributeBase* pInfo, bool bPowerOn)
 {

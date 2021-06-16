@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
@@ -81,7 +81,7 @@
 #include "FilthWorm.h"
 #include "FilthShark.h"
 #include "FilthVolcano.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 
 //-------------------------------------
 terPlayer::terPlayer(const PlayerData& playerData) 
@@ -638,7 +638,7 @@ terUnitBase* terPlayer::createUnit(const UnitTemplate& data)
 
 void terPlayer::incomingCommandRegion(const netCommand4G_Region& reg)
 {
-	//Region Buffer ìîæíî ñäåëàòü ãëîáàëüíûì
+	//Region Buffer Ð¼Ð¾Ð¶Ð½Ð¾ ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ñ‹Ð¼
 	XBuffer RegionBuffer(5000, 1);
 	RegionBuffer.init();
 	RegionBuffer.write(reg.pData_, reg.dataSize_);
@@ -852,10 +852,16 @@ void terPlayer::showDebugInfo()
 		ZeroRegionPoint->getRasterizeColumn().show(BLUE);
 	if(showDebugPlayer.zeroColumn == 3)
 		ZeroRegionPoint->getBorder(debugInfoBorderCall,NULL, true);
-	if(showDebugPlayer.zeroColumn == 4)
-		ZeroRegionPoint->scanRecursive(ShowOp(GREEN), ShowOp(RED), TERRAFORM_ELEMENT_SIZE);
-	if(showDebugPlayer.zeroColumn == 5)
-		ZeroRegionPoint->scanRecursive(ShowOp(GREEN), ShowOp(RED), 1);
+	if(showDebugPlayer.zeroColumn == 4) {
+        auto opg = ShowOp(GREEN);
+        auto opr = ShowOp(RED);
+        ZeroRegionPoint->scanRecursive(opg, opr, TERRAFORM_ELEMENT_SIZE);
+    }
+	if(showDebugPlayer.zeroColumn == 5) {
+        auto opg = ShowOp(GREEN);
+        auto opr = ShowOp(RED);
+        ZeroRegionPoint->scanRecursive(opg, opr, 1);
+    }
 
 	if(showDebugPlayer.trustMap)
 		TrustMap->Show();
@@ -1023,7 +1029,7 @@ void terPlayer::universalSave(SavePlayerData& data, bool userSave)
 				xassert(data.buildings.back());
 			}
 			else 
-				xassert_s(0 && "Èãíîðèðóåòñÿ çàïèñü çäàíèÿ: ", (*bi)->attr().internalName());
+				xassert_s(0 && "Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€ÑƒÐµÑ‚ÑÑ Ð·Ð°Ð¿Ð¸ÑÑŒ Ð·Ð´Ð°Ð½Ð¸Ñ: ", (*bi)->attr().internalName());
 		}
 	}
 	
@@ -1328,7 +1334,7 @@ void terPlayer::rebuildDefenceMapQuant()
 terUnitBase* terPlayer::findPathToTarget(DefenceMap& defenceMap, terUnitAttributeID id, terUnitBase* ignoreUnit, const Vect2f& nearPosition, Vect2iVect& path)
 {
 	MTL();
-	xassert(id != UNIT_ATTRIBUTE_ANY && "Íåäîïóñòèì ëþáîé þíèò äëÿ öåëè àòàêè");
+	xassert(id != UNIT_ATTRIBUTE_ANY && "ÐÐµÐ´Ð¾Ð¿ÑƒÑÑ‚Ð¸Ð¼ Ð»ÑŽÐ±Ð¾Ð¹ ÑŽÐ½Ð¸Ñ‚ Ð´Ð»Ñ Ñ†ÐµÐ»Ð¸ Ð°Ñ‚Ð°ÐºÐ¸");
 	UnitList targets;
 	UnitList::iterator ui;
 	FOR_EACH(Units, ui)
@@ -1469,9 +1475,10 @@ bool terPlayer::soundEvent(const SoundEventSetup* ev)
 
 bool terPlayer::startSound(const SoundEventSetup* ev) const
 {
-	if(ev->is3D)
-		return SND3DPlaySound(ev->name,&Vect3f(0,0,0));
-	else
+	if(ev->is3D) {
+        Vect3f z(0,0,0);
+        return SND3DPlaySound(ev->name, &z);
+    } else
 		return SND2DPlaySound(ev->name);
 
 	return false;
@@ -1517,9 +1524,9 @@ void terVoiceDispatcher::quant()
 			startVoice(it->voiceSetup(),true);
 	}
 
-	voiceQueue_.remove_if(mem_fun_ref(&VoiceTimer::end));
-	delayedVoices_.remove_if(mem_fun_ref(&VoiceTimer::end));
-	disabledVoices_.remove_if(mem_fun_ref(&VoiceTimer::end));
+	voiceQueue_.remove_if(std::mem_fn(&VoiceTimer::end));
+	delayedVoices_.remove_if(std::mem_fn(&VoiceTimer::end));
+	disabledVoices_.remove_if(std::mem_fn(&VoiceTimer::end));
 
 	while(!isVoicePlaying() && !voiceQueue_.empty()){
 		play(voiceQueue_.begin()->voiceSetup());

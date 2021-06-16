@@ -4,7 +4,7 @@
 #include "ClusterFind.h"
 #include "ForceField.h"
 #include "AIPrm.h"
-#include "runtime.h"
+#include "Runtime.h"
 
 bool AITile::update(int x,int y)
 {
@@ -137,7 +137,7 @@ public:
 	typedef ClusterFind::Cluster Node;
 	Node* end;
 
-	//Ïðåäïîëàãàåìûå çàòðàòû íà ïðîäâèæåíèå èç pos1 ê îêîí÷àíèþ
+	//ÐŸÑ€ÐµÐ´Ð¿Ð¾Ð»Ð°Ð³Ð°ÐµÐ¼Ñ‹Ðµ Ð·Ð°Ñ‚Ñ€Ð°Ñ‚Ñ‹ Ð½Ð° Ð¿Ñ€Ð¾Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· pos1 Ðº Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸ÑŽ
 	inline float GetH(Node* pos)
 	{
 		return sqrtf(sqr(pos->xcenter-end->xcenter)+
@@ -152,7 +152,7 @@ public:
 		return (walk_to&ClusterFind::DOWN_MASK)+gmul;
 	}
 
-	//Çàòðàòû íà ïðîäâèæåíèå èç pos1 â pos2
+	//Ð—Ð°Ñ‚Ñ€Ð°Ñ‚Ñ‹ Ð½Ð° Ð¿Ñ€Ð¾Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· pos1 Ð² pos2
 	inline float GetG(Node* pos1,Node* pos2)
 	{
 		float mul=(pos2->walk&ClusterFind::DOWN_MASK)+gmul;
@@ -170,10 +170,10 @@ public:
 };
 
 class ClusterHeuristicDitch : public ClusterHeuristic
-{//Ðâû ñ÷èòàþòñÿ íåïðåîäîëèìûìè ïðåïÿòñòâèÿìè (âûñîòà==0)
+{//Ð Ð²Ñ‹ ÑÑ‡Ð¸Ñ‚Ð°ÑŽÑ‚ÑÑ Ð½ÐµÐ¿Ñ€ÐµÐ¾Ð´Ð¾Ð»Ð¸Ð¼Ñ‹Ð¼Ð¸ Ð¿Ñ€ÐµÐ¿ÑÑ‚ÑÑ‚Ð²Ð¸ÑÐ¼Ð¸ (Ð²Ñ‹ÑÐ¾Ñ‚Ð°==0)
 public:
 	enum {
-		heuristic_ditch = 127 //Ðîâ íà íóëåâîé âûñîòå
+		heuristic_ditch = 127 //Ð Ð¾Ð² Ð½Ð° Ð½ÑƒÐ»ÐµÐ²Ð¾Ð¹ Ð²Ñ‹ÑÐ¾Ñ‚Ðµ
 	};
 
 	inline float GetG(Node* pos1,Node* pos2)
@@ -197,7 +197,7 @@ public:
 	typedef ClusterFind::Cluster Node;
 	Node* end;
 
-	//Ïðåäïîëàãàåìûå çàòðàòû íà ïðîäâèæåíèå èç pos1 ê îêîí÷àíèþ
+	//ÐŸÑ€ÐµÐ´Ð¿Ð¾Ð»Ð°Ð³Ð°ÐµÐ¼Ñ‹Ðµ Ð·Ð°Ñ‚Ñ€Ð°Ñ‚Ñ‹ Ð½Ð° Ð¿Ñ€Ð¾Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· pos1 Ðº Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸ÑŽ
 	inline float GetH(Node* pos)
 	{
 		return sqrtf(sqr(pos->xcenter-end->xcenter)+
@@ -209,7 +209,7 @@ public:
 		return (walk_to&ClusterFind::DOWN_MASK)*10000.0f+1;
 	}
 
-	//Çàòðàòû íà ïðîäâèæåíèå èç pos1 â pos2
+	//Ð—Ð°Ñ‚Ñ€Ð°Ñ‚Ñ‹ Ð½Ð° Ð¿Ñ€Ð¾Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· pos1 Ð² pos2
 	inline float GetG(Node* pos1,Node* pos2)
 	{
 		float mul=(pos2->walk&ClusterFind::DOWN_MASK)*10000.0f+1;
@@ -231,14 +231,13 @@ bool AITileMap::findPath(const Vect2i& from_w, const Vect2i& to_w, vector<Vect2i
 		return false;
 
 	bool b;
-	switch(type)
-	{
-	case PATH_NORMAL:
-		b=path_finder->FindPath(from, to, out_path, ClusterHeuristicDitch());
-		break;
-	case PATH_HARD:
-		b=path_hard_map->FindPath(from, to, out_path, ClusterHeuristicHard());
-		break;
+	//Since both clusterheuristic types are not same type, is better to use if's than switch
+	if (type == PATH_NORMAL) {
+        ClusterHeuristic ch = ClusterHeuristicDitch();
+        b = path_finder->FindPath(from, to, out_path, ch);
+    } else if (type == PATH_HARD) {
+        ClusterHeuristicHard chh = ClusterHeuristicHard();
+		b = path_hard_map->FindPath(from, to, out_path, chh);
 	}
 
 	vector<Vect2i>::iterator it;
@@ -272,7 +271,7 @@ void AITileMap::rebuildWalkMap(BYTE* walk_map)
 			if(dh < terrainPathFind.minimizeMinLevel)
 				dh = 0;
 /*/
-			int dh=0;//Íå ó÷èòûâàòü ãîðèñòîñòü ïîâåðõíîñòè 
+			int dh=0;//ÐÐµ ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ñ‚ÑŒ Ð³Ð¾Ñ€Ð¸ÑÑ‚Ð¾ÑÑ‚ÑŒ Ð¿Ð¾Ð²ÐµÑ€Ñ…Ð½Ð¾ÑÑ‚Ð¸ 
 /**/
 			if(!walk_map[i])
 				walk_map[i] = dh;
@@ -293,7 +292,7 @@ void AITileMap::rebuildWalkMap(BYTE* walk_map)
 	}
 
 
-	//Äîáàâèòü êëàñòåð
+	//Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÐºÐ»Ð°ÑÑ‚ÐµÑ€
 	if(0 && field_dispatcher)
 	{
 		xassert(FieldDispatcher::scale == tileSizeShl);

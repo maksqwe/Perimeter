@@ -9,13 +9,22 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #define WINVER	0x0500
 #define _WIN32_WINNT 0x0500
+#else
+// Visual Studio 2019, afxv_w32.h: #error MFC does not support WINVER less than 0x0501.
+#define WINVER	0x0501
+#define _WIN32_WINNT 0x0501
+#endif
 
 #pragma warning(disable : 4786 4800)
 
 #include "my_STL.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#ifndef _FINAL_VERSION_
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include <afxwin.h>         // MFC core and standard components
@@ -41,14 +50,26 @@
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
+#endif //_WIN32
+#endif //_FINAL_VERSION_
 
 #include <vector> 
 #include <string>
+
+// hash_map is an old and non-standard MS extension
+// see https://docs.microsoft.com/en-us/cpp/standard-library/hash-map?view=msvc-160
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
 #include <hash_map> 
+#else
+#include <unordered_map>
+#endif
+
+#include <algorithm>
 
 using namespace std;
 
 #include "xutil.h"
+#include "Serialization.h"
 #include "xmath.h"
 #include "Timers.h"
 

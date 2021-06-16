@@ -1,7 +1,9 @@
 #include "stdafxTr.h"
 
 #include <math.h>
+#ifdef _WIN32
 #include <wtypes.h>
+#endif
 #include "fastmath.h"
 
 
@@ -49,7 +51,7 @@ void  build_sqrt_table()
 
 // At the assembly level the recommended workaround for the second FIST bug is the same for the first; 
 // inserting the FRNDINT instruction immediately preceding the FIST instruction. 
-
+/*
 __forceinline void FloatToInt(int *int_pointer, float f) 
 {
 	__asm  fld  f
@@ -58,7 +60,7 @@ __forceinline void FloatToInt(int *int_pointer, float f)
   __asm  fistp dword ptr [edx];
 
 }
-
+*/
 
 /*
 int main(int argc, char* argv[])
@@ -99,7 +101,7 @@ float  fastsqrtN (float x)
     if (x < 0.0f)
         return -1.0f;
     if (x == 0.0f)
-        return 0.0f;  /* ìîæåò ïðèâåñòè ê äåëåíèþ íà 0 */
+        return 0.0f;  /* Ð¼Ð¾Ð¶ÐµÑ‚ Ð¿Ñ€Ð¸Ð²ÐµÑÑ‚Ð¸ Ðº Ð´ÐµÐ»ÐµÐ½Ð¸ÑŽ Ð½Ð° 0 */
     EPS = x * eps;
     sq = x;
     sqold = x + 30.0f;         /* != sq */

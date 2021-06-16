@@ -1,4 +1,6 @@
-#include "stdafx.h"
+// TODO: change encoding to utf-8
+
+#include "StdAfx.h"
 #include "terra.h"
 #include "RigidBody.h"
 #include "ForceField.h"
@@ -379,7 +381,7 @@ void RigidBody::ground_analysis(float dt)
 
 	// ”стран€ет ступор перед вертикальными стенками
 	float norm_xy = sqrtf(sqr(velocity().x) + sqr(velocity().y));
-	if((norm_xy < prm().minimal_velocity_xy || gravicap_mode && dz_max > deep_penetration_dz) && norm_xy > FLT_EPS){
+	if((norm_xy < prm().minimal_velocity_xy || (gravicap_mode && dz_max > deep_penetration_dz)) && norm_xy > FLT_EPS){
 		float k = prm().minimal_velocity_xy*general_velocity_factor/norm_xy;
 		velocity_.x *= k;
 		velocity_.y *= k;

@@ -1,6 +1,6 @@
 #pragma once
 
-extern __declspec( thread ) DWORD tls_is_graph;
+extern THREAD_LOCAL DWORD tls_is_graph;
 enum
 {
 	MT_GRAPH_THREAD=1,
@@ -93,7 +93,7 @@ public:
 };
 
 /*
-	Отключает на области видимости assert`ы связанные с многопоточностью.
+	РћС‚РєР»СЋС‡Р°РµС‚ РЅР° РѕР±Р»Р°СЃС‚Рё РІРёРґРёРјРѕСЃС‚Рё assert`С‹ СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РјРЅРѕРіРѕРїРѕС‚РѕС‡РЅРѕСЃС‚СЊСЋ.
 */
 class MTAutoSkipAssert
 {

@@ -1,7 +1,7 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "PerimeterSound.h"
 #include "SoundInternal.h"
-#include "c3d.h"
+#include "C3D.h"
 #include "SoundScript.h"
 
 static LPDIRECTSOUND8 g_pDS = 0;
@@ -84,7 +84,7 @@ int PanByX(float x)
 	return ToPan(xx);
 }
 
-void logs(char *format, ...)
+void logs(const char *format, ...)
 {
 	if(snd_error)
 	{
@@ -368,8 +368,8 @@ bool SNDScriptPrmEnableAll()
 
 bool RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB)
 {
-	//Вообще-то после Restore для hardvare buffer неплохо 
-	//бы его преречитать
+	//Р’РѕРѕР±С‰Рµ-С‚Рѕ РїРѕСЃР»Рµ Restore РґР»СЏ hardvare buffer РЅРµРїР»РѕС…Рѕ 
+	//Р±С‹ РµРіРѕ РїСЂРµСЂРµС‡РёС‚Р°С‚СЊ
     HRESULT hr;
     DWORD dwStatus;
     if( FAILED( hr = pDSB->GetStatus( &dwStatus ) ) )
@@ -387,7 +387,7 @@ bool RestoreBuffer(LPDIRECTSOUNDBUFFER pDSB)
             if( hr == DSERR_BUFFERLOST )
                 Sleep( 10 );
         }
-        while( hr = pDSB->Restore() );
+        while( (hr = pDSB->Restore()) );
     }
 
 	return true;
@@ -484,7 +484,11 @@ LPDIRECTSOUNDBUFFER SNDLoadSound(LPCSTR fxname,DWORD dwCreationFlags)
 LFail:
     // Cleanup
     SAFE_DELETE( pWaveFile );
-    SAFE_DELETE( pDSBuffer );
+    //SAFE_DELETE( pDSBuffer ); //pDSBuffer is abstract, calling delelte is UB
+    if (pDSBuffer) {
+        pDSBuffer->Release();
+        (pDSBuffer) = NULL;
+    }
     return NULL;
 }
 
@@ -962,7 +966,7 @@ bool SNDScript::FindFree(LPCSTR name,ScriptParam*& script,int& nfree)
 
 bool SND3DPlaySound(LPCSTR name,
 					const Vect3f* pos,
-					const Vect3f* velocity//По умолчанию объект считается неподвижным
+					const Vect3f* velocity//РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РѕР±СЉРµРєС‚ СЃС‡РёС‚Р°РµС‚СЃСЏ РЅРµРїРѕРґРІРёР¶РЅС‹Рј
 					)
 {
 	if(!g_enable_sound)

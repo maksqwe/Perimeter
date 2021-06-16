@@ -1,8 +1,8 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "NetPlayer.h"
 #include "Save.h"
-#include "..\terra\crc.h"
-#include "Scripts\Config.hi"
+#include "../Terra/crc.h"
+#include "Scripts/Config.hi"
 
 const char* SAVE_VERSION = "V2.00";
 
@@ -137,7 +137,7 @@ MissionDescription::MissionDescription()
 }
 
 void MissionDescription::read(XBuffer& in) 
-{ 
+{
 	in > worldID_ > StringInWrapper(missionName_) > StringInWrapper(missionDescriptionStr_) > StringInWrapper(saveName_) > StringInWrapper(saveNameBinary_); 
 	in.read(difficulty);
 	for(int i = 0; i < NETWORK_PLAYERS_MAX; i++)
@@ -574,6 +574,5 @@ void MissionDescription::setSinglePlayerDifficulty(Difficulty difficutyIn)
 
 void MissionDescription::shufflePlayers()
 {
-	srand(timeGetTime());
-	random_shuffle(&playersShufflingIndices[0], &playersShufflingIndices[0] + playerAmountScenarioMax);
+	shuffle(&playersShufflingIndices[0], &playersShufflingIndices[0] + playerAmountScenarioMax, std::default_random_engine(timeGetTime()));
 }

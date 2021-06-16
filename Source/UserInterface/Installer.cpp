@@ -1,11 +1,11 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
 #include "PrmEdit.h"
-#include "Terra.h"
+#include "terra.h"
 #include "Region.h"
 #include "CameraManager.h"
 #include "Runtime.h"
@@ -283,10 +283,8 @@ void terBuildingInstaller::SetBuildPosition(const Vect2f& mousePos, terPlayer* p
 			ObjectPoint->ClearAttr(ATTRUNKOBJ_IGNORE);
 
 			ObjectPoint->SetPosition(Se3f(QuatF(Angle, Vect3f::K), Position));
-			if(valid())
-				ObjectPoint->SetColor(0,&sColor4f(0,1.0f,0,0.5f),&sColor4f(0,1.0f,0,0.5f));
-			else
-				ObjectPoint->SetColor(0,&sColor4f(1.0f,0,0,0.5f),&sColor4f(1.0f,0,0,0.5f));
+			sColor4f c = valid() ? sColor4f(0,1.0f,0,0.5f) : sColor4f(1.0f,0,0,0.5f);
+            ObjectPoint->SetColor(0,&c,&c);
 			return;
 		}
 		ObjectPoint->SetAttr(ATTRUNKOBJ_IGNORE);
@@ -394,10 +392,10 @@ bool terBuildingInstaller::checkScriptInstructions()
 			const SaveBuildingInstallerInstruction& instruction = *ii;
 			terUnitBase* unit = universe()->findUnitByLabel(instruction.label);
 			if(!unit){
-				xassert_s(0 && "Îáúåêò ïî ìåòêå íå íàéäåí: ", instruction.label);
+				xassert_s(0 && "ÐžÐ±ÑŠÐµÐºÑ‚ Ð¿Ð¾ Ð¼ÐµÑ‚ÐºÐµ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½: ", instruction.label);
 			}												
 			else{
-				if((unit->activity() && instruction.labeledObjectActivity || !unit->activity() && !instruction.labeledObjectActivity) &&
+				if(((unit->activity() && instruction.labeledObjectActivity) || (!unit->activity() && !instruction.labeledObjectActivity)) &&
 					unit->position2D().distance2(Position) < sqr(instruction.distance))
 					return true;
 			}

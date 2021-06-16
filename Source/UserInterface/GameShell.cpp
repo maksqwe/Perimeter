@@ -14,12 +14,12 @@
 
 //#include "InterfaceScript.h"
 #include "PerimeterShellUI.h"
-#include "controls.h"
+#include "Controls.h"
 
-#include "silicon.h"
+#include "Silicon.h"
 #include "HistoryScene.h"
 #include "BGScene.h"
-#include "..\Game\MusicManager.h"
+#include "../Game/MusicManager.h"
 
 #include "RigidBody.h"
 #include "chaos.h"
@@ -32,10 +32,10 @@
 
 #include "ExternalShow.h"
 #include "Triggers.h"
-#include "..\TriggerEditor\TriggerEditor.h"
+#include "../TriggerEditor/TriggerEditor.h"
 
 #include "qd_textdb.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 #include "PlayBink.h"
 
 #include "EditArchive.h"
@@ -274,7 +274,7 @@ windowClientSize_(1024, 768)
 			_bCursorVisible = 0;
 //			_shellIconManager.GetWnd(SQSH_MM_SPLASH1)->Show(1);
 //			_shellIconManager.SetModalWnd(SQSH_MM_SPLASH1);
-			_shellIconManager.AddDynamicHandler(showReels, CBCODE_QUANT); //ждать пока не слетится
+			_shellIconManager.AddDynamicHandler(showReels, CBCODE_QUANT); //Р¶РґР°С‚СЊ РїРѕРєР° РЅРµ СЃР»РµС‚РёС‚СЃСЏ
 		} else {
 			startWithScreen(SQSH_MM_START_SCR);
 		}
@@ -306,7 +306,7 @@ windowClientSize_(1024, 768)
 			name = "XXX";
 		name = setExtention((path + name).c_str(), "spg");
 
-		if(!XStream(0).open(name.c_str()))
+		if(!XStream(0).open(name.c_str())) {
 			if(openFileDialog(name, "Resourse\\Missions", "spg", "Mission Name")){
 				size_t pos = name.rfind("RESOURCE\\");
 				if(pos != string::npos)
@@ -314,7 +314,8 @@ windowClientSize_(1024, 768)
 			}
 			else
 				ErrH.Exit();
-
+        }
+		
 		if(check_command_line(KEY_REPLAY_REEL)){
 			const char* fname=check_command_line(KEY_REPLAY_REEL);
 			HTManager::instance()->GameStart(MissionDescription(fname, GT_playRellGame));
@@ -867,7 +868,7 @@ Vect2i GameShell::convertToScreenAbsolute(const Vect2f& pos)
 {
 	POINT pt = { round((pos.x + 0.5f)*windowClientSize().x), round((pos.y + 0.5f)*windowClientSize().y) };
 	ClientToScreen(hWndVisGeneric, &pt);
-	return Vect2i(pt.x, pt.y);
+	return Vect2i((int)pt.x, (int)pt.y);
 }
 
 bool GameShell::checkReel(UINT uMsg,WPARAM wParam,LPARAM lParam) {
@@ -896,6 +897,7 @@ void GameShell::EventHandler(UINT uMsg,WPARAM wParam,LPARAM lParam)
 		return;
 	}
 
+    sKey s;
     switch(uMsg){
 	case WM_MOUSELEAVE:
 		MouseLeave();
@@ -934,12 +936,14 @@ void GameShell::EventHandler(UINT uMsg,WPARAM wParam,LPARAM lParam)
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 		if (canProcessKeyEvent(lParam)) {
-			KeyPressed(sKey(wParam, true));
+            s = sKey(wParam, true);
+			KeyPressed(s);
 		}
 		break;
 	case WM_KEYUP:
-	case WM_SYSKEYUP: 
-		KeyUnpressed(sKey(wParam, true));
+	case WM_SYSKEYUP:
+        s = sKey(wParam, true);
+        KeyUnpressed(s);
 		break;
 	case WM_CHAR:
 		if (canProcessKeyEvent(lParam) || ((_bMenuMode || wParam == VK_BACK) && _shellIconManager.isInEditMode())) {
@@ -1054,9 +1058,9 @@ bool GameShell::DebugKeyPressed(sKey& Key)
 		terRenderDevice->Flush(hWndVisGeneric);
 		ShowCursor(1);
 		//setUseAlternativeNames(true);
-		static TriggerEditor triggetEditor(triggerInterface());
+		static TriggerEditor triggerEditor(triggerInterface());
 		TriggerChain* triggerChain = universe()->activePlayer()->getStrategyToEdit();
-		if(triggerChain && triggetEditor.run(*triggerChain, hWndVisGeneric)){
+		if(triggerChain && triggerEditor.run(*triggerChain, hWndVisGeneric)){
 			triggerChain->initializeTriggersAndLinks();
 			triggerChain->save();
 			triggerChain->buildLinks();
@@ -1070,7 +1074,8 @@ bool GameShell::DebugKeyPressed(sKey& Key)
 		terCamera->setFocus(HardwareCameraFocus);
 		ShowCursor(0);				
 		RestoreFocus();									
-		break; }
+		break;
+	}
 #endif
 
 	case VK_F4 | KBD_CTRL:
@@ -1151,7 +1156,7 @@ bool GameShell::DebugKeyPressed(sKey& Key)
 			size_t pos = saveName.rfind("RESOURCE\\");
 			if(pos != string::npos)
 				saveName.erase(0, pos);
-			//Несколько кривой участок кода, не будет работать с HT
+			//РќРµСЃРєРѕР»СЊРєРѕ РєСЂРёРІРѕР№ СѓС‡Р°СЃС‚РѕРє РєРѕРґР°, РЅРµ Р±СѓРґРµС‚ СЂР°Р±РѕС‚Р°С‚СЊ СЃ HT
 			HTManager::instance()->GameClose();
 			HTManager::instance()->GameStart(MissionDescription(saveName.c_str()));
 		}
@@ -1291,7 +1296,7 @@ void GameShell::KeyPressed(sKey& Key)
 	if(missionEditor_ && missionEditor_->keyPressed(Key))
 		return;
 
-#ifndef _FINAL_VERSION_
+#ifdef PERIMETER_DEBUG
 	if (Key.fullkey == (VK_F1|KBD_SHIFT|KBD_CTRL)) {
 		EnableDebugKeyHandlersInitial = EnableDebugKeyHandlers ^= 1;
 		return;
@@ -1566,7 +1571,7 @@ void GameShell::ControlUnpressed(int key)
 				if(_shellIconManager.IsInterface())
 					_shellCursorManager.ShowCursor();
 				
-				//восстановить положение курсора
+				//РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР»РѕР¶РµРЅРёРµ РєСѓСЂСЃРѕСЂР°
 				//Vect2f v;
 				//ConvertWorldToScreen(_MapMoveStartPoint, v);
 				//SetCursorPos(v.x, v.y);
@@ -1911,7 +1916,8 @@ void GameShell::makeMovieShot()
 	int time = frame_time() - movieStartTime_;
 	int ms = time % 1000;
 	msg < "REC: " < fname < " \nTime: " <= time/60000 < ":" <= (time % 60000)/1000 < "." <= ms/100 % 10 <= ms/10 % 10 <= ms % 10;
-	OutText(20, 20, msg, &sColor4f(1, 1, 1, 1));
+    sColor4f c(1, 1, 1, 1);
+	OutText(20, 20, msg, &c);
 	terRenderDevice->SetFont(0);
 	terRenderDevice->EndScene();
 }
@@ -1923,14 +1929,14 @@ void GameShell::CameraQuant()
 {
 	if(!cameraMouseTrack && cameraCursorInWindow && !_bMenuMode && 
 		!cameraMouseShift && !cameraMouseZoom && !isScriptReelEnabled()){
-		//сдвиг когда курсор у края окна
+		//СЃРґРІРёРі РєРѕРіРґР° РєСѓСЂСЃРѕСЂ Сѓ РєСЂР°СЏ РѕРєРЅР°
 		//if(!CursorOverInterface)
 		terCamera->mouseQuant(mousePosition());
 	}
 	
 	MousePositionLock = 0;
 	
-	//поворот вслед за мышью
+	//РїРѕРІРѕСЂРѕС‚ РІСЃР»РµРґ Р·Р° РјС‹С€СЊСЋ
 	if(cameraMouseTrack && MouseMoveFlag){
 		terCamera->tilt(mousePositionDelta());
 		
@@ -1938,7 +1944,7 @@ void GameShell::CameraQuant()
 		setCursorPosition(Vect2f::ZERO);
 	}
 	
-	//смещение вслед за мышью
+	//СЃРјРµС‰РµРЅРёРµ РІСЃР»РµРґ Р·Р° РјС‹С€СЊСЋ
 	if(cameraMouseShift && MouseMoveFlag){
 		terCamera->shift(mousePositionDelta());
 		setCursorPosition(mapMoveStartPoint());
@@ -2017,16 +2023,18 @@ void CShellLogicDispatcher::init()
 	
 	initFonts();
 
-	//камера и сцена для моделей в окошке
+	//РєР°РјРµСЂР° Рё СЃС†РµРЅР° РґР»СЏ РјРѕРґРµР»РµР№ РІ РѕРєРѕС€РєРµ
 	m_hScene = terVisGeneric->CreateScene();
 
 	m_hLight = m_hScene->CreateLight(ATTRLIGHT_DIRECTION);
 	m_hLight->SetPosition(MatXf(Mat3f::ID,Vect3f(0,0,0)));
-	m_hLight->SetColor(&sColor4f(0,0,0,1),&sColor4f(1,1,1,1));
+    sColor4f a(0,0,0,1);
+    sColor4f b(1,1,1,1);
+	m_hLight->SetColor(&a,&b);
 	m_hLight->SetDirection(Vect3f(0,0,-1));
 
 	m_hCamera = m_hScene->CreateCamera();
-	m_hCamera->SetAttr(ATTRCAMERA_PERSPECTIVE); // перспектива
+	m_hCamera->SetAttr(ATTRCAMERA_PERSPECTIVE); // РїРµСЂСЃРїРµРєС‚РёРІР°
 
 	MatXf CameraMatrix;
 	Identity(CameraMatrix);
@@ -2045,15 +2053,18 @@ void CShellLogicDispatcher::init()
 	float _small_camera_rect_dx  = small_camera_rect_dx/2.f;
 	float _small_camera_rect_dy  = small_camera_rect_dy/2.f;
 
-	m_hCamera->SetFrustum(                          // устанавливается пирамида видимости
-		&Vect2f(_small_camera_x + _small_camera_rect_dx, 
-				_small_camera_y + _small_camera_rect_dy), // центр камеры
-
-		&sRectangle4f(-_small_camera_rect_dx, -_small_camera_rect_dy, 
-						_small_camera_rect_dx, _small_camera_rect_dy),// видимая область камеры
-		&Vect2f(1.0f, 1.0f),                        // фокус камеры
-		&Vect2f(30.0f, 10000.0f)                    // ближайший и дальний z-плоскости отсечения
-		);
+    Vect2f center(_small_camera_x + _small_camera_rect_dx,
+                  _small_camera_y + _small_camera_rect_dy);
+    sRectangle4f clip(-_small_camera_rect_dx, -_small_camera_rect_dy,
+                      _small_camera_rect_dx, _small_camera_rect_dy);
+    Vect2f focus(1.0f, 1.0f);
+    Vect2f zplane(30.0f, 10000.0f);
+    m_hCamera->SetFrustum(                          // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ РїРёСЂР°РјРёРґР° РІРёРґРёРјРѕСЃС‚Рё
+            &center,								// С†РµРЅС‚СЂ РєР°РјРµСЂС‹
+            &clip,									// РІРёРґРёРјР°СЏ РѕР±Р»Р°СЃС‚СЊ РєР°РјРµСЂС‹
+            &focus,									// С„РѕРєСѓСЃ РєР°РјРµСЂС‹
+            &zplane									// Р±Р»РёР¶Р°Р№С€РёР№ Рё РґР°Р»СЊРЅРёР№ z-РїР»РѕСЃРєРѕСЃС‚Рё РѕС‚СЃРµС‡РµРЅРёСЏ
+    );
 
 	m_hCamera->SetAttr(ATTRCAMERA_CLEARZBUFFER);
 }
@@ -2451,6 +2462,8 @@ void GameShell::setLocalizedFontSizes() {
 }
 
 void GameShell::preLoad() {
+    historyScene.loadProgram("RESOURCE\\scenario.hst");
+    bwScene.loadProgram("RESOURCE\\menu.hst");
 	string path = getLocDataPath() + "Text\\Texts.btdb";
 	#ifdef _FINAL_VERSION_
 		qdTextDB::instance().load(path.c_str(), 0 );
@@ -2488,15 +2501,15 @@ void GameShell::editParameters()
 	bool reloadParameters = false;
 	savePrm().manualData.zeroLayerHeight = vMap.hZeroPlast;
     
-	const char* header = "Заголовок миссии";
-	const char* mission = "Миссия";
-	const char* missionAll = "Миссия все данные";
+	const char* header = "Р—Р°РіРѕР»РѕРІРѕРє РјРёСЃСЃРёРё";
+	const char* mission = "РњРёСЃСЃРёСЏ";
+	const char* missionAll = "РњРёСЃСЃРёСЏ РІСЃРµ РґР°РЅРЅС‹Рµ";
 	const char* debugPrm = "Debug.prm";
-	const char* global = "Глобальные параметры";
-	const char* attribute = "Атрибуты";
-	const char* sounds = "Звуки";
-	const char* interface_ = "Интерфейс";
-	const char* physics = "Физические параметры";
+	const char* global = "Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹";
+	const char* attribute = "РђС‚СЂРёР±СѓС‚С‹";
+	const char* sounds = "Р—РІСѓРєРё";
+	const char* interface_ = "РРЅС‚РµСЂС„РµР№СЃ";
+	const char* physics = "Р¤РёР·РёС‡РµСЃРєРёРµ РїР°СЂР°РјРµС‚СЂС‹";
 	const char* separator = "--------------";
 
 	vector<const char*> items;
@@ -2540,19 +2553,24 @@ void GameShell::editParameters()
 		debugPrm_.edit();
 	}
 	else if(item == attribute){
-		attributeLibrary.edit();
+        EditArchive ea = EditArchive();
+		attributeLibrary.edit(ea);
 	}
 	else if(item == global){
-		globalAttr.edit();
+        EditArchive ea = EditArchive();
+		globalAttr.edit(ea);
 	}
 	else if(item == sounds){
-		soundScriptTable.edit();
+        EditArchive ea = EditArchive();
+		soundScriptTable.edit(ea);
 	}
 	else if(item == interface_){
-		interfaceAttr.edit();
+        EditArchive ea = EditArchive();
+		interfaceAttr.edit(ea);
 	}
 	else if(item == physics){
-		rigidBodyPrmLibrary.edit();
+        EditArchive ea = EditArchive();
+		rigidBodyPrmLibrary.edit(ea);
 	}
 
 	if(manualData().zeroLayerHeight != vMap.hZeroPlast)

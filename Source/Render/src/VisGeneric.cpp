@@ -3,7 +3,7 @@
 #include "ObjLibrary.h"
 #include "Scene.h"
 #include "Font.h"
-#include "..\3dx\Lib3dx.h"
+#include "../3dx/Lib3dx.h"
 
 void Init3dxshader();
 void Done3dxshader();
@@ -33,7 +33,7 @@ static float get_float(char* s)
 	return f;
 }
 
-// глобальные переменные
+// РіР»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ
 cVisGeneric	*gb_VisGeneric=0;
 
 DebugType<int>		Option_DrawMeshBound(0);
@@ -64,7 +64,7 @@ bool cVisGeneric::assertEnabled_ = false;
 
 bool Option_ShowType[SHOW_MAX];
 
-__declspec( thread ) DWORD tls_is_graph=MT_LOGIC_THREAD;
+THREAD_LOCAL DWORD tls_is_graph=MT_LOGIC_THREAD;
 
 float CONVERT_PROCENT(float x,float min,float max)
 {
@@ -88,7 +88,7 @@ cVisGeneric::cVisGeneric() : cUnknownClass(KIND_UI_VISGENERIC)//: SceneArray(KIN
 	for(int i=0;i<SHOW_MAX;i++)
 		Option_ShowType[i]=true;
 	Option_ShowType[SHOW_INFO]=false;
-	// инициализация глобальных переменых
+	// РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РіР»РѕР±Р°Р»СЊРЅС‹С… РїРµСЂРµРјРµРЅС‹С…
 	shaders=NULL;
 	ObjLibrary=new cObjLibrary();
 	Lib3dx=new cLib3dx;
@@ -235,14 +235,14 @@ cScene* cVisGeneric::CreateScene()
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 void cVisGeneric::SetData(cInterfaceRenderDevice *pData)
-{ // функция для работы с окном вывода
+{ // С„СѓРЅРєС†РёСЏ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РѕРєРЅРѕРј РІС‹РІРѕРґР°
 	cURenderDevice *IRenderDevice=(cURenderDevice*)pData;
 	VISASSERT(IRenderDevice&&IRenderDevice->GetKind(KIND_UI_RENDERDEVICE));
 	InitShaders();
 	Init3dxshader();
 }
 void cVisGeneric::ClearData()
-{ // функция для работы с окном вывода
+{ // С„СѓРЅРєС†РёСЏ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РѕРєРЅРѕРј РІС‹РІРѕРґР°
 	vector<cFontInternal*>::iterator it;
 	FOR_EACH(fonts,it)
 		(*it)->Release();
@@ -411,7 +411,7 @@ void DebugMemInfo()
 	p+=sprintf(p,"summary size=%i.\n",summary_size);
 	p+=sprintf(p,"summary num=%i.\n",summary_num);
 	MessageBox(gb_RenderDevice->GetWindowHandle(),text,"Memory info",MB_OK);
-#endif _DEBUG
+#endif //_DEBUG
 }
 
 
@@ -671,7 +671,7 @@ cFont* cVisGeneric::CreateFont(const char *TextureFileName,int h,bool silentErr)
 	FOR_EACH(fonts,it)
 	{
 		cFontInternal* f=*it;
-		if(_stricmp(f->font_name.c_str(),TextureFileName)==0 && 
+		if(stricmp(f->font_name.c_str(),TextureFileName)==0 &&
 			f->GetStatementHeight()==h)
 		{
 			return new cFont(f);

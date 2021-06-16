@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #ifndef __SOUND_SCRIPT_H__
 #define __SOUND_SCRIPT_H__
 
@@ -117,5 +119,7 @@ struct SoundScriptTable
 };
 
 extern SingletonPrm<SoundScriptTable> soundScriptTable;
+
+DEFINE_SINGLETON_PRM(SoundScriptTable)
 
 #endif //__SOUND_SCRIPT_H__

@@ -1,12 +1,13 @@
 #include "StdAfxRD.h"
 #include "NParticle.h"
-#include "scene.h"
+#include "Scene.h"
 #include <algorithm>
 #include "NParticleID.h"
 #include "TileMap.h"
 #include "ForceField.h"
 #include "MeshBank.h"
 #include "ObjMesh.h"
+#include "xmath.h"
 
 static RandomGenerator rnd;
 static vector<Vect2f> rotate_angle;
@@ -15,7 +16,7 @@ KeyFloat::value KeyFloat::none=0;
 KeyPos::value KeyPos::none=Vect3f::ZERO;
 KeyRotate::value KeyRotate::none=QuatF::ID;
 KeyColor::value KeyColor::none=sColor4f(0,0,0,0);
-float KeyGeneral::time_delta=0.05f;//в секундах
+float KeyGeneral::time_delta=0.05f;//РІ СЃРµРєСѓРЅРґР°С…
 static const float INV_2_PI=1/(2*M_PI);
 
 float cEffect::GetParticleRateReal()const
@@ -302,7 +303,7 @@ void cEmitterBase::SetEmitterKey(EmitterKeyBase& k,cEmitter3dObject* models)
 	rotation_direction=k.rotation_direction;
 	GlobalMatrix.trans()=LocalMatrix.trans()=position.Get(0);
 	GlobalMatrix.rot()=LocalMatrix.rot()=rotation.Get(0);
-	if ((k.particle_position.type == EMP_3DMODEL_INSIDE))
+	if (k.particle_position.type == EMP_3DMODEL_INSIDE)
 	{
 		normal_position = k.normal_position;
 		begin_position = k.begin_position;
@@ -454,10 +455,11 @@ bool cEmitterBase::OnePos(int i,Vect3f& pos, Vect3f* norm /*= NULL*/)
 			pos=parent->GetPos()[cur_one_pos];
 		}else
 			pos.set(0,0,0);
-		if (norm)
+		if (norm) {
 			if (parent->GetNorm().empty())
 				norm->set(0,0,0);
 			else norm->set(parent->GetNorm()[cur_one_pos]);
+        }
 		break;
 	case EMP_3DMODEL_INSIDE:
 		if(!begin_position.empty())
@@ -466,10 +468,11 @@ bool cEmitterBase::OnePos(int i,Vect3f& pos, Vect3f* norm /*= NULL*/)
 			pos=begin_position[cur_one_pos];
 		}else
 			pos.set(0,0,0);
-		if (norm)
+		if (norm) {
 			if (parent->GetNorm().empty())
 				norm->set(0,0,0);
 			else norm->set(normal_position[cur_one_pos]);
+        }
 		break;
 	}
 	return true;
@@ -732,9 +735,9 @@ void cEmitterInt::Draw(cCamera *pCamera)
 		fcolor = k0.color+(k1.color-k0.color)*ts;
 		psize = k0.size+(k1.size-k0.size)*ts;
 
-		//Добавить в массив
+		//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 		Vect3f sx,sy;
-		Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
+		Vect2f rot=rotate_angle[(int)round(angle*rotate_angle_size)&rotate_angle_mask];
 		rot*=psize*=p.begin_size;
 		mat.invXformVect(Vect3f(+rot.x,-rot.y,0),sx);
 		mat.invXformVect(Vect3f(+rot.y,+rot.x,0),sy);
@@ -827,7 +830,7 @@ inline void cEmitterInt::nParticle::PutToBuf(const float& dtime_global, const Ke
 	fcolor = k0.color+(k1.color-k0.color)*ts;
 	psize = k0.size+(k1.size-k0.size)*ts;
 
-	//Добавить в массив
+	//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 	Vect3f sx,sy;
 	Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
 	rot*=psize*begin_size*trace_size;
@@ -1342,7 +1345,7 @@ inline void cEmitterSpl::nParticle::PutToBuf(const float& dtime_global, HeritKey
 		fcolor = k0.color+(k1.color-k0.color)*ts;
 		psize = k0.size+(k1.size-k0.size)*ts;
 	}
-	//Добавить в массив
+	//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 	Vect3f sx,sy;
 	Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
 	rot*=psize*begin_size*trace_size;
@@ -1497,9 +1500,9 @@ void cEmitterSpl::Draw(cCamera *pCamera)
 			psize = k0.size+(k1.size-k0.size)*ts;
 		}
 
-		//Добавить в массив
+		//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 		Vect3f sx,sy;
-		Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
+		Vect2f rot=rotate_angle[(int)round(angle*rotate_angle_size)&rotate_angle_mask];
 		rot*=psize*=p.begin_size;
 		mat.invXformVect(Vect3f(+rot.x,-rot.y,0),sx);
 		mat.invXformVect(Vect3f(+rot.y,+rot.x,0),sy);
@@ -1566,7 +1569,7 @@ void cEmitterSpl::Draw(cCamera *pCamera)
 			psize = k0.size+(k1.size-k0.size)*ts;
 		}
 
-		//Добавить в массив
+		//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 		Vect3f sx,sy;
 		Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
 		rot*=psize*p.begin_size;
@@ -2068,7 +2071,7 @@ void cEffect::Init(EffectKey& effect_key_,cEmitter3dObject* models,float scale)
 	{
 		int k=0;
 	}
-#endif _DEBUG
+#endif //_DEBUG
 
 	EffectKey scaled_effect;
 	if(fabsf(scale-1.0f)>FLT_EPS)
@@ -2731,7 +2734,7 @@ EmitterKeyBase::EmitterKeyBase()
 	rot0.time=0;
 	emitter_rotation.push_back(rot0);
 
-	///Общие параметры частиц
+	///РћР±С‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ С‡Р°СЃС‚РёС†
 	life_time.push_back(KeyFloat(0,1));
 	life_time_delta.push_back(KeyFloat(0,0));
 	begin_size.push_back(KeyFloat(0,1));
@@ -2747,7 +2750,7 @@ EmitterKeyBase::EmitterKeyBase()
 //	PlumeTimeScaling = 1.0f;
 //	PlumeSizeScaling = 1.0f;
 
-	//Параметры отдельной частицы
+	//РџР°СЂР°РјРµС‚СЂС‹ РѕС‚РґРµР»СЊРЅРѕР№ С‡Р°СЃС‚РёС†С‹
 	p_size.push_back(KeyFloat(0,0.5f));
 	KeyColor c;
 	c.r=c.g=c.b=c.a=1;
@@ -2805,7 +2808,7 @@ void EmitterKeyBase::GetParticleLifeTime(float t,float& mid_t,float& min_t,float
 		float l=max(life_time[i].f,1e-2f);
 		inv_life_time[i].f=1/l;
 	}
-	//см. EmitOne
+	//СЃРј. EmitOne
 	float inv_particle_life_time=1/max(particle_life_time,1e-3f);
 	float inv_life=inv_life_time.Get(t);
 	float dlife=life_time_delta.Get(t);
@@ -3284,7 +3287,7 @@ EffectKey::~EffectKey()
 
 void EffectKey::Clear()
 {
-	//В effect maker этот список в деструкторе должен быть всегда пустым
+	//Р’ effect maker СЌС‚РѕС‚ СЃРїРёСЃРѕРє РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РІСЃРµРіРґР° РїСѓСЃС‚С‹Рј
 	vector<EmitterKeyInterface*>::iterator it;
 	FOR_EACH(key,it)
 		delete *it;
@@ -3691,7 +3694,7 @@ inline void cEmitterInt::nParticle::ZPutToBuf(const float& dtime_global, const K
 	fcolor = k0.color+(k1.color-k0.color)*ts;
 	psize = k0.size+(k1.size-k0.size)*ts;
 
-	//Добавить в массив
+	//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 	Vect3f sx,sy;
 	Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
 	rot*=psize*begin_size*trace_size;
@@ -3877,9 +3880,9 @@ void cEmitterZ::Draw(cCamera *pCamera)
 		fcolor = k0.color+(k1.color-k0.color)*ts;
 		psize = k0.size+(k1.size-k0.size)*ts;
 
-		//Добавить в массив
+		//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 		Vect3f sx,sy;
-		Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
+		Vect2f rot=rotate_angle[(int)round(angle*rotate_angle_size)&rotate_angle_mask];
 		rot*=psize*=p.begin_size;
 		if(planar)
 		{
@@ -3954,7 +3957,7 @@ void cEmitterZ::Draw(cCamera *pCamera)
 		fcolor = k0.color+(k1.color-k0.color)*ts;
 		psize = k0.size+(k1.size-k0.size)*ts;
 
-		//Добавить в массив
+		//Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃСЃРёРІ
 		Vect3f sx,sy;
 		Vect2f rot=rotate_angle[round(angle*rotate_angle_size)&rotate_angle_mask];
 		rot*=psize*p.begin_size;

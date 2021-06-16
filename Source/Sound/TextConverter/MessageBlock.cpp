@@ -1,5 +1,7 @@
-#include "stdafx.h"
-#include "parse\ParamParse.h"
+// TODO: change encoding to utf-8
+
+#include "StdAfx.h"
+#include "Parse/ParamParse.h"
 #include "MessageBlock.h"
 
 static vector<string> stringID;

@@ -1,5 +1,5 @@
 #include "StdAfxRD.h"
-#include "Particle.h"
+#include "particle.h"
 #include "Trail.h"
 
 cTrail::cTrail(float fTimeLife) : cAnimUnkObj(KIND_PARTICLE)
@@ -31,7 +31,7 @@ void cTrail::Animate(float dt)
 {
 	CurrentTime+=dt;
 	GetFrame()->AddPhase(dt);
-	if(GetRef()>1) return; // запрещено удаление
+	if(GetRef()>1) return; // Р·Р°РїСЂРµС‰РµРЅРѕ СѓРґР°Р»РµРЅРёРµ
 	if(Particle.empty()||(CurrentTime-Particle[LastParticle].time*TimeLife)>TimeLife) 
 		Release();
 }
@@ -58,14 +58,14 @@ void cTrail::Draw(cCamera *DrawNode)
 			phase=1.001f;
 		if(Key)
 		{
-			sParticleKey &key=Key[round(phase*(NumberKey-1))];
+			sParticleKey &key=Key[(int)round(phase*(NumberKey-1))];
 			v2.diffuse=v1.diffuse=key.diffuse;
 			scale=key.rotate.x;
 		}
 		else
 		{
 			v1.diffuse=Diffuse;
-			v1.diffuse.a=round(Diffuse.a*(1-phase));
+			v1.diffuse.a= (int)round(Diffuse.a*(1-phase));
 			v2.diffuse=v1.diffuse;
 			scale=GetScale().x;
 		}

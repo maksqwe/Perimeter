@@ -1,4 +1,4 @@
-#include "StdAfxRd.h"
+#include "StdAfxRD.h"
 #include "Interpolator3dx.h"
 
 //out=a0+a1*t5+a2*t5^2+a3*t5^3
@@ -11,7 +11,7 @@
 //a3new=a3
 
 
-//интерполирует 1 float константно
+//РёРЅС‚РµСЂРїРѕР»РёСЂСѓРµС‚ 1 float РєРѕРЅСЃС‚Р°РЅС‚РЅРѕ
 
 
 Interpolator3dx<1> temp;

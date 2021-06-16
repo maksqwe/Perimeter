@@ -90,7 +90,8 @@ public:
 	}
 	inline void Detach(cBase &base)
 	{
-		for(int i=0;i<length();i++)
+		int i=0;
+		for(i=0;i<length();i++)
 			if(Base[i]==base) 
 				break;
 		if(i>=length()) return;
@@ -151,8 +152,9 @@ public:
 	inline int AddBase(cBase *base,char test=1);
 	inline void Attach(cBase *base)					{ if(CurrentSize>=MaxSize) Resize(MaxSize+dSize,MaxSize); Base[CurrentSize++]=base;	}
 	inline void Detach(cBase *base)					
-	{ 
-		for(int number=0;number<length();number++)
+	{
+        int number = 0;
+        for(number=0;number<length();number++)
 			if(Base[number]==base) 
 				break;
 		if(number>=length()) return;
@@ -182,24 +184,24 @@ template <class cBase> class cBaseArrayManager : public cBaseArrayPointer <cBase
 public:
 	cBaseArrayManager()										{ }
 	cBaseArrayManager(int MaxLength,int AddSize=1):cBaseArrayPointer<cBase>(MaxLength,AddSize)	{ }
-	~cBaseArrayManager()									{ assert(length()==0); }
+	~cBaseArrayManager()									{ assert(this->length()==0); }
 	inline int Attach(cBase *base)							
-	{ 
-		for(int i=0;i<length();i++)
-			if(Base[i]==0) 
+	{
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]==0)
 			{
-				Base[i]=base;
+				this->Base[i]=base;
 				return i;
 			}
 		cBaseArrayPointer<cBase>::Attach(base);
-		return length()-1;
+		return this->length()-1;
 	}
 	inline void Detach(cBase *base)					
 	{ 
-		for(int i=0;i<length();i++)
-			if(Base[i]==base) 
+		for(int i=0;i<this->length();i++)
+			if(this->Base[i]==base)
 			{
-				Base[i]=0;
+				this->Base[i]=0;
 				break;
 			}
 	}
@@ -257,14 +259,14 @@ public:
 		return size; 
 	}
 	inline void Detach(int number)
-	{ // ищет указатель элемент Base в списке и удаляет его из списка
+	{ // РёС‰РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ СЌР»РµРјРµРЅС‚ Base РІ СЃРїРёСЃРєРµ Рё СѓРґР°Р»СЏРµС‚ РµРіРѕ РёР· СЃРїРёСЃРєР°
 		if(number>=length()) return;
 		if(length()==1) { Delete(); return; }
 		length()--;
 		cBase *tmp=Base; Base=new cBase[length()];
 		for(int i=0;i<number;i++)
 			Base[i]=tmp[i];
-		for(i=number;i<length();i++)
+		for(int i=number;i<length();i++)
 			Base[i]=tmp[i+1];
 		if(tmp) delete [] tmp;
 	}
@@ -315,13 +317,14 @@ public:
 		return 0;
 	}
 	inline void Attach(cBase *base)
-	{ // добавляет указатель в конец списка
+	{ // РґРѕР±Р°РІР»СЏРµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РІ РєРѕРЅРµС† СЃРїРёСЃРєР°
 		Resize(length()+BASEDYNARRAY_DSIZE);
 		Base[length()-1]=base;
 	}
 	inline void Detach(cBase *base)
-	{ // ищет указатель элемент Base в списке и удаляет его из списка
-		for(int number=0;number<length();number++)
+	{ // РёС‰РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ СЌР»РµРјРµРЅС‚ Base РІ СЃРїРёСЃРєРµ Рё СѓРґР°Р»СЏРµС‚ РµРіРѕ РёР· СЃРїРёСЃРєР°
+        int number = 0;
+        for(number=0;number<length();number++)
 			if(Base[number]==base) 
 				break;
 		if(number>=length()) return;
@@ -330,7 +333,7 @@ public:
 		Resize(length()-1);
 	}
 	inline void Delete(int number)
-	{ // удаляет из списка элемент с номером number, и удаляет сам эелемент с номером
+	{ // СѓРґР°Р»СЏРµС‚ РёР· СЃРїРёСЃРєР° СЌР»РµРјРµРЅС‚ СЃ РЅРѕРјРµСЂРѕРј number, Рё СѓРґР°Р»СЏРµС‚ СЃР°Рј СЌРµР»РµРјРµРЅС‚ СЃ РЅРѕРјРµСЂРѕРј
 		if(Base[number]) { delete Base[number]; Base[number]=0; }
 		memcpy(&Base[number],&Base[number+1],(length()-number-1)*sizeof(cBase*));
 		Resize(length()-1);

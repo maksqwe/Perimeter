@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #include "StdAfx.h"
 
 #include "Universe.h"
@@ -71,7 +73,7 @@ void terCorridor::Quant()
 		break;
 		
 	case FRAME_APPROACHING:
-		if(position2D().distance2(frame_->position2D()) < sqr(attr().distanceThreshould) || attr().moveFrame && frame_->wayPoints().empty()){
+		if(position2D().distance2(frame_->position2D()) < sqr(attr().distanceThreshould) || (attr().moveFrame && frame_->wayPoints().empty())){
 			frame_->BodyPoint->makeStatic();
 			mode_ = FRAME_DISAPPEARING;
 			disappearingTimer_.start(attr().disappearingTime);
@@ -322,8 +324,8 @@ bool terCorridorOmega::readyToTeleportate() const
 
 bool terCorridorOmega::mined() const 
 { 
-	return upgraded() && gameShell->manualData().omegaMissionType == SaveManualData::OMEGA_MINE 
-		|| !upgraded() && gameShell->manualData().omegaMissionType == SaveManualData::OMEGA_DEMINE; 
+	return (upgraded() && gameShell->manualData().omegaMissionType == SaveManualData::OMEGA_MINE) 
+		|| (!upgraded() && gameShell->manualData().omegaMissionType == SaveManualData::OMEGA_DEMINE); 
 }
 
 void terCorridorOmega::checkConnection() 

@@ -388,14 +388,17 @@ void terFilthSpot::DestroyLink()
 void terFilthSpot::SoundActivate()
 {
 	float z = (float)(vMap.GetAlt(vMap.XCYCL(round(position().x)),vMap.YCYCL(round(position().y))) >> VX_FRACTION);
+    Vect3f v;
 	switch(FilthParamID){
 		case FILTH_SPOT_ID_ANTS:
 		case FILTH_SPOT_ID_A_ANTS:
-			SND3DPlaySound("ant_nexus",&Vect3f(position().x,position().y,z));
+            v = Vect3f(position().x,position().y,z);
+			SND3DPlaySound("ant_nexus",&v);
 			break;
 		case FILTH_SPOT_ID_WASP:
 		case FILTH_SPOT_ID_A_WASP:
-			SND3DPlaySound("wasp_nexus",&Vect3f(position().x,position().y,z));
+            v = Vect3f(position().x,position().y,z);
+			SND3DPlaySound("wasp_nexus",&v);
 			break;
 	}
 	SoundImpulse = 1;
@@ -582,7 +585,8 @@ void terFilthSpot::GenerationProcess()
 				v.z = 0;
 				creature_generation_period=attack_period*10.0f;
 				if(terCheckFilthPoint(round(v.x),round(v.y))){
-					SND3DPlaySound("Proc_Geo_Vulcan",&To3D(v));
+				    Vect3f v3 = To3D(v);
+					SND3DPlaySound("Proc_Geo_Vulcan",&v3);
 					terFilthSwarmVolcano* p = new terFilthSwarmVolcano(this,v,create_first);
 					if(FilthParamID==FILTH_SPOT_ID_VOLCANO_SCUM_DISRUPTOR)
 						p->SetPrm(&terFilthVolcanoScumDisruptorPrm);
@@ -728,7 +732,7 @@ void terFilthSpot::GetDifficity(int& creature_num_,float& sleep_mul)
 		difficity=universe()->worldPlayer()->difficultyPrm().filthDensity;
 	xassert(creature_num>0);
 	xassert(difficity>0 && difficity<10);
-	creature_num_=max(round(creature_num*difficity),1);
+	creature_num_=max((int)round(creature_num*difficity),1);
 	sleep_mul=max(creature_num_/(creature_num*difficity),1.0f);
 }
 
@@ -994,7 +998,7 @@ void terFilthSwarm::FindComplexTarget(list<terUnitBase*>& target_list,int max_ta
 	float a=attack_direction*M_PI/180.0f;
 	Vect2f direction(cos(a),sin(a));
 
-	//На фрэйм нападать только, если нет других целей.
+	//РќР° С„СЂСЌР№Рј РЅР°РїР°РґР°С‚СЊ С‚РѕР»СЊРєРѕ, РµСЃР»Рё РЅРµС‚ РґСЂСѓРіРёС… С†РµР»РµР№.
 	float md = FLT_MAX;
 	PlayerVect::iterator pi;
 
@@ -1166,7 +1170,7 @@ Se3f terSplineController::quantPosition(float dt)
 	{
 		Vect3f line2=HermitSplineDerivation2(cur_way_point,p[0],p[1],p[2],p[3]);
 		Vect3f a=(line2-(line2.dot(front))*front)*k_acceleration;
-		a.z=0;//Учитывать только горизонтальную составляющую
+		a.z=0;//РЈС‡РёС‚С‹РІР°С‚СЊ С‚РѕР»СЊРєРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅСѓСЋ СЃРѕСЃС‚Р°РІР»СЏСЋС‰СѓСЋ
 		acceleration=acceleration*(1-damphing)+a*damphing;
 
 		up=Normalize(Vect3f(0,0,1)+acceleration);

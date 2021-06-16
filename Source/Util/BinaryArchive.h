@@ -1,15 +1,15 @@
 /*
-	Бинарный архив. 
+	Р‘РёРЅР°СЂРЅС‹Р№ Р°СЂС…РёРІ. 
 
-В отличии от XPrmArchive, BinaryArchive представляют
-собой просто бинарный поток. В начале - заголовок:
+Р’ РѕС‚Р»РёС‡РёРё РѕС‚ XPrmArchive, BinaryArchive РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‚
+СЃРѕР±РѕР№ РїСЂРѕСЃС‚Рѕ Р±РёРЅР°СЂРЅС‹Р№ РїРѕС‚РѕРє. Р’ РЅР°С‡Р°Р»Рµ - Р·Р°РіРѕР»РѕРІРѕРє:
 
 	"BinX" + int(version)
 
-Версии необходимы для ручного контроля конвертации 
-старых данных. Для этого во все архивы введена функция
-laterThen(version) ("позже, чем"): true, если версия файла
-больше, чем указанная (для всех других потоков - всегда true).
+Р’РµСЂСЃРёРё РЅРµРѕР±С…РѕРґРёРјС‹ РґР»СЏ СЂСѓС‡РЅРѕРіРѕ РєРѕРЅС‚СЂРѕР»СЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё 
+СЃС‚Р°СЂС‹С… РґР°РЅРЅС‹С…. Р”Р»СЏ СЌС‚РѕРіРѕ РІРѕ РІСЃРµ Р°СЂС…РёРІС‹ РІРІРµРґРµРЅР° С„СѓРЅРєС†РёСЏ
+laterThen(version) ("РїРѕР·Р¶Рµ, С‡РµРј"): true, РµСЃР»Рё РІРµСЂСЃРёСЏ С„Р°Р№Р»Р°
+Р±РѕР»СЊС€Рµ, С‡РµРј СѓРєР°Р·Р°РЅРЅР°СЏ (РґР»СЏ РІСЃРµС… РґСЂСѓРіРёС… РїРѕС‚РѕРєРѕРІ - РІСЃРµРіРґР° true).
 
 	// v1
 	ar & WRAP_OBJECT(obj1);
@@ -18,18 +18,18 @@ laterThen(version) ("позже, чем"): true, если версия файла
 
 	// v2
 	if(!ar.laterThan(1))
-		ar & WRAP_OBJECT(obj1); // старый объект прочитается только в v1
+		ar & WRAP_OBJECT(obj1); // СЃС‚Р°СЂС‹Р№ РѕР±СЉРµРєС‚ РїСЂРѕС‡РёС‚Р°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ v1
 	ar & WRAP_OBJECT(obj2);
 	ar & WRAP_OBJECT(obj3);
 	if(ar.laterThan(1))
-		ar & WRAP_OBJECT(obj4); // новый объект прочитается в v2, запишется и отредактируется везде
+		ar & WRAP_OBJECT(obj4); // РЅРѕРІС‹Р№ РѕР±СЉРµРєС‚ РїСЂРѕС‡РёС‚Р°РµС‚СЃСЏ РІ v2, Р·Р°РїРёС€РµС‚СЃСЏ Рё РѕС‚СЂРµРґР°РєС‚РёСЂСѓРµС‚СЃСЏ РІРµР·РґРµ
 
-EnumWrapper и BitVector пишутся по значению,
-а не по именам. При изменении значений enum'ов 
-конвертировать данные вручную.
+EnumWrapper Рё BitVector РїРёС€СѓС‚СЃСЏ РїРѕ Р·РЅР°С‡РµРЅРёСЋ,
+Р° РЅРµ РїРѕ РёРјРµРЅР°Рј. РџСЂРё РёР·РјРµРЅРµРЅРёРё Р·РЅР°С‡РµРЅРёР№ enum'РѕРІ 
+РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ РґР°РЅРЅС‹Рµ РІСЂСѓС‡РЅСѓСЋ.
 
-Вместо имен классов пишется 4-байтный хеш. Теоретически может возникнуть совпадение,
-стоит предупреждение, выход - поменять чуть-чуть имя класса.
+Р’РјРµСЃС‚Рѕ РёРјРµРЅ РєР»Р°СЃСЃРѕРІ РїРёС€РµС‚СЃСЏ 4-Р±Р°Р№С‚РЅС‹Р№ С…РµС€. РўРµРѕСЂРµС‚РёС‡РµСЃРєРё РјРѕР¶РµС‚ РІРѕР·РЅРёРєРЅСѓС‚СЊ СЃРѕРІРїР°РґРµРЅРёРµ,
+СЃС‚РѕРёС‚ РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ, РІС‹С…РѕРґ - РїРѕРјРµРЅСЏС‚СЊ С‡СѓС‚СЊ-С‡СѓС‚СЊ РёРјСЏ РєР»Р°СЃСЃР°.
 
 */
 
@@ -49,6 +49,50 @@ inline unsigned int stringHash(const char *str)
 		h = 5*h + *(str++);
 	return h;
 }
+
+class BinaryOArchive;
+class BinaryIArchive;
+
+template<class Base>
+class BinaryClassDescriptor : public ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>
+{
+public:
+    typedef typename ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>::SerializerBase SerializerBase;
+
+    template<class Derived>
+    struct BinarySerializer : ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>::template Serializer<Derived>
+    {
+        BinarySerializer() {
+            instance().add(*this, get_type_id<Derived>().c_str());
+        }
+    };
+
+    void add(SerializerBase& serializer, const char* name) {
+        ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>::add(serializer, name, 0);
+        unsigned int hash = stringHash(name);
+        if(mapHash_.find(hash) != mapHash_.end())
+            ErrH.Abort("BinaryClassDescriptor: coincidence of hash code", XERR_USER, 0, name);
+        mapHash_[hash] = &serializer;
+    }
+
+    SerializerBase& findByHash(unsigned int hash) {
+        typename MapHash::iterator i = mapHash_.find(hash);
+        if(i == mapHash_.end()){
+            xassert(0 && "Unregistered class");
+            ErrH.Abort("BinaryClassDescriptor::findByHash Unregistered class");
+        }
+        return *i->second;
+    }
+
+    static BinaryClassDescriptor& instance() {
+        return Singleton<BinaryClassDescriptor>::instance();
+    }
+
+private:
+    typedef map<unsigned int, SerializerBase*> MapHash;
+    MapHash mapHash_;
+};
+
 
 class BinaryOArchive 
 {
@@ -83,16 +127,16 @@ public:
     template<class T>
     BinaryOArchive& operator&(const ObjectWrapper<T> & t)
     {
-        typedef WrapperTraits<T>::unwrapped_type U;
+        typedef typename WrapperTraits<T>::unwrapped_type U;
 
 		using namespace SerializationHelpers;
 		using SerializationHelpers::Identity;
 
         Select<IsPrimitive<U>,
             Identity<save_primitive_impl<U> >,
-			Select<is_pointer<U>, 
+			Select<boost::is_pointer<U>, 
 				Identity<save_pointer_impl<U> >,
-				Select<is_array<U>, 
+				Select<boost::is_array<U>, 
 					Identity<save_array_impl<U> >,
 					Identity<save_non_primitive_impl<U> >
 				>
@@ -172,14 +216,14 @@ private:
 			buffer_ < stringHash("");
 			return;
 		}
-		const char* name = typeid(*t).name();
+		const char* name = get_type_id<T>().c_str();
 		buffer_ < stringHash(name);
-		BinaryClassDescriptor<remove_const<T>::type>::instance().find(name).save(*this, t);
+		BinaryClassDescriptor<typename boost::remove_const<T>::type>::instance().find(name).save(*this, t);
 	}
 
 	template<class T, class A>
 	BinaryOArchive& operator&(const std::vector<T, A>& cont){
-		vector<T, A>::const_iterator i;
+		typename vector<T, A>::const_iterator i;
 		openCollection(cont.size());
 		FOR_EACH(cont, i)
 			(*this) & WRAP_NAME(*i, 0);
@@ -188,7 +232,7 @@ private:
 
 	template<class T, class A>
 	BinaryOArchive& operator&(const std::list<T, A>& cont){
-		list<T, A>::const_iterator i;
+        typename list<T, A>::const_iterator i;
 		openCollection(cont.size());
 		FOR_EACH(cont, i)
 			(*this) & WRAP_NAME(*i, 0);
@@ -286,15 +330,15 @@ public:
 	template<class T>
     BinaryIArchive& operator&(const ObjectWrapper<T>& t)
     {
-        typedef WrapperTraits<T>::unwrapped_type U;
+        typedef typename WrapperTraits<T>::unwrapped_type U;
 		using namespace SerializationHelpers;
 		using SerializationHelpers::Identity;
 
         Select<IsPrimitive<U>,
             Identity<load_primitive_impl<U> >,
-			Select<is_pointer<U>, 
+			Select<boost::is_pointer<U>, 
 				Identity<load_pointer_impl<U> >,
-				Select<is_array<U>, 
+				Select<boost::is_array<U>, 
 					Identity<load_array_impl<U> >,
 					Identity<load_non_primitive_impl<U> >
 				>
@@ -382,9 +426,9 @@ private:
 			}
 			return;
 		}
-		typedef BinaryClassDescriptor<remove_const<T>::type> Descriptor;
+		typedef BinaryClassDescriptor<typename boost::remove_const<T>::type> Descriptor;
 		if(t){
-			if(hash == stringHash(typeid(*t).name())){
+			if(hash == stringHash(get_type_id<T>().c_str())){
 				Descriptor::instance().findByHash(hash).load(*this, t);
 				return;
 			}
@@ -409,7 +453,7 @@ private:
 			}
 		}
 		else{
-			vector<T, A>::iterator i;
+			typename vector<T, A>::iterator i;
 			FOR_EACH(cont, i)
 				(*this) & WRAP_NAME(*i, 0);
 		}
@@ -428,7 +472,7 @@ private:
 			}
 		}
 		else{
-			list<T, A>::iterator i;
+            typename list<T, A>::iterator i;
 			FOR_EACH(cont, i)
 				(*this) & WRAP_NAME(*i, 0);
 		}
@@ -506,45 +550,6 @@ private:
 		buffer_.read(value);
 		return *this;
 	}
-};
-
-
-template<class Base>
-class BinaryClassDescriptor : public ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>
-{
-public:
-	template<class Derived>
-	struct BinarySerializer : ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>::Serializer<Derived>
-	{
-		BinarySerializer() {
-			instance().add(*this, typeid(Derived).name());
-		}
-	};
-
-	void add(SerializerBase& serializer, const char* name) {
-		ClassDescriptor<Base, BinaryOArchive, BinaryIArchive>::add(serializer, name, 0);
-		unsigned int hash = stringHash(name);
-		if(mapHash_.find(hash) != mapHash_.end())
-			ErrH.Abort("BinaryClassDescriptor: coincidence of hash code", XERR_USER, 0, name); 
-        mapHash_[hash] = &serializer;
-	}
-
-	SerializerBase& findByHash(unsigned int hash) {
-		MapHash::iterator i = mapHash_.find(hash);
-		if(i == mapHash_.end()){
-			xassert(0 && "Unregistered class");
-			ErrH.Abort("BinaryClassDescriptor: Unregistered class");
-		}
-		return *i->second;
-	}
-
-	static BinaryClassDescriptor& instance() {
-		return Singleton<BinaryClassDescriptor>::instance();
-	}
-
-private:
-	typedef map<unsigned int, SerializerBase*> MapHash;
-	MapHash mapHash_;
 };
 
 

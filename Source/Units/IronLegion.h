@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #ifndef __IRONLEGION_H__
 #define __IRONLEGION_H__
 
@@ -54,7 +56,7 @@ public:
 
 	template<class Archive>
 	void serialize(Archive& ar) {
-		__super::serialize(ar);
+        AttributeReal::serialize(ar);
 		if(ar.openBlock("attributeLegionary", "Легионер")){
 			ar & TRANSLATE_OBJECT(is_base_unit, "is_base_unit");
 			ar & TRANSLATE_OBJECT(formationRadiusFactor, "formationRadiusFactor");

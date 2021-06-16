@@ -1,6 +1,8 @@
 #pragma once
 
+#ifdef _MSC_VER
 #pragma pack(push,1)
+#endif
 
 struct sVertexXYZ
 {
@@ -185,7 +187,7 @@ struct sVertexXYZW4INT1
 
 class cSkinVertex
 {
-/*формат
+/*С„РѕСЂРјР°С‚
 	Vect3f	pos;
 	float weight[X];
 	BYTE index[4];
@@ -214,4 +216,6 @@ public:
 protected:
 };
 
+#ifdef _MSC_VER
 #pragma pack(pop)
+#endif

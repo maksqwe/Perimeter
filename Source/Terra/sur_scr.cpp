@@ -1,3 +1,5 @@
+// TODO: change encoding to utf-8
+
 #include "stdafxTr.h"
 
 #include <ctype.h>
@@ -299,7 +301,7 @@ void s_sur_scr::lex2convert(char* world, char*& buf, XStream &fout)
 				if(row[numbers_rows].type==INT_VARIABLE) row[numbers_rows].set_el(i,t_int);
 				if(row[numbers_rows].type==DOUBLE_VARIABLE){ t_double=t_int; row[numbers_rows].set_el(i,t_double); }
 				if(row[numbers_rows].type==CHAR_VARIABLE){
-					itoa(t_int,buffer,10);
+                    sprintf(buffer, "%d", t_int);
 					row[numbers_rows].set_el(i,buffer);					
 				}
 			}

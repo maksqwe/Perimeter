@@ -4,7 +4,7 @@
 #include "ClusterFind.h"
 #include "ForceField.h"
 #include "AIPrm.h"
-#include "runtime.h"
+#include "Runtime.h"
 
 DefenceMap::DefenceMap(int hsize,int vsize) 
 : Map2D<BYTE, 4>(hsize, vsize, 0)
@@ -77,7 +77,7 @@ public:
 		center_ /= ends.size();
 	}
 
-	//Ïðåäïîëàãàåìûå çàòðàòû íà ïðîäâèæåíèå èç pos1 ê îêîí÷àíèþ
+	//ÐŸÑ€ÐµÐ´Ð¿Ð¾Ð»Ð°Ð³Ð°ÐµÐ¼Ñ‹Ðµ Ð·Ð°Ñ‚Ñ€Ð°Ñ‚Ñ‹ Ð½Ð° Ð¿Ñ€Ð¾Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· pos1 Ðº Ð¾ÐºÐ¾Ð½Ñ‡Ð°Ð½Ð¸ÑŽ
 	float GetH(Node* pos)
 	{
 		return sqrtf(sqr(pos->xcenter - center_.xi())+
@@ -92,7 +92,7 @@ public:
 		return (walk_to&ClusterFind::DOWN_MASK)+gmul;
 	}
 
-	//Çàòðàòû íà ïðîäâèæåíèå èç pos1 â pos2
+	//Ð—Ð°Ñ‚Ñ€Ð°Ñ‚Ñ‹ Ð½Ð° Ð¿Ñ€Ð¾Ð´Ð²Ð¸Ð¶ÐµÐ½Ð¸Ðµ Ð¸Ð· pos1 Ð² pos2
 	float GetG(Node* pos1,Node* pos2)
 	{
 		float mul=(pos2->walk&ClusterFind::DOWN_MASK)+gmul;
@@ -150,7 +150,8 @@ bool DefenceMap::findPathToPoint(const Vect2i& from_w, const Vect2i& to_w, vecto
 	if(tos.empty())
 		return false;
 
-	if(!path_finder->FindPathMulti(from, tos, out_path, ClusterHeuristicMulti()))
+    ClusterHeuristicMulti heuristic = ClusterHeuristicMulti();
+	if(!path_finder->FindPathMulti(from, tos, out_path, heuristic))
 		return false;
 
 	vector<Vect2i>::iterator it;
@@ -192,7 +193,8 @@ terUnitBase* DefenceMap::findPathToTarget(const Vect2i& from_w, const UnitList& 
 	if(tos.empty())
 		return 0;
 
-	if(!path_finder->FindPathMulti(from, tos, out_path, ClusterHeuristicMulti()))
+    ClusterHeuristicMulti heuristic = ClusterHeuristicMulti();
+    if(!path_finder->FindPathMulti(from, tos, out_path, heuristic))
 		return 0;
 
 	vector<Vect2i>::iterator it;

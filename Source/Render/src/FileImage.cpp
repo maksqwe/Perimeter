@@ -1,11 +1,14 @@
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <stdio.h>
+#include <cstdint>
 #include <assert.h>
 
 #include <vfw.h>		// AVI include
 #include <setjmp.h>		// JPG include
 #include <math.h>
-#include <XUtil.h>
+#include "xutil.h"
 #include "FileImage.h"
 
 #include <fcntl.h>
@@ -21,7 +24,7 @@ int ResourceFileRead(const char *fname,char *&buf,int &size);
 #ifdef USE_JPEG
 #include "jpeglib.h"	// JPG include
 #pragma comment (lib,"jpeg") // JPG library
-#endif USE_JPEG
+#endif //USE_JPEG
 
 #ifndef ABS
 #define ABS(a)										((a)>=0?(a):-(a))
@@ -166,7 +169,8 @@ void GetDimTexture(int& dx,int& dy,int& count)
 			tx = x;
 			ty = y;
 		}
-		if (cx=!cx) x>>=1;
+		cx = !cx;
+		if (cx) x>>=1;
 		else y>>=1;
 	}
 	if (tx*ty==0)
@@ -179,26 +183,30 @@ void GetDimTexture(int& dx,int& dy,int& count)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// реализация интерфейса cTGAImage
+// СЂРµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° cTGAImage
 //////////////////////////////////////////////////////////////////////////////////////////
+#if defined(_MSC_VER) || defined(__GNUC__)
 #pragma pack(push,1)
+#endif
 
 struct TGAHeader
 {
-unsigned char idFieldLength;
-unsigned char colorMapType;
-unsigned char imageType;
-unsigned short indexFirstColorMapEntry;
-unsigned short countColorMapEntries;
-unsigned char numberOfBitsPerColorMapEntry;
-unsigned short startX;
-unsigned short startY;
-unsigned short width;
-unsigned short height;
-unsigned char bitsPerPixel;
-unsigned char flags;
+uint8_t idFieldLength;
+uint8_t colorMapType;
+uint8_t imageType;
+uint16_t indexFirstColorMapEntry;
+uint16_t countColorMapEntries;
+uint8_t numberOfBitsPerColorMapEntry;
+uint16_t startX;
+uint16_t startY;
+uint16_t width;
+uint16_t height;
+uint8_t bitsPerPixel;
+uint8_t flags;
 };
+#if defined(_MSC_VER) || defined(__GNUC__)
 #pragma pack(pop)
+#endif
 
 bool SaveTga(const char* filename,int width,int height,unsigned char* buf,int byte_per_pixel)
 {
@@ -378,7 +386,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// реализация интерфейса cAVIImage
+// СЂРµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° cAVIImage
 //////////////////////////////////////////////////////////////////////////////////////////
 class cAVIImage : public cFileImage
 {
@@ -425,7 +433,8 @@ public:
 		PAVISTREAM pcomp=0;
 		PAVIFILE fAVI=0;
 		remove(fname);
-		if(err=AVIFileOpen(&fAVI,fname,OF_CREATE|OF_WRITE,NULL))
+		err = AVIFileOpen(&fAVI,fname,OF_CREATE|OF_WRITE,NULL);
+		if(err)
 			return 1;
 		AVISTREAMINFO avi;
 		memset(&avi,0,sizeof(AVISTREAMINFO));
@@ -435,7 +444,8 @@ public:
 		avi.dwRate     = length*1000/time;
 		avi.dwQuality  = 0;
 		avi.dwLength   = length;
-		if(err=AVIFileCreateStream(fAVI,&pavi,&avi))
+		err = AVIFileCreateStream(fAVI,&pavi,&avi);
+		if(err)
 			return 2;
 		AVICOMPRESSOPTIONS compOptions;
 		memset(&compOptions, 0, sizeof(AVICOMPRESSOPTIONS));
@@ -444,16 +454,19 @@ public:
 		compOptions.fccHandler      = avi.fccHandler;
 		compOptions.dwQuality       = avi.dwQuality;
 		compOptions.dwKeyFrameEvery = 15;
-		if(err=AVIMakeCompressedStream(&pcomp, pavi, &compOptions, NULL))
+		err=AVIMakeCompressedStream(&pcomp, pavi, &compOptions, NULL);
+		if(err)
 			return 3;
-		if(err=AVIStreamSetFormat(pcomp,0,&bmh,bmh.biSize))
+		err=AVIStreamSetFormat(pcomp,0,&bmh,bmh.biSize);
+		if(err)
 			return 4;
 		unsigned char *buf=new unsigned char[bmh.biSizeImage];
 		for(int i=0;i<length;i++)
 		{
 			for(int j=0;j<y;j++)
 				memcpy(&buf[(y-j-1)*bmh.biSizeImage/y],&((LPBYTE)pointer)[i*bmh.biSizeImage+j*bmh.biSizeImage/y],bmh.biSizeImage/y);
-			if(err=AVIStreamWrite(pcomp,i,1,buf,bmh.biSizeImage,AVIIF_KEYFRAME,NULL,NULL))
+			err=AVIStreamWrite(pcomp,i,1,buf,bmh.biSizeImage,AVIIF_KEYFRAME,NULL,NULL);
+			if(err)
 				return 5;
 		}
 		delete buf;
@@ -501,7 +514,7 @@ public:
 	}
 };
 //////////////////////////////////////////////////////////////////////////////////////////
-// реализация интерфейса cJPGImage
+// СЂРµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° cJPGImage
 //////////////////////////////////////////////////////////////////////////////////////////
 #ifdef USE_JPEG
 struct my_error_mgr
@@ -665,7 +678,7 @@ public:
 	static void Done()													{}
 };
 
-#endif USE_JPEG
+#endif //USE_JPEG
 
 ///////////////////////////////////////////////
 ///AVIX
@@ -759,7 +772,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// реализация интерфейса cFileImage
+// СЂРµР°Р»РёР·Р°С†РёСЏ РёРЅС‚РµСЂС„РµР№СЃР° cFileImage
 cFileImage* cFileImage::Create(const char *fname)
 {
 	_strlwr((char*)fname);
@@ -770,7 +783,7 @@ cFileImage* cFileImage::Create(const char *fname)
 #ifdef USE_JPEG
 	else if(strstr(fname,".jpg"))
 		return new cJPGImage;
-#endif USE_JPEG
+#endif //USE_JPEG
 	return 0;
 }
 void cFileImage::InitFileImage()
@@ -833,7 +846,7 @@ int ResourceFileRead(const char *filename,char *&buf,int &size)
 	
 
 	size=_lseek(file,0,SEEK_END);
-	if(size<=0) { _close(file); return -1<<1; }
+	if(size<=0) { _close(file); return -2; }
 	_lseek(file,0,SEEK_SET);
 	buf=new char[size];
 	_read(file,buf,size);
@@ -847,7 +860,7 @@ bool ResourceIsZIP()
 
 #endif// _UTILTVA_
 
-////////////////////// Реализация cAviScaleFileImage ///////////////////////////
+////////////////////// Р РµР°Р»РёР·Р°С†РёСЏ cAviScaleFileImage ///////////////////////////
 
 cAviScaleFileImage::cAviScaleFileImage():cFileImage()
 {

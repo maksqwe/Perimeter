@@ -1,8 +1,7 @@
 #ifndef _PERIMETER_COMMON_COMMANDS_
 #define _PERIMETER_COMMON_COMMANDS_
 
-enum terUnitAttributeID;
-enum CommandID;
+#include "UnitAttribute.h"
 
 const int PERIMETER_REGION_DATA_SIZE = 64;
 
@@ -82,7 +81,7 @@ public:
 		commandData_=donor.commandData_;
 		position_=donor.position_;
 		unitID_=donor.unitID_;
-		unit_=donor.unit_; // ! отличие от Read Write
+		unit_=donor.unit_; // ! РѕС‚Р»РёС‡РёРµ РѕС‚ Read Write
 		return *this;
 	}
 

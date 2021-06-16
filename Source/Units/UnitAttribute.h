@@ -1,23 +1,53 @@
+// TODO: change encoding to utf-8
+
 #ifndef __UNIT_ATTRIBUTE_H__
 #define __UNIT_ATTRIBUTE_H__
 
-#include "..\Util\Serialization.h"
-#include "..\Util\TypeLibrary.h"
+#include "../Util/Serialization.h"
+#include "../Util/TypeLibrary.h"
 
 #ifndef _UNIT_ATTRIBUTE_INL_
 #define _UNIT_ATTRIBUTE_INL_
-#include "..\Scripts\UnitAttribute.inl"
-#include "..\Scripts\SquadShellEnums.inl"
+#include "../Scripts/UnitAttribute.inl"
+#include "../Scripts/SquadShellEnums.inl"
 #endif // _UNIT_ATTRIBUTE_INL_
 
 #ifndef __TOOLZER_ENUMS_INL__
 #define __TOOLZER_ENUMS_INL__
-#include "..\Scripts\ToolzerEnums.inl"
+#include "../Scripts/ToolzerEnums.inl"
 #endif // __TOOLZER_ENUMS_INL__
 
-#include "..\Physics\RigidBodyPrm.h"
-#include "..\Util\DebugUtil.h"
-#include "..\UserInterface\SoundTrack.h"
+#include "../Physics/RigidBodyPrm.h"
+#include "../Util/DebugUtil.h"
+#include "../UserInterface/SoundTrack.h"
+
+#if !defined(_MSC_VER) || (_MSC_VER >= 1900)
+DECLARE_ENUM_DESCRIPTOR(terUnitAttributeID)
+DECLARE_ENUM_DESCRIPTOR(terUnitClassType)
+DECLARE_ENUM_DESCRIPTOR(terLegionType)
+DECLARE_ENUM_DESCRIPTOR(terInterpolationID)
+DECLARE_ENUM_DESCRIPTOR(DamageElementFilter)
+DECLARE_ENUM_DESCRIPTOR(PopupFormatGroup)
+DECLARE_ENUM_DESCRIPTOR(ToolzerPhaseID)
+DECLARE_ENUM_DESCRIPTOR(ToolzerActionID)
+DECLARE_ENUM_DESCRIPTOR(SoundEventID)
+DECLARE_ENUM_DESCRIPTOR(AnimationGroupID)
+DECLARE_ENUM_DESCRIPTOR(ToolzerBuildingDamageMode)
+DECLARE_ENUM_DESCRIPTOR(WeaponType)
+DECLARE_ENUM_DESCRIPTOR(EnvironmentalDamageType)
+DECLARE_ENUM_DESCRIPTOR(SoundID)
+DECLARE_ENUM_DESCRIPTOR(ChainNodeID)
+DECLARE_ENUM_DESCRIPTOR(ShellControlID)
+DECLARE_ENUM_DESCRIPTOR(Difficulty)
+DECLARE_ENUM_DESCRIPTOR(terBelligerent)
+DECLARE_ENUM_DESCRIPTOR(CollisionGroupID)
+DECLARE_ENUM_DESCRIPTOR(terUnitClassID)
+DECLARE_ENUM_DESCRIPTOR(WeaponFlags)
+DECLARE_ENUM_DESCRIPTOR(ChainID)
+DECLARE_ENUM_DESCRIPTOR(terEffectID)
+DECLARE_ENUM_DESCRIPTOR(PlacementStrategy)
+DECLARE_ENUM_DESCRIPTOR_ENCLOSED(RigidBodyPrm, RigidBodyType)
+#endif
 
 typedef vector<Vect2f> Vect2fVect;
 typedef vector<Vect2i> Vect2iVect;
@@ -1375,9 +1405,19 @@ struct ModelData
 	}
 };
 
+#ifdef _WIN32
 class FileTime : _FILETIME
 {
 public:
+#else
+class FileTime
+{
+public:
+	///Fields copied from _FILETIME struct
+    unsigned short dwLowDateTime;
+    unsigned short dwHighDateTime;
+#endif
+
 	FileTime() {
 		dwLowDateTime = dwHighDateTime = 0;
 	}
@@ -1712,5 +1752,8 @@ extern SingletonPrm<AttributeLibrary> attributeLibrary;
 void initAttributes();
 
 class cObjectNodeRoot* createObject(const char* name, terBelligerent belligerent);
+
+DEFINE_SINGLETON_PRM(AttributeLibrary)
+DEFINE_SINGLETON_PRM(GlobalAttributes)
 
 #endif

@@ -2,7 +2,7 @@
 #include "StdAfx.h"
 #include "Config.h"
 #include "Runtime.h"
-#include "Terra.h"
+#include "terra.h"
 #include "GenericControls.h"
 #include "Universe.h"
 #include "UniverseInterface.h"
@@ -11,7 +11,7 @@
 #include "Controls.h"
 
 #include "BGScene.h"
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 
 extern MpegSound gb_Music;
 
@@ -112,7 +112,7 @@ void onMMOnlineCreateButton(CShellWindow* pWnd, InterfaceEventCode code, int par
 		CSliderWindow *pSlider = (CSliderWindow*) _shellIconManager.GetWnd(SQSH_MM_ONLINE_GAME_SPEED_SLIDER);
 		CListBoxWindow* list = (CListBoxWindow*)_shellIconManager.GetWnd(SQSH_MM_ONLINE_MAP_LIST);
 		CEditWindow* input = (CEditWindow*)_shellIconManager.GetWnd(SQSH_MM_ONLINE_PLAYER_NAME_INPUT);
-		string gameName="Èãðà îò:";
+		string gameName="Ð˜Ð³Ñ€Ð° Ð¾Ñ‚:";
 		gameName+=input->GetText();
 		gameShell->getNetClient()->CreateGame(gameName.c_str(), strcat("RESOURCE\\MULTIPLAYER\\", multiplayerMaps[list->GetCurSel()].missionName()), input->GetText(), BELLIGERENT_EXODUS0, 0, 0.2f + pSlider->pos * 4.8f);
 		_shellIconManager.SwitchMenuScreens(pWnd->m_pParent->ID, SQSH_MM_ONLINE_LOBBY_SCR);

@@ -228,7 +228,7 @@ void DrawBWCyrcle(int r, unsigned char * bitmap, int xcenter, int ycenter, int s
 		unsigned char mask=x&0x07; mask=0x80>>mask;
 		bitmap[(x>>3) + (y*(sizex>>3))] |=mask;
 	}
-	//Ñòàâèì òî÷êó â öåíòðå
+	//Ð¡Ñ‚Ð°Ð²Ð¸Ð¼ Ñ‚Ð¾Ñ‡ÐºÑƒ Ð² Ñ†ÐµÐ½Ñ‚Ñ€Ðµ
 	int x=xcenter; int y=ycenter;
 	unsigned char mask=x&0x07; mask=0x80>>mask;
 	bitmap[(x>>3) + (y*(sizex>>3))] |=mask;
@@ -266,7 +266,7 @@ void DrawBWQuadrate(int r, unsigned char * bitmap, int xcenter, int ycenter, int
 		mask=x&0x07; mask=0x80>>mask;
 		bitmap[(x>>3) + (y*(sizex>>3))] |=mask;
 	}
-	//Ñòàâèì òî÷êó â öåíòðå
+	//Ð¡Ñ‚Ð°Ð²Ð¸Ð¼ Ñ‚Ð¾Ñ‡ÐºÑƒ Ð² Ñ†ÐµÐ½Ñ‚Ñ€Ðµ
 	int x=xcenter; int y=ycenter;
 	unsigned char mask=x&0x07; mask=0x80>>mask;
 	bitmap[(x>>3) + (y*(sizex>>3))] |=mask;
@@ -275,7 +275,7 @@ void DrawBWQuadrate(int r, unsigned char * bitmap, int xcenter, int ycenter, int
 
 
 #ifdef _SURMAP_
-#include "..\Surmap5\utl\3d_shape.h"
+#include "../Surmap5/utl/3d_shape.h"
 int S3Dinverse=0;
 void S3Danalyze(int S3Dmode, int S3Dlevel, int S3DnoiseLevel, int S3DnoiseAmp, int S3Dside)
 {

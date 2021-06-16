@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-#include "umath.h"
+#include "Umath.h"
 #include "IVisGeneric.h"
 #include "VisGenericDefine.h"
 #include "IRenderDevice.h"
@@ -8,7 +8,7 @@
 #include "PrmEdit.h"
 #include "Runtime.h"
 
-#include "Terra.h"
+#include "terra.h"
 
 #include "CameraManager.h"
 
@@ -26,38 +26,38 @@
 #include "UnitAttribute.h"
 #include "PerimeterShellUI.h"
 
-#include "..\PluginMax\ZIPStream.h"
+#include "../PluginMAX/ZIPStream.h"
 
 #include "Universe.h"
-#include "..\resource.h"
+#include "../resource.h"
 
 #include <commdlg.h>
-#include "..\ht\ht.h"
+#include "../HT/ht.h"
 #include "GraphicsOptions.h"
 
 const char* currentVersion = 
 "Ver "
-#include "..\version.h" 
+#include "../version.h"
 " (" __DATE__ " " __TIME__ ")";
 
 #ifdef _SINGLE_DEMO_
 const char* currentShortVersion = 
-"Êîìòåê'04 äåìî, v"
-#include "..\version.h" 
+"ÐšÐ¾Ð¼Ñ‚ÐµÐº'04 Ð´ÐµÐ¼Ð¾, v"
+#include "../version.h"
 ;
 #endif
 
 #ifdef _MULTIPLAYER_DEMO_
 const char* currentShortVersion = 
 "Multiplayer Demo (for GameSpy internal testing only), v"
-#include "..\version.h" 
+#include "../version.h"
 ;
 #endif
 
 #ifndef _DEMO_
 const char* currentShortVersion = 
 "v"
-#include "..\version.h" 
+#include "../version.h"
 ;
 #endif
 
@@ -181,7 +181,6 @@ void InternalErrorHandler()
 	if(universe()) universe()->allSavePlayReel();
 }
 
-
 void HTManager::init()
 {
 	interpolation_timer_ = 0;
@@ -189,20 +188,23 @@ void HTManager::init()
 
 	static XBuffer errorHeading;
 	errorHeading.SetRadix(16);
-	errorHeading < currentVersion <
+	errorHeading < currentVersion
 #ifdef _FINAL_VERSION_
-		" Final"
-#else
-		" Release"
+		< " Final"
+#endif
+#ifdef PERIMETER_DEBUG
+        < " DBG"
 #endif
 		< " OS: " <= GetVersion();
 
+#ifndef _FINAL_VERSION_
 	ErrH.SetPrefix(errorHeading);
 	ErrH.SetRestore(InternalErrorHandler);
+#endif
 	SetAssertRestoreGraphicsFunction(RestoreGDI);
 	
-	xt_get_cpuid();
-	xt_getMMXstatus();
+	//xt_get_cpuid();
+	//xt_getMMXstatus();
 	initclock();
 
 	allocation_tracking("before");
@@ -382,7 +384,9 @@ void HTManager::initGraphics()
 
 	terLight = terScene->CreateLight(ATTRLIGHT_DIRECTION);
 	terLight->SetPosition(MatXf(Mat3f::ID,Vect3f(0,0,0)));
-	terLight->SetColor(&sColor4f(0,0,0,1),&sColor4f(1,1,1,1));
+    sColor4f a(0,0,0,1);
+    sColor4f b(1,1,1,1);
+	terLight->SetColor(&a, &b);
 
 	pDefaultFont=terVisGeneric->CreateFont("Arial",12);
 	xassert(pDefaultFont);
@@ -567,7 +571,7 @@ void checkSingleRunning()
 //------------------------------
 int PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw)
 {
-#ifdef _FINAL_VERSION_
+#if defined(_FINAL_VERSION_) && !defined(PERIMETER_DEBUG)
 	checkSingleRunning();
 #endif
 
@@ -773,7 +777,7 @@ void setLogicFp()
 #ifndef _FINAL_VERSION_
 	static int enable = IniManager("Perimeter.ini").getInt("Game","ControlFpEnable");
 	if(enable){
-		_controlfp( _controlfp(0,0) & ~(EM_OVERFLOW | EM_ZERODIVIDE | EM_DENORMAL |  EM_INVALID),  MCW_EM ); 
+		_controlfp( _controlfp(0,0) & ~(EM_OVERFLOW | EM_ZERODIVIDE | EM_DENORMAL |  EM_INVALID),  _MCW_EM ); 
 		_clearfp();
 	}
 #endif

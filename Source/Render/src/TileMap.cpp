@@ -2,8 +2,8 @@
 #include "TileMap.h"
 #include "Scene.h"
 #include "ObjLibrary.h"
-#include "..\..\Game\Region.h"
-#include "font.h"
+#include "../../Game/Region.h"
+#include "Font.h"
 
 cTileMap::cTileMap(cScene* pScene,TerraInterface* terra_) : cUnkObj(KIND_TILEMAP)
 {
@@ -23,7 +23,8 @@ cTileMap::cTileMap(cScene* pScene,TerraInterface* terra_) : cUnkObj(KIND_TILEMAP
 	enable_debug_rect=false;
 	debug_fade_interval=500;
 
-	SetScene(pScene);
+	//Since we cant call SetScene in ctor
+	IParent = pScene;
 }
 cTileMap::~cTileMap()
 {
@@ -96,7 +97,7 @@ void cTileMap::CreateLightmap()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// ðåàëèçàöèÿ èíòåðôåéñà cIUnkObj
+// Ñ€ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹ÑÐ° cIUnkObj
 //////////////////////////////////////////////////////////////////////////////////////////
 
 void cTileMap::PreDraw(cCamera *DrawNode)
@@ -117,7 +118,7 @@ void cTileMap::Draw(cCamera *DrawNode)
 	cD3DRender *Render=gb_RenderDevice3D;
 	if(DrawNode->GetAttribute(ATTRCAMERA_SHADOW))
 	{
-		Render->Draw(GetScene()); // ðèñîâàòü èñòî÷íèêè ñâåòà
+		Render->Draw(GetScene()); // Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸ÐºÐ¸ ÑÐ²ÐµÑ‚Ð°
 	}
 	else if(DrawNode->GetAttribute(ATTRCAMERA_SHADOWMAP))
 	{
@@ -125,7 +126,7 @@ void cTileMap::Draw(cCamera *DrawNode)
 			Render->Draw(this,ALPHA_TEST,TILEMAP_ALL,true);
 	}
 	else if(DrawNode->GetAttribute(ATTRCAMERA_REFLECTION))
-	{ // ðèñîâàòü îòðàæåíèå
+	{ // Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¾Ñ‚Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ
 		Render->SetRenderState(RS_ALPHAREF,254/*GetRefSurface()*/);
 		Render->SetRenderState(RS_ALPHAFUNC,D3DCMP_GREATER);
 		Render->Draw(this,ALPHA_TEST,TILEMAP_NOZEROPLAST,false);
@@ -134,7 +135,7 @@ void cTileMap::Draw(cCamera *DrawNode)
 	}else
 	{
 		if(GetAttribute(ATTRUNKOBJ_REFLECTION))
-		{ // ðèñîâàòü ïðÿìîå èçîáðàæåíèå
+		{ // Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¿Ñ€ÑÐ¼Ð¾Ðµ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ
 			Render->SetRenderState(RS_ALPHAREF,1);
 			Render->Draw(this,ALPHA_BLEND,TILEMAP_ZEROPLAST,false);
 			Render->Draw(this,ALPHA_NONE,TILEMAP_NOZEROPLAST,false);
@@ -182,7 +183,7 @@ void cTileMap::Draw(cCamera *DrawNode)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// ðåàëèçàöèÿ cTileMap
+// Ñ€ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ cTileMap
 //////////////////////////////////////////////////////////////////////////////////////////
 void cTileMap::UpdateMap(const Vect2i& pos1,const Vect2i& pos2)
 {
@@ -308,13 +309,15 @@ void cTileMap::CalcShadowMapCamera(cCamera *DrawNode)
 	LightMatrix.trans()=-PosLight;
 
 	Vect2f Focus(1/(box.max.x-box.min.x),1/(box.max.y-box.min.y));
-	ShadowDrawNode->SetFrustum(&Vect2f(0.5f,0.5f),&sRectangle4f(-0.5f,-0.5f,0.5f,0.5f),
-		&Focus, &Vect2f(0,box.max.z-box.min.z));
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f,-0.5f,0.5f,0.5f);
+    Vect2f zplane(0,box.max.z-box.min.z);
+    ShadowDrawNode->SetFrustum(&center,&clip, &Focus, &zplane);
 	ShadowDrawNode->SetPosition(LightMatrix);
 
-//Ñ îäíîé ñòîðîíû ýòà êàìåðà äîëæíà áûòü ïîñ÷èòàíà äî òîãî ìîìåíòà
-//êîãäà íà÷í¸ò îïðåäåëÿòüñÿ, êàêèå îáúåêòû âèäèìû. Ñ äðóãîé ñòîðîíû îíà äîëæíà áûòü
-//ïîñ÷èòàííà ïîçæå, òàê êàê âûçûâàåòñÿ CalculateZMinMax
+//Ð¡ Ð¾Ð´Ð½Ð¾Ð¹ ÑÑ‚Ð¾Ñ€Ð¾Ð½Ñ‹ ÑÑ‚Ð° ÐºÐ°Ð¼ÐµÑ€Ð° Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾ÑÑ‡Ð¸Ñ‚Ð°Ð½Ð° Ð´Ð¾ Ñ‚Ð¾Ð³Ð¾ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚Ð°
+//ÐºÐ¾Ð³Ð´Ð° Ð½Ð°Ñ‡Ð½Ñ‘Ñ‚ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÑÑ‚ÑŒÑÑ, ÐºÐ°ÐºÐ¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ð²Ð¸Ð´Ð¸Ð¼Ñ‹. Ð¡ Ð´Ñ€ÑƒÐ³Ð¾Ð¹ ÑÑ‚Ð¾Ñ€Ð¾Ð½Ñ‹ Ð¾Ð½Ð° Ð´Ð¾Ð»Ð¶Ð½Ð° Ð±Ñ‹Ñ‚ÑŒ
+//Ð¿Ð¾ÑÑ‡Ð¸Ñ‚Ð°Ð½Ð½Ð° Ð¿Ð¾Ð·Ð¶Ðµ, Ñ‚Ð°Ðº ÐºÐ°Ðº Ð²Ñ‹Ð·Ñ‹Ð²Ð°ÐµÑ‚ÑÑ CalculateZMinMax
 	fix_shadow.box=box;
 	fix_shadow.LightMatrix=LightMatrix;
 
@@ -339,17 +342,19 @@ void cTileMap::FixShadowMapCamera(cCamera *DrawNode)
 	LightMatrix.trans()=-PosLight;
 
 	Vect2f Focus(1/(box.max.x-box.min.x),1/(box.max.y-box.min.y));
-	ShadowDrawNode->SetFrustum(&Vect2f(0.5f,0.5f),&sRectangle4f(-0.5f,-0.5f,0.5f,0.5f),
-		&Focus, &Vect2f(0,box.max.z-box.min.z));
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f,-0.5f,0.5f,0.5f);
+    Vect2f zplane(0,box.max.z-box.min.z);
+    ShadowDrawNode->SetFrustum(&center,&clip, &Focus, &zplane);
 	ShadowDrawNode->SetPosition(LightMatrix);
 /*
 	if(LightDrawNode->GetAttribute(ATTRCAMERA_NOCLEARTARGET))
-	{//Îñâåùåíèå ïðè ïðîåêòèâíîé êàìåðå
+	{//ÐžÑÐ²ÐµÑ‰ÐµÐ½Ð¸Ðµ Ð¿Ñ€Ð¸ Ð¿Ñ€Ð¾ÐµÐºÑ‚Ð¸Ð²Ð½Ð¾Ð¹ ÐºÐ°Ð¼ÐµÑ€Ðµ
 //		Vect2f PosLightMap;
 //		PosLightMap.x = (box.max.x+box.min.x)*0.5f;
 //		PosLightMap.y = (box.max.y+box.min.y)*0.5f;
 
-//		Vect3f vShadow(0,0,-1);//Âñ¸ ðàâíî ñ äðóãèõ ïîëîæåíèé êðèâî îñâåùàåò
+//		Vect3f vShadow(0,0,-1);//Ð’ÑÑ‘ Ñ€Ð°Ð²Ð½Ð¾ Ñ Ð´Ñ€ÑƒÐ³Ð¸Ñ… Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ð¹ ÐºÑ€Ð¸Ð²Ð¾ Ð¾ÑÐ²ÐµÑ‰Ð°ÐµÑ‚
 
 //		Vect3f PosLight(PosLightMap.x,PosLightMap.y,-5000*vShadow.z);
 		Vect3f LightDirection(0,0,-1);
@@ -437,10 +442,11 @@ void cTileMap::CalcShadowMapCameraProective(cCamera *DrawNode)
 	light_out.z/=light_out.w;
 	light_out.w/=light_out.w;
 
+    D3DXVECTOR3 a(light_out.x,light_out.y,light_out.z);
+    D3DXVECTOR3 b(0,0,0.5f);
+    D3DXVECTOR3 c(0,0,-1);
 	D3DXMatrixLookAtLH(&look_light,
-		&D3DXVECTOR3(light_out.x,light_out.y,light_out.z),
-		&D3DXVECTOR3(0,0,0.5f),
-		&D3DXVECTOR3(0,0,-1)
+		&a, &b, &c
 	);
 
 	sBox6f box=::CalcZMinMax(&look_light);
@@ -483,12 +489,15 @@ void cTileMap::CalcShadowMapCameraProective(cCamera *DrawNode)
 	//MP*MVL*P*MV
  
 	Vect2f Focus(1,1);
-	ShadowDrawNode->SetFrustum(&Vect2f(0.5f,0.5f),&sRectangle4f(-0.5f,-0.5f,0.5f,0.5f),
-		&Focus, &Vect2f(0,1000));
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f,-0.5f,0.5f,0.5f);
+    Vect2f zplane(0,1000);
+	ShadowDrawNode->SetFrustum(&center,&clip, &Focus, &zplane);
 	ShadowDrawNode->SetPosition(DrawNode->GetMatrix());
 
 	D3DXVECTOR4 out;
-	D3DXVec3Transform(&out,&D3DXVECTOR3(1024,1024,0),ShadowDrawNode->matProj);
+    D3DXVECTOR3 v(1024,1024,0);
+	D3DXVec3Transform(&out,&v,ShadowDrawNode->matProj);
 
 	Vect3f p[8];
 	DrawNode->GetFrustumPoint(p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7]);
@@ -543,14 +552,14 @@ void cTileMap::AddPlanarCamera(cCamera *DrawNode,bool light)
 
 	PosLightMap.z = SizeLightMap;
 
-	Vect3f vShadow(0,0,-1);//Âñ¸ ðàâíî ñ äðóãèõ ïîëîæåíèé êðèâî îñâåùàåò
+	Vect3f vShadow(0,0,-1);//Ð’ÑÑ‘ Ñ€Ð°Ð²Ð½Ð¾ Ñ Ð´Ñ€ÑƒÐ³Ð¸Ñ… Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ð¹ ÐºÑ€Ð¸Ð²Ð¾ Ð¾ÑÐ²ÐµÑ‰Ð°ÐµÑ‚
 
-	Vect3f PosLight(PosLightMap.x-5000*vShadow.x,PosLightMap.y-5000*vShadow.y,-5000*vShadow.z);
+	Vect3f PosLight = -Vect3f(PosLightMap.x-5000*vShadow.x,PosLightMap.y-5000*vShadow.y,-5000*vShadow.z);
 	MatXf LightMatrix;
-	LightMatrix.rot().xrow().cross(vShadow,Vect3f(0,1,0)); // èñòî÷íèê ñâåòà â íàïðàâëåíèè îñè x
+	LightMatrix.rot().xrow().cross(vShadow,Vect3f(0,1,0)); // Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº ÑÐ²ÐµÑ‚Ð° Ð² Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ð¸ Ð¾ÑÐ¸ x
 	LightMatrix.rot().yrow()=Vect3f(0,-1,0);
 	LightMatrix.rot().zrow()=vShadow;
-	LightMatrix.trans()=LightMatrix.rot().xform( -PosLight );
+	LightMatrix.trans()=LightMatrix.rot().xform( PosLight );
 	LightMatrix.trans().x-=6;
 	LightMatrix.trans().y+=3;
 
@@ -562,11 +571,13 @@ void cTileMap::AddPlanarCamera(cCamera *DrawNode,bool light)
 	PlanarNode->ClearAttribute(ATTRCAMERA_PERSPECTIVE);
 	PlanarNode->ClearAttribute(ATTRCAMERA_SHOWCLIP);
 	PlanarNode->SetRenderTarget(light?GetLightMap():GetShadowMap(),NULL);
-	PlanarNode->SetFrustum(&Vect2f(0.5f,0.5f),&sRectangle4f(-0.5f,-0.5f,0.5f,0.5f),
-		&Focus, &Vect2f(10,1e6f));
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f,-0.5f,0.5f,0.5f);
+    Vect2f zplane(10,1e6f);
+    PlanarNode->SetFrustum(&center,&clip, &Focus, &zplane);
 	
 	PlanarNode->SetPosition(LightMatrix);
-	PlanarNode->Attach(SCENENODE_OBJECT,this); // ðèñîâàòü èñòî÷íèêè ñâåòà							   
+	PlanarNode->Attach(SCENENODE_OBJECT,this); // Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸ÐºÐ¸ ÑÐ²ÐµÑ‚Ð°							   
 }
 
 void cTileMap::AddFixedLightCamera(cCamera *DrawNode)
@@ -579,14 +590,14 @@ void cTileMap::AddFixedLightCamera(cCamera *DrawNode)
 
 	PosLightMap.z = SizeLightMap;
 
-	Vect3f vShadow(0,0,-1);//Âñ¸ ðàâíî ñ äðóãèõ ïîëîæåíèé êðèâî îñâåùàåò
+	Vect3f vShadow(0,0,-1);//Ð’ÑÑ‘ Ñ€Ð°Ð²Ð½Ð¾ Ñ Ð´Ñ€ÑƒÐ³Ð¸Ñ… Ð¿Ð¾Ð»Ð¾Ð¶ÐµÐ½Ð¸Ð¹ ÐºÑ€Ð¸Ð²Ð¾ Ð¾ÑÐ²ÐµÑ‰Ð°ÐµÑ‚
 
-	Vect3f PosLight(PosLightMap.x-5000*vShadow.x,PosLightMap.y-5000*vShadow.y,-5000*vShadow.z);
+	Vect3f PosLight = -Vect3f(PosLightMap.x-5000*vShadow.x,PosLightMap.y-5000*vShadow.y,-5000*vShadow.z);
 	MatXf LightMatrix;
-	LightMatrix.rot().xrow().cross(vShadow,Vect3f(0,1,0)); // èñòî÷íèê ñâåòà â íàïðàâëåíèè îñè x
+	LightMatrix.rot().xrow().cross(vShadow,Vect3f(0,1,0)); // Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº ÑÐ²ÐµÑ‚Ð° Ð² Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ð¸ Ð¾ÑÐ¸ x
 	LightMatrix.rot().yrow()=Vect3f(0,-1,0);
 	LightMatrix.rot().zrow()=vShadow;
-	LightMatrix.trans()=LightMatrix.rot().xform( -PosLight );
+	LightMatrix.trans()=LightMatrix.rot().xform( PosLight );
 
 	DrawNode->SetCopy(PlanarNode);
 	DrawNode->AttachChild(PlanarNode);
@@ -597,11 +608,13 @@ void cTileMap::AddFixedLightCamera(cCamera *DrawNode)
 	PlanarNode->ClearAttribute(ATTRCAMERA_SHOWCLIP);
 	PlanarNode->SetAttribute(ATTRCAMERA_NOCLEARTARGET);
 	PlanarNode->SetRenderTarget(GetShadowMap(),NULL);
-	PlanarNode->SetFrustum(&Vect2f(0.5f,0.5f),&sRectangle4f(-0.5f,-0.5f,0.5f,0.5f),
-		&Focus, &Vect2f(10,1e6f));
+    Vect2f center(0.5f,0.5f);
+    sRectangle4f clip(-0.5f,-0.5f,0.5f,0.5f);
+    Vect2f zplane(10,1e6f);
+    PlanarNode->SetFrustum(&center,&clip, &Focus, &zplane);
 	
 	PlanarNode->SetPosition(LightMatrix);
-	PlanarNode->Attach(SCENENODE_OBJECT,this); // ðèñîâàòü èñòî÷íèêè ñâåòà
+	PlanarNode->Attach(SCENENODE_OBJECT,this); // Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¸ÑÑ‚Ð¾Ñ‡Ð½Ð¸ÐºÐ¸ ÑÐ²ÐµÑ‚Ð°
 }
 
 void cTileMap::CalcZMinMax(int x_tile,int y_tile)
@@ -717,13 +730,13 @@ Vect2f cTileMap::CalcZ(cCamera *DrawNode)
 
 
 static int cur_zeroplast_number=0;
-static 
+static
 void cTileMapBorderCall(void* data,Vect2f& p)
 {
 	cTileMap* tm=(cTileMap*)data;
 
-	int x=round(p.x)>>TILEMAP_SHL;
-	int y=round(p.y)>>TILEMAP_SHL;
+	int x= (int)round(p.x)>>TILEMAP_SHL;
+	int y= (int)round(p.y)>>TILEMAP_SHL;
 	xassert(x>=0 && x<tm->TileNumber.x);
 	xassert(y>=0 && y<tm->TileNumber.y);
 	sTile& tile=tm->GetTile(x,y);

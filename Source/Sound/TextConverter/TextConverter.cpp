@@ -1,7 +1,9 @@
+// TODO: change encoding to utf-8
+
 #include "stdafx.h"
 
 #define _NOSTD_
-#include "parse\ParamParse.h"
+#include "parse/ParamParse.h"
 #include <stdlib.h>
 #include <conio.h>
 #include "MessageBlock.h"

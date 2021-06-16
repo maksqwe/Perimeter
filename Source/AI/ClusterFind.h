@@ -4,121 +4,25 @@
 #include "AIAStar.h"
 
 
-#define CF_UP_BIT //Верхний бит в walk_map несёт разделительную функцию
-
-//Ещё большее сглаживание пути
-template<class ClusterHeuristic>
-float HeuristicLine(int xfrom,int yfrom,int xto,int yto,
-		  int dx,int dy,BYTE* walk_map,ClusterHeuristic& heuristic,
-		  bool& debug_xor )
-{
-	float x,y;
-	float lx,ly;
-	if(xfrom==xto && yfrom==yto)return 0;
-	xassert(xfrom>=0 && xfrom<dx && yfrom>=0 && yfrom<dy);
-	xassert(xto>=0 && xto<dx && yto>=0 && yto<dy);
-
-	x=xfrom;
-	y=yfrom;
-
-	lx=xto-xfrom;
-	ly=yto-yfrom;
-	int t,maxt;
-	if(fabsf(lx)>fabsf(ly))
-	{
-		maxt=fabsf(lx);
-		ly=ly/fabsf(lx);
-		lx=(lx>0)?+1:-1;
-	}else
-	{
-		maxt=fabsf(ly);
-		lx=lx/fabsf(ly);
-		ly=(ly>0)?+1:-1;
-	}
-
-	float sq_mul=sqrtf(sqr(lx)+sqr(ly));
-	float len=0;
-	BYTE walk_from,walk_to;
-	walk_from=walk_map[yfrom*dx+xfrom];
-
-	debug_xor=false;
-
-	for(t=0;t<maxt;t++)
-	{
-		x+=lx;y+=ly;
-
-		int ix=round(x),iy=round(y);
-		xassert(ix>=0 && ix<dx && iy>=0 && iy<dy);
-
-		walk_to=walk_map[iy*dx+ix];
-		float l=heuristic(walk_from,walk_to)*sq_mul;
-		debug_xor|=((walk_from^walk_to)&ClusterFind::UP_MASK)?true:false;
-
-		walk_from=walk_to;
-		len+=l;
-	}
-
-	return len;
-}
-
-
-template<class ClusterHeuristic>
-void SoftPath2(vector<Vect2i>& out_path,
-			int dx,int dy,BYTE* walk_map,
-			ClusterHeuristic& heuristic)
-{
-	//for(int iteration=0;iteration<2;iteration++)
-	for(int i=1;i<out_path.size()-1;i++)
-	{
-		//Убрать эту точку
-		Vect2i p0,p1,p2;
-		p0=out_path[i-1];
-		p1=out_path[i];
-		p2=out_path[i+1];
-
-		float l0,l1,lskip;
-		bool b0,b1,bskip;
-
-		lskip=HeuristicLine(p0.x,p0.y,p2.x,p2.y,
-				dx,dy,walk_map,heuristic,bskip);
-
-		l0=HeuristicLine(p0.x,p0.y,p1.x,p1.y,
-				dx,dy,walk_map,heuristic,b0);
-
-		l1=HeuristicLine(p1.x,p1.y,p2.x,p2.y,
-				dx,dy,walk_map,heuristic,b1);
-
-
-		if(lskip<l0+l1)
-		{
-			if(bskip || b0 || b1)
-			{
-				int k=0;
-			}
-
-			out_path.erase(out_path.begin()+i);
-			i--;
-		}
-	}
-}
+#define CF_UP_BIT //Р’РµСЂС…РЅРёР№ Р±РёС‚ РІ walk_map РЅРµСЃС‘С‚ СЂР°Р·РґРµР»РёС‚РµР»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ
 
 class ClusterFind
 {
 public:
 	struct Cluster
 	{
-		int x,y;//Левая верхняя точка.
-		int xcenter,ycenter;//Не обязательно попадает в кластер
-		BYTE walk;//Сложность продвижения по этому куску
-		bool temp_set;//Можно ли писать в link
+		int x,y;//Р›РµРІР°СЏ РІРµСЂС…РЅСЏСЏ С‚РѕС‡РєР°.
+		int xcenter,ycenter;//РќРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РїРѕРїР°РґР°РµС‚ РІ РєР»Р°СЃС‚РµСЂ
+		BYTE walk;//РЎР»РѕР¶РЅРѕСЃС‚СЊ РїСЂРѕРґРІРёР¶РµРЅРёСЏ РїРѕ СЌС‚РѕРјСѓ РєСѓСЃРєСѓ
+		bool temp_set;//РњРѕР¶РЅРѕ Р»Рё РїРёСЃР°С‚СЊ РІ link
 		DWORD self_id;
 
-		vector<Cluster*> link;//С кем связанны.
-		vector<DWORD> index_link;//индекс в массиве all_cluster
+		vector<Cluster*> link;//РЎ РєРµРј СЃРІСЏР·Р°РЅРЅС‹.
+		vector<DWORD> index_link;//РёРЅРґРµРєСЃ РІ РјР°СЃСЃРёРІРµ all_cluster
 
 		inline Cluster(){temp_set=true;}
 
-		//Для AIAStarGraph
+		//Р”Р»СЏ AIAStarGraph
 		typedef vector<Cluster*>::iterator iterator;
 		inline iterator begin(){return link.begin();}
 		inline iterator end(){return link.end();}
@@ -138,16 +42,16 @@ public:
 	ClusterFind(int dx,int dy,int max_distance=10);
 	~ClusterFind();
 
-	// Доступ к карте для заполнения перед Set/SetLater
+	// Р”РѕСЃС‚СѓРї Рє РєР°СЂС‚Рµ РґР»СЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ РїРµСЂРµРґ Set/SetLater
 	BYTE* GetWalkMap(){ return walk_map; }
 
-	//Создать сеть кластеров по walk_map
+	//РЎРѕР·РґР°С‚СЊ СЃРµС‚СЊ РєР»Р°СЃС‚РµСЂРѕРІ РїРѕ walk_map
 	void Set(bool enable_smooting);
 	
-	//Так как Set очень длительная операция, то 
-	//разбить на несколько квантов
+	//РўР°Рє РєР°Рє Set РѕС‡РµРЅСЊ РґР»РёС‚РµР»СЊРЅР°СЏ РѕРїРµСЂР°С†РёСЏ, С‚Рѕ 
+	//СЂР°Р·Р±РёС‚СЊ РЅР° РЅРµСЃРєРѕР»СЊРєРѕ РєРІР°РЅС‚РѕРІ
 	void SetLater(bool enable_smooting,int quant_of_build);
-	bool SetLaterQuant();//true - процесс завершён
+	bool SetLaterQuant();//true - РїСЂРѕС†РµСЃСЃ Р·Р°РІРµСЂС€С‘РЅ
 	bool ready() const { return cur_quant_build >= quant_of_build; }
 
 	template<class ClusterHeuristic>
@@ -229,12 +133,12 @@ protected:
 
 	vector<Cluster> all_cluster;
 
-	BYTE* is_used;//Для SoftPath
+	BYTE* is_used;//Р”Р»СЏ SoftPath
 	DWORD is_used_size;
 	int is_used_xmin,is_used_xmax,is_used_ymin,is_used_ymax;
 
-	//для SetLater
-	int quant_of_build;//Сколько квантов необходимо для построения карты
+	//РґР»СЏ SetLater
+	int quant_of_build;//РЎРєРѕР»СЊРєРѕ РєРІР°РЅС‚РѕРІ РЅРµРѕР±С…РѕРґРёРјРѕ РґР»СЏ РїРѕСЃС‚СЂРѕРµРЅРёСЏ РєР°СЂС‚С‹
 	int cur_quant_build;
 	int set_later_cur_num;
 
@@ -243,11 +147,11 @@ protected:
 	//	Private Members
 	void Relink();
 	void Smooting();
-	//Добавлять, если temp_set==true
-	vector<DWORD> vtemp_set;//Для ClusterOne
+	//Р”РѕР±Р°РІР»СЏС‚СЊ, РµСЃР»Рё temp_set==true
+	vector<DWORD> vtemp_set;//Р”Р»СЏ ClusterOne
 	void ClusterOne(int x,int y,int id,Cluster& c);
 
-	//Возвращает true, если нашёл путь на два шага вперёд
+	//Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РЅР°С€С‘Р» РїСѓС‚СЊ РЅР° РґРІР° С€Р°РіР° РІРїРµСЂС‘Рґ
 	bool IterativeFindPath(Vect2i from,
 						   Vect2i center,Vect2i to,
 						   Vect2i up,Vect2i up_to,
@@ -265,7 +169,7 @@ protected:
 	bool LineWalk(int xfrom,int yfrom,int xto,int yto,
 					   BYTE max_walk);
 
-	//То-же поиск волной. Ищет ячейки соприкасающиеся с to.
+	//РўРѕ-Р¶Рµ РїРѕРёСЃРє РІРѕР»РЅРѕР№. РС‰РµС‚ СЏС‡РµР№РєРё СЃРѕРїСЂРёРєР°СЃР°СЋС‰РёРµСЃСЏ СЃ to.
 	void FindClusterFront(int x,int y,DWORD to,
 		vector<Front>& front);
 
@@ -278,5 +182,100 @@ protected:
 
 	void CheckAllLink();
 };
+
+template<class ClusterHeuristic>
+void SoftPath2(vector<Vect2i>& out_path,
+               int dx,int dy,BYTE* walk_map,
+               ClusterHeuristic& heuristic)
+{
+    //for(int iteration=0;iteration<2;iteration++)
+    for(int i=1;i<out_path.size()-1;i++)
+    {
+        //РЈР±СЂР°С‚СЊ СЌС‚Сѓ С‚РѕС‡РєСѓ
+        Vect2i p0,p1,p2;
+        p0=out_path[i-1];
+        p1=out_path[i];
+        p2=out_path[i+1];
+
+        float l0,l1,lskip;
+        bool b0,b1,bskip;
+
+        lskip=HeuristicLine(p0.x,p0.y,p2.x,p2.y,
+                            dx,dy,walk_map,heuristic,bskip);
+
+        l0=HeuristicLine(p0.x,p0.y,p1.x,p1.y,
+                         dx,dy,walk_map,heuristic,b0);
+
+        l1=HeuristicLine(p1.x,p1.y,p2.x,p2.y,
+                         dx,dy,walk_map,heuristic,b1);
+
+
+        if(lskip<l0+l1)
+        {
+            if(bskip || b0 || b1)
+            {
+                int k=0;
+            }
+
+            out_path.erase(out_path.begin()+i);
+            i--;
+        }
+    }
+}
+
+//Р•С‰С‘ Р±РѕР»СЊС€РµРµ СЃРіР»Р°Р¶РёРІР°РЅРёРµ РїСѓС‚Рё
+template<class ClusterHeuristic>
+float HeuristicLine(int xfrom,int yfrom,int xto,int yto,
+                    int dx,int dy,BYTE* walk_map,ClusterHeuristic& heuristic,
+                    bool& debug_xor )
+{
+    float x,y;
+    float lx,ly;
+    if(xfrom==xto && yfrom==yto)return 0;
+    xassert(xfrom>=0 && xfrom<dx && yfrom>=0 && yfrom<dy);
+    xassert(xto>=0 && xto<dx && yto>=0 && yto<dy);
+
+    x=xfrom;
+    y=yfrom;
+
+    lx=xto-xfrom;
+    ly=yto-yfrom;
+    int t,maxt;
+    if(fabsf(lx)>fabsf(ly))
+    {
+        maxt=fabsf(lx);
+        ly=ly/fabsf(lx);
+        lx=(lx>0)?+1:-1;
+    }else
+    {
+        maxt=fabsf(ly);
+        lx=lx/fabsf(ly);
+        ly=(ly>0)?+1:-1;
+    }
+
+    float sq_mul=sqrtf(sqr(lx)+sqr(ly));
+    float len=0;
+    BYTE walk_from,walk_to;
+    walk_from=walk_map[yfrom*dx+xfrom];
+
+    debug_xor=false;
+
+    for(t=0;t<maxt;t++)
+    {
+        x+=lx;y+=ly;
+
+        int ix=round(x),iy=round(y);
+        xassert(ix>=0 && ix<dx && iy>=0 && iy<dy);
+
+        walk_to=walk_map[iy*dx+ix];
+        float l=heuristic(walk_from,walk_to)*sq_mul;
+        debug_xor|=((walk_from^walk_to)&ClusterFind::UP_MASK)?true:false;
+
+        walk_from=walk_to;
+        len+=l;
+    }
+
+    return len;
+}
 
 #endif //__CLUSTERFIND_H__

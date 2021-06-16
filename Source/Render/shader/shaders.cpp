@@ -6,14 +6,14 @@
 #define VAR_HANDLE(x) GetVariableByName(x,#x);
 
 /*
-Î HLSL:
- Äëÿ óñêîðåíèÿ 
-	âìåñòî
+Ðž HLSL:
+ Ð”Ð»Ñ ÑƒÑÐºÐ¾Ñ€ÐµÐ½Ð¸Ñ 
+	Ð²Ð¼ÐµÑÑ‚Ð¾
 		pConstantTable->SetFloat
-	èñïîëüçóåòñÿ
+	Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ÑÑ
 		gb_RenderDevice3D->SetVertexShaderConstant
 
-  Êîíñòàíòû ïî óìîë÷àíèþ íå óñòàíàïëèâàþòñÿ!!!
+  ÐšÐ¾Ð½ÑÑ‚Ð°Ð½Ñ‚Ñ‹ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ Ð½Ðµ ÑƒÑÑ‚Ð°Ð½Ð°Ð¿Ð»Ð¸Ð²Ð°ÑŽÑ‚ÑÑ!!!
   
 */
 
@@ -103,7 +103,7 @@ void cVertexShader::Delete()
 void cVertexShader::Restore()
 {
 	unsigned int fp=_controlfp(0,0);
-	_controlfp( MCW_EM,  MCW_EM ); 
+	_controlfp( _MCW_EM,  _MCW_EM ); 
 	Delete();
 	RestoreShader();
 	_clearfp();
@@ -161,7 +161,8 @@ inline void cVertexShader::SetFloat(const SHADER_HANDLE& h,const float vect)
 {
 	if(h.num_register)
 	{
-		gb_RenderDevice3D->SetVertexShaderConstant(h.begin_register,&D3DXVECTOR4(vect,vect,vect,vect));
+        D3DXVECTOR4 v(vect,vect,vect,vect);
+		gb_RenderDevice3D->SetVertexShaderConstant(h.begin_register,&v);
 //		pConstantTable->SetFloat(gb_RenderDevice3D->lpD3DDevice,h,vect);
 	}
 }
@@ -206,7 +207,7 @@ void cVertexShader::GetVariableByName(SHADER_HANDLE& sh,const char* name)
 	ConstShaderInfo& desc=pShaderInfo[i];
 	if(!pShader.empty() && sh.num_register)
 	{
-		//Ïîòîìó êàê SHADER_HANDLE îäèí, à øåéäåðîâ ìíîãî
+		//ÐŸÐ¾Ñ‚Ð¾Ð¼Ñƒ ÐºÐ°Ðº SHADER_HANDLE Ð¾Ð´Ð¸Ð½, Ð° ÑˆÐµÐ¹Ð´ÐµÑ€Ð¾Ð² Ð¼Ð½Ð¾Ð³Ð¾
 		VISASSERT(sh.begin_register==desc.begin_register && sh.num_register==desc.num_register);
 	}
 	sh.begin_register=desc.begin_register;
@@ -279,7 +280,7 @@ void cVertexShader::SetTextureTransform(MatXf& m)
 
 void PSShowMap::Restore()
 {
-#include "o\showmap.ph"
+#include "o/showmap.ph"
 }
 
 void VSChaos::Select(float umin,float vmin,float umin2,float vmin2,
@@ -287,8 +288,10 @@ void VSChaos::Select(float umin,float vmin,float umin2,float vmin2,
 {
 	SetFog();
 	SetMatrix(mWVP,gb_RenderDevice3D->GetDrawNode()->matViewProj);
-	SetVector(mUV,&D3DXVECTOR4(umin,vmin,umin2,vmin2));
-	SetVector(mUVBump,&D3DXVECTOR4(umin_b0,vmin_b0,umin_b1,vmin_b1));
+    D3DXVECTOR4 uv(umin,vmin,umin2,vmin2);
+    D3DXVECTOR4 uvb(umin_b0,vmin_b0,umin_b1,vmin_b1);
+	SetVector(mUV,&uv);
+	SetVector(mUVBump,&uvb);
 	SetMatrix(mWorldView,gb_RenderDevice3D->GetDrawNode()->matView);
 
 	cVertexShader::Select();
@@ -308,21 +311,22 @@ void VSChaos::RestoreShader()
 {
 	if(gb_RenderDevice3D->bSupportTableFog)
 	{
-		#include "chaos\o\chaos.vl"
+		#include "Chaos/o/chaos.vl"
 	}else
 	{
-		#include "chaos\o\chaos_fog.vl"
+		#include "Chaos/o/chaos_fog.vl"
 	}
 }
 
 void PSChaos::Restore()
 {
-#include "chaos\o\chaos.ph"
+#include "Chaos/o/chaos.ph"
 }
 
 void VSChaos::SetFog()
 {
-	SetVector(vFog,&gb_RenderDevice3D->dtAdvance->GetFogParam());
+    D3DXVECTOR4 v = gb_RenderDevice3D->dtAdvance->GetFogParam();
+    SetVector(vFog,&v);
 }
 
 #include "ShadersGeforce3.inl"

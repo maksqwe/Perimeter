@@ -8,9 +8,9 @@
 
 #include <IndexedTexture3D.hpp>
 
-#include "..\Terra\terra.h"
-#include "..\UserInterface\chaos.h"
-#include "..\PluginMax\ZIPStream.h"
+#include "../Terra/terra.h"
+#include "../UserInterface/chaos.h"
+#include "../PluginMAX/ZIPStream.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -70,7 +70,7 @@ CGeoToolApp theApp;
 BOOL CGeoToolApp::InitInstance()
 {
 	AfxEnableControlContainer();
-	// ƒÎˇ ‘œ—
+	// –î–ª—è –§–ü–°
 	initclock();
 
 	// Standard initialization
