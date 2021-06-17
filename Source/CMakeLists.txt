@@ -1,6 +1,5 @@
 IF(NOT PERIMETER_WINDOWS)
     INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/Source/Exodus")
-    ADD_SUBDIRECTORY("Exodus")
 ENDIF()
 
 IF(GEN_SCRIPTS)
@@ -13,11 +12,27 @@ ADD_SUBDIRECTORY("PluginMAX")
 ADD_SUBDIRECTORY("Terra")
 ADD_SUBDIRECTORY("tx3d")
 ADD_SUBDIRECTORY("Render")
+ADD_SUBDIRECTORY("Sound")
 
-IF(PERIMETER_WINDOWS)
+SET(perimeter_LINK_LIBS
+        #Our libs
+        XTool
+        PluginMAX
+        Terra
+        tx3d
+        Render
+        Sound
+)
+
+
+IF(PERIMETER_EXODUS)
+    MESSAGE("Using Exodus wrapper - WARNING: EXPERIMENTAL!")
+    ADD_SUBDIRECTORY("Exodus")
+    SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS} Exodus)
+ELSE()
     ADD_SUBDIRECTORY("PlayOgg")
     ADD_SUBDIRECTORY("Network")
-    ADD_SUBDIRECTORY("Sound")
+    SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS} PlayOgg Network)
 ENDIF()
 if(NOT FINAL_VERSION)
     ADD_SUBDIRECTORY("TriggerEditor")
@@ -44,15 +59,6 @@ INCLUDE_DIRECTORIES(
         "${PROJECT_SOURCE_DIR}/Source/Game/Scripts"
 )
 
-SET(perimeter_LINK_LIBS
-        #Our libs
-        XTool
-        PluginMAX
-        Terra
-        tx3d
-        Render
-)
-
 #Add Windows and DirectX libs
 IF(PERIMETER_WINDOWS)
     #Include headers
@@ -68,11 +74,6 @@ IF(PERIMETER_WINDOWS)
     ENDIF()
 
     SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS}
-            #Our libs
-            PlayOgg
-            Network
-            Sound
-
             #DirectX libs
             d3d9
             d3dx9
@@ -101,15 +102,12 @@ ELSE() #Add non windows dependencies
     SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS}
         #${BOOST_LIBRARY}
         ${SDL2_LIBRARY}
-        #Wrapper lib
-        Exodus
         # dl is required for dladdr in stacktrace,
         dl
     )
 ENDIF()
 
 SET(perimeter_SRCS
-        Util/dplay8guid.c
         Game/CameraManager.cpp
         Game/MonkManager.cpp
         Game/MusicManager.cpp
