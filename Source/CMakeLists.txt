@@ -86,18 +86,19 @@ IF(PERIMETER_WINDOWS)
     #Select 64 or 32 compiled libs
     IF(PERIMETER_ARCH_64)
         MESSAGE("Linking against DirectX 64 bits")
-        LINK_DIRECTORIES(BEFORE ${PROJECT_SOURCE_DIR}/MSDXSDK_02_06/Lib/x64)
+        SET(LIBS_MSDXSDK ${PROJECT_SOURCE_DIR}/MSDXSDK_02_06/Lib/x64)
     ELSE()
         MESSAGE("Linking against DirectX 32 bits")
-        LINK_DIRECTORIES(BEFORE ${PROJECT_SOURCE_DIR}/MSDXSDK_02_06/Lib/x86)
+        SET(LIBS_MSDXSDK ${PROJECT_SOURCE_DIR}/MSDXSDK_02_06/Lib/x86)
     ENDIF()
+    LINK_DIRECTORIES(BEFORE ${LIBS_MSDXSDK})
 
     SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS}
             #DirectX libs
-            d3d9
-            d3dx9
-            dsound
-            DxErr
+            ${LIBS_MSDXSDK}/d3d9.lib
+            ${LIBS_MSDXSDK}/d3dx9.lib
+            ${LIBS_MSDXSDK}/dsound.lib
+            ${LIBS_MSDXSDK}/DxErr.lib
     
             #Windows libs
             winmm
