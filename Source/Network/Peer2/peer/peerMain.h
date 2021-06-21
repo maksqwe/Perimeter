@@ -15,9 +15,9 @@ devsupport@gamespy.com
 #ifndef _PEERMAIN_H_
 #define _PEERMAIN_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*************
 ** INCLUDES **
@@ -197,8 +197,8 @@ void piSendPlayerUTM(PEER peer, const char * nick, const char * command, const c
 PEERBool piConnectTitle(PEER peer);
 void piDisconnectTitle(PEER peer);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif

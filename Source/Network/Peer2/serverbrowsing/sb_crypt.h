@@ -1,9 +1,9 @@
 #ifndef _SB_CRYPT_H
 #define _SB_CRYPT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 typedef struct _GOACryptState
 {
@@ -25,9 +25,9 @@ unsigned char GOADecryptByte(GOACryptState *state, unsigned char b);       // De
 void GOADecrypt(GOACryptState *state,unsigned char *bp, int len);   // decrypt byte array
 void GOAHashFinal(GOACryptState *state, unsigned char *hash, unsigned char hashlength); // Hash length (16-32)
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 
 #endif

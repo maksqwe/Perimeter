@@ -15,9 +15,9 @@ devsupport@gamespy.com
 #ifndef _PEERROOMS_H_
 #define _PEERROOMS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*************
 ** INCLUDES **
@@ -35,8 +35,8 @@ void piLeaveRoom(PEER peer, RoomType roomType, const char * reason);
 PEERBool piRoomToType(PEER peer, const char * room, RoomType * roomType);
 void piSetLocalFlags(PEER peer);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif

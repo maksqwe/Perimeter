@@ -22,6 +22,8 @@ devsupport@gamespy.com
 #include <stdlib.h>
 #include "chatSocket.h"
 
+#include <iostream>
+
 /************
 ** DEFINES **
 ************/

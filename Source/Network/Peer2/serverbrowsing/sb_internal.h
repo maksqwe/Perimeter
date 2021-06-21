@@ -9,9 +9,9 @@
 
 #include "sb_crypt.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 typedef enum {	pi_cryptheader,
 				pi_fixedheader, 
@@ -312,10 +312,8 @@ void SBEngineHaltUpdates(SBQueryEngine *engine);
 //server browser internal function
 SBError ServerBrowserBeginUpdate2(ServerBrowser sb, SBBool async, SBBool disconnectOnComplete, unsigned char *basicFields, int numBasicFields, char *serverFilter, int updateOptions, int maxServers);
 
-
-
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif

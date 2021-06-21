@@ -20,9 +20,9 @@ devsupport@gamespy.com
 #ifndef _SB_SERVERBROWSING_H
 #define _SB_SERVERBROWSING_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 	
 #include "../nonport.h"
 	
@@ -388,8 +388,8 @@ key/value. The user-defined instance data will be passed to the KeyFn callback *
 void SBServerEnumKeys(SBServer server, SBServerKeyEnumFn KeyFn, void *instance);
 
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif 

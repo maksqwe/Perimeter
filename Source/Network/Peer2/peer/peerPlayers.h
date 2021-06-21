@@ -15,9 +15,9 @@ devsupport@gamespy.com
 #ifndef _PEERPLAYERS_H_
 #define _PEERPLAYERS_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*************
 ** INCLUDES **
@@ -86,8 +86,8 @@ piPlayer * piFindRoomHost(PEER peer, RoomType roomType);
 piPlayer * piFindRoomOp(PEER peer, RoomType roomType);
 int piCountRoomOps(PEER peer, RoomType roomType, const char * exclude);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif

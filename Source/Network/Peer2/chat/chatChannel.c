@@ -23,6 +23,7 @@ devsupport@gamespy.com
 #include "chatChannel.h"
 #include "chatCallbacks.h"
 
+#include <iostream>
 
 /************
 ** DEFINES **

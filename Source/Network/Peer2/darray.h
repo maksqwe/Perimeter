@@ -14,9 +14,9 @@
  * the DArray can refer to elements via (void*) ptrs.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /* Type: DArray
  * ----------------
@@ -306,8 +306,8 @@ void *ArrayGetDataPtr(DArray array);
  */
 void ArraySetDataPtr(DArray array, void *ptr, int count, int capacity);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif //_DARRAY_

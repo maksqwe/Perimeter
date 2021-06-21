@@ -15,9 +15,9 @@ devsupport@gamespy.com
 #ifndef _PEERQR_H_
 #define _PEERQR_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*************
 ** INCLUDES **
@@ -39,8 +39,8 @@ void piQRThink(PEER peer);
 PEERBool piStartAutoMatchReporting(PEER peer);
 void piStopAutoMatchReporting(PEER peer);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif

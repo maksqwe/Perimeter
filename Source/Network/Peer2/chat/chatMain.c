@@ -30,6 +30,8 @@ devsupport@gamespy.com
 	#include "../nonport.h"
 #endif
 
+#include <iostream>
+
 /************
 ** DEFINES **
 ************/

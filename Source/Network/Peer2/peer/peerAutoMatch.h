@@ -15,9 +15,9 @@ devsupport@gamespy.com
 #ifndef _PEERAUTOMATCH_H_
 #define _PEERAUTOMATCH_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*************
 ** INCLUDES **
@@ -36,8 +36,8 @@ void piSetAutoMatchStatus(PEER peer, PEERAutoMatchStatus status);
 void piStopAutoMatch(PEER peer);
 PEERBool piJoinAutoMatchRoom(PEER peer, SBServer server);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif

@@ -23,6 +23,8 @@ devsupport@gamespy.com
 #include "peerCallbacks.h"
 #include "peerMangle.h"
 
+#include <iostream>
+
 /************
 ** DEFINES **
 ************/

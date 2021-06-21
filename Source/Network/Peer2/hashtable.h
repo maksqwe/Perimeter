@@ -82,9 +82,9 @@ typedef int (*TableMapFn2)(void *elem, void *clientData);
  */
 typedef void (*TableElementFreeFn)(void *elem);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /* TableNew
  * --------
@@ -218,8 +218,8 @@ void * TableMapSafe2(HashTable table, TableMapFn2 fn, void *clientData);
  */
 void TableClear(HashTable table);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif //_HASHTABLE_H_PRM

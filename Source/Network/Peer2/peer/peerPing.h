@@ -15,9 +15,9 @@ devsupport@gamespy.com
 #ifndef _PEERPING_H_
 #define _PEERPING_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /*************
 ** INCLUDES **
@@ -36,8 +36,8 @@ void piPingPlayerLeftRoom(PEER peer, piPlayer * player);
 void piUpdateXping(PEER peer, const char * nick1, const char * nick2, int ping);
 PEERBool piGetXping(PEER peer, const char * nick1, const char * nick2, int * ping);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif
