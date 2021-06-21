@@ -15,10 +15,6 @@ devsupport@gamespy.com
 #ifndef _PEERSB_H_
 #define _PEERSB_H_
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
-
 /*************
 ** INCLUDES **
 *************/
@@ -40,9 +36,5 @@ PEERBool piSBStartListingAutoMatches(PEER peer);
 void piSBStopListingAutoMatches(PEER peer);
 SBServer piSBCloneServer(SBServer server);
 void piSBFreeHostServer(PEER peer);
-
-//#ifdef __cplusplus
-//}
-//#endif
 
 #endif

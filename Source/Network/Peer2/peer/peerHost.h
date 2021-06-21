@@ -15,10 +15,6 @@ devsupport@gamespy.com
 #ifndef _PEERHOST_H_
 #define _PEERHOST_H_
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
-
 /*************
 ** INCLUDES **
 *************/
@@ -29,9 +25,5 @@ devsupport@gamespy.com
 **************/
 PEERBool piStartHosting(PEER peer, SOCKET socket, unsigned short port);
 void piStopHosting(PEER peer, PEERBool stopReporting);
-
-//#ifdef __cplusplus
-//}
-//#endif
 
 #endif
