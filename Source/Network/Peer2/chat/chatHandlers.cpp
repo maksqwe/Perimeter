@@ -26,6 +26,8 @@ devsupport@gamespy.com
 #include "chatCallbacks.h"
 #include "chatCrypt.h"
 
+#include <iostream>
+
 /************
 ** DEFINES **
 ************/

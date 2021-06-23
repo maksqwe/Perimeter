@@ -30,11 +30,14 @@ devsupport@gamespy.com
 #include "peerHost.h"
 #include "peerAutoMatch.h"
 #include "peerQR.h"
+#include "qr2/qr2.h"
 #if defined(applec) || defined(THINK_C) || defined(__MWERKS__) && !defined(__mips64) && !defined(_WIN32)
 	#include "::md5.h"
 #else
 	#include "../md5.h"
 #endif
+
+#include <iostream>
 
 /************
 ** DEFINES **
@@ -390,7 +393,7 @@ static void piConnectConnectCallback
 
 	// Add the callback.
 	////////////////////
-	piAddConnectCallback(peer, success, (peerConnectCallback)operation->callback, operation->callbackParam, operation->ID);
+	piAddConnectCallback(peer, static_cast<PEERBool>(success), (peerConnectCallback)operation->callback, operation->callbackParam, operation->ID);
 
 	// Remove the operation.
 	////////////////////////
@@ -677,7 +680,7 @@ static void piCreateStagingRoomEnterChannelCallback
 }
 
 // internal QR2 function
-qr2_error_t qr2_create_socket(/*[out]*/SOCKET *sock, const char *ip, /*[in/out]*/int * port);
+//qr2_error_t qr2_create_socket(/*[out]*/SOCKET *sock, const char *ip, /*[in/out]*/int * port);
 
 PEERBool piNewCreateStagingRoomOperation
 (
@@ -1016,11 +1019,11 @@ static void piGetPlayerInfoCallback
 	if(operation->callback)
 	{
 		if(operation->type == PI_GET_PLAYER_INFO_OPERATION)
-			piAddGetPlayerInfoCallback(peer, success, nick, IP, profileID, (peerGetPlayerInfoCallback)operation->callback, operation->callbackParam, operation->ID);
+			piAddGetPlayerInfoCallback(peer, static_cast<PEERBool>(success), nick, IP, profileID, (peerGetPlayerInfoCallback)operation->callback, operation->callbackParam, operation->ID);
 		else if(operation->type == PI_GET_PROFILE_ID_OPERATION)
-			piAddGetPlayerProfileIDCallback(peer, success, nick, profileID, (peerGetPlayerProfileIDCallback)operation->callback, operation->callbackParam, operation->ID);
+			piAddGetPlayerProfileIDCallback(peer, static_cast<PEERBool>(success), nick, profileID, (peerGetPlayerProfileIDCallback)operation->callback, operation->callbackParam, operation->ID);
 		else if(operation->type == PI_GET_IP_OPERATION)
-			piAddGetPlayerIPCallback(peer, success, nick, IP, (peerGetPlayerIPCallback)operation->callback, operation->callbackParam, operation->ID);
+			piAddGetPlayerIPCallback(peer, static_cast<PEERBool>(success), nick, IP, (peerGetPlayerIPCallback)operation->callback, operation->callbackParam, operation->ID);
 		else
 			assert(0);
 	}
@@ -1145,7 +1148,7 @@ static void piChangeNickCallback
 	// Add the callback.
 	////////////////////
 	if(operation->callback)
-		piAddChangeNickCallback(peer, success, oldNick, newNick, (peerChangeNickCallback)operation->callback, operation->callbackParam, operation->ID);
+		piAddChangeNickCallback(peer, static_cast<PEERBool>(success), oldNick, newNick, (peerChangeNickCallback)operation->callback, operation->callbackParam, operation->ID);
 
 	// Remove the operation.
 	////////////////////////
@@ -1211,7 +1214,7 @@ static void piGetGlobalKeysCallback
 	// Add the callback.
 	////////////////////
 	if(operation->callback)
-		piAddGetGlobalKeysCallback(peer, success, user, num, keys, values, (peerGetGlobalKeysCallback)operation->callback, operation->callbackParam, operation->ID);
+		piAddGetGlobalKeysCallback(peer, static_cast<PEERBool>(success), user, num, keys, values, (peerGetGlobalKeysCallback)operation->callback, operation->callbackParam, operation->ID);
 
 	// Remove the operation.
 	////////////////////////
@@ -1291,7 +1294,7 @@ static void piGetChannelKeysCallback
 	// Add the callback.
 	////////////////////
 	if(operation->callback)
-		piAddGetRoomKeysCallback(peer, success, operation->roomType, user, num, keys, values, (peerGetRoomKeysCallback)operation->callback, operation->callbackParam, operation->ID);
+		piAddGetRoomKeysCallback(peer, static_cast<PEERBool>(success), operation->roomType, user, num, keys, values, (peerGetRoomKeysCallback)operation->callback, operation->callbackParam, operation->ID);
 
 	// Remove the operation.
 	////////////////////////
@@ -1367,7 +1370,7 @@ static void piAuthenticateCDKeyCallback
 	// Add the callback.
 	////////////////////
 	if(operation->callback)
-		piAddAuthenticateCDKeyCallback(peer, result, message, operation->callback, operation->callbackParam, operation->ID);
+		piAddAuthenticateCDKeyCallback(peer, result, message, static_cast<peerAuthenticateCDKeyCallback>(operation->callback), operation->callbackParam, operation->ID);
 
 	// Remove the operation.
 	////////////////////////
