@@ -94,18 +94,22 @@ devsupport@gamespy.com
 #define IS_ALPHA(c) ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
 
 #define ciAddFilter_wrapper(_res, _chat, _type, _name, _name2, _callback1, _callback2, _param, _data) \
-	typedef void(*_func_dummy)(); _func_dummy _dummyCB; \
+	auto _cb1 = _callback1; auto _cb2 = _callback2; \
 	void* _void_callback1 = NULL; \
-	if(_callback1) { \
-		auto _callback_ptr1 = &_dummyCB; \
+	if(_cb1) { \
+		auto _callback_ptr1 = &(_cb1); \
 		_void_callback1 = reinterpret_cast<void *&>(_callback_ptr1); \
 	} \
 	void* _void_callback2 = NULL; \
-	if(_callback2) { \
-		auto _callback_ptr2 = &_dummyCB; \
+	if(_cb2) { \
+		auto _callback_ptr2 = &(_cb2); \
 		_void_callback2 = reinterpret_cast<void *&>(_callback_ptr2); \
 	} \
 	_res = ciAddFilter(_chat, _type, _name, _name2, _void_callback1, _void_callback2, _param, _data);
+
+#define ciAddCallback_wrapper_cb_ptr(_data_ptr, _enum_cb, _callback, _params, _cb_param, _num, _channel_name) \
+	void* _void_callback = reinterpret_cast<void *>(_callback); \
+	ciAddCallback(_data_ptr, _enum_cb, _void_callback, _params, _cb_param, _num, _channel_name);
 
 enum
 {
@@ -2796,7 +2800,7 @@ void ciRplWhoReplyHandler(CHAT chat, ciServerMessage * message)
 		params.user = user;
 		params.address = address;
 		
-		ciAddCallback_wrapper(chat, CALLBACK_GET_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
+		ciAddCallback_wrapper_cb_ptr(chat, CALLBACK_GET_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
 
 		// We want to wait until we get the end, but we've already called the callback.
 		///////////////////////////////////////////////////////////////////////////////
@@ -2817,7 +2821,7 @@ void ciRplWhoReplyHandler(CHAT chat, ciServerMessage * message)
 		params.user = user;
 		params.address = address;
 
-		ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
+		ciAddCallback_wrapper_cb_ptr(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
 
 		return;
 	}
@@ -3005,7 +3009,7 @@ void ciRplGetKeyHandler(CHAT chat, ciServerMessage * message)
 		}
 		else
 		{
-			ciAddCallback_wrapper(chat, CALLBACK_GET_GLOBAL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
+			ciAddCallback_wrapper_cb_ptr(chat, CALLBACK_GET_GLOBAL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
 		}
 
 		for(i = 0 ; i < num ; i++)
@@ -3232,7 +3236,7 @@ void ciRplGetCKeyHandler(CHAT chat, ciServerMessage * message)
 		}
 		else
 		{
-			ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
+			ciAddCallback_wrapper_cb_ptr(chat, CALLBACK_GET_CHANNEL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
 		}
 
 		for(i = 0 ; i < num ; i++)
@@ -3637,7 +3641,7 @@ void ciRplListHandler(CHAT chat, ciServerMessage * message)
 			params.channel = channel;
 			params.topic = topic;
 			params.numUsers = numUsers;
-			ciAddCallback_wrapper(chat, CALLBACK_ENUM_CHANNELS_EACH, filter->callback, &params, filter->param, filter->ID, NULL);
+			ciAddCallback_wrapper_cb_ptr(chat, CALLBACK_ENUM_CHANNELS_EACH, filter->callback, &params, filter->param, filter->ID, NULL);
 
 			//TODO:only store this stuff if there's an "all" callback
 
