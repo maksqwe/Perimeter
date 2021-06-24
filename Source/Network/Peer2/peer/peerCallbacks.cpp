@@ -31,6 +31,11 @@ devsupport@gamespy.com
                                assert(data->callback);\
 							   assert(data->params);
 
+#define piAddCallback_wrapper(peer, success, callback, param, enum_callback, params_ptr, sizeof_params, opid) \
+	auto _callback_ptr = &(callback); \
+	void *_void_callback = reinterpret_cast<void *&>(_callback_ptr); \
+	piAddCallback(peer, success, _void_callback, param, enum_callback, params_ptr, sizeof_params, opid);
+
 /**********
 ** TYPES **
 **********/
@@ -120,8 +125,7 @@ void piAddConnectCallback
 )
 {
 	piConnectParams params;
-
-	piAddCallback(peer, success, callback, param, PI_CONNECT_CALLBACK, &params, sizeof(piConnectParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_CONNECT_CALLBACK, &params, sizeof(piConnectParams), opID);
 }
 
 /* JoinRoom.
@@ -186,7 +190,7 @@ void piAddJoinRoomCallback
 	params.result = result;
 	params.roomType = roomType;
 
-	piAddCallback(peer, success, callback, param, PI_JOIN_ROOM_CALLBACK, &params, sizeof(piJoinRoomParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_JOIN_ROOM_CALLBACK, &params, sizeof(piJoinRoomParams), opID);
 }
 
 /* ListGroupsRooms.
@@ -271,7 +275,7 @@ void piAddListGroupRoomsCallback
 	params.numGames = numGames;
 	params.numPlaying = numPlaying;
 
-	piAddCallback(peer, success, callback, param, PI_LIST_GROUP_ROOMS_CALLBACK, &params, sizeof(piListGroupRoomsParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_LIST_GROUP_ROOMS_CALLBACK, &params, sizeof(piListGroupRoomsParams), opID);
 }
 
 /* ListingGames.
@@ -389,7 +393,7 @@ void piAddListingGamesCallback
 	params.staging = staging;
 	params.msg = msg;
 	params.progress = progress;
-	piAddCallback(peer, success, connection->gameListCallback, connection->gameListParam, PI_LISTING_GAMES_CALLBACK, &params, sizeof(piListingGamesParams), -1);
+	piAddCallback_wrapper(peer, success, connection->gameListCallback, connection->gameListParam, PI_LISTING_GAMES_CALLBACK, &params, sizeof(piListingGamesParams), -1);
 }
 
 /* NickError.
@@ -457,7 +461,7 @@ void piAddNickErrorCallback
 
 	params.type = type;
 	params.nick = (char *)nick;
-	piAddCallback(peer, PEERFalse, connection->nickErrorCallback, param, PI_NICK_ERROR_CALLBACK, &params, sizeof(piNickErrorParams), opID);
+	piAddCallback_wrapper(peer, PEERFalse, connection->nickErrorCallback, param, PI_NICK_ERROR_CALLBACK, &params, sizeof(piNickErrorParams), opID);
 }
 
 /* EnumPlayers.
@@ -530,7 +534,7 @@ void piAddEnumPlayersCallback
 	params.nick = (char *)nick;
 	params.flags = flags;
 
-	piAddCallback(peer, success, callback, param, PI_ENUM_PLAYERS_CALLBACK, &params, sizeof(piEnumPlayersParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_ENUM_PLAYERS_CALLBACK, &params, sizeof(piEnumPlayersParams), opID);
 }
 
 /* GetPlayerInfo.
@@ -599,7 +603,7 @@ void piAddGetPlayerInfoCallback
 	params.IP = IP;
 	params.profileID = profileID;
 
-	piAddCallback(peer, success, callback, param, PI_GET_PLAYER_INFO_CALLBACK, &params, sizeof(piGetPlayerInfoParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_GET_PLAYER_INFO_CALLBACK, &params, sizeof(piGetPlayerInfoParams), opID);
 }
 
 /* GetPlayerProfileID.
@@ -664,7 +668,7 @@ void piAddGetPlayerProfileIDCallback
 	params.nick = (char *)nick;
 	params.profileID = profileID;
 
-	piAddCallback(peer, success, callback, param, PI_GET_PLAYER_PROFILE_ID_CALLBACK, &params, sizeof(piGetPlayerProfileIDParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_GET_PLAYER_PROFILE_ID_CALLBACK, &params, sizeof(piGetPlayerProfileIDParams), opID);
 }
 
 /* GetPlayerIP.
@@ -729,7 +733,7 @@ void piAddGetPlayerIPCallback
 	params.nick = (char *)nick;
 	params.IP = IP;
 
-	piAddCallback(peer, success, callback, param, PI_GET_PLAYER_IP_CALLBACK, &params, sizeof(piGetPlayerIPParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_GET_PLAYER_IP_CALLBACK, &params, sizeof(piGetPlayerIPParams), opID);
 }
 
 /* Room Message.
@@ -816,7 +820,7 @@ void piAddRoomMessageCallback
 		params.message = (char *)message;
 		params.messageType = messageType;
 
-		piAddCallback(peer, PEERTrue, callbacks->roomMessage, callbacks->param, PI_ROOM_MESSAGE_CALLBACK, &params, sizeof(piRoomMessageParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->roomMessage, callbacks->param, PI_ROOM_MESSAGE_CALLBACK, &params, sizeof(piRoomMessageParams), -1);
 	}
 }
 
@@ -920,7 +924,7 @@ void piAddRoomUTMCallback
 		params.parameters = (char *)parameters;
 		params.authenticated = authenticated;
 
-		piAddCallback(peer, PEERTrue, callbacks->roomUTM, callbacks->param, PI_ROOM_UTM_CALLBACK, &params, sizeof(piRoomUTMParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->roomUTM, callbacks->param, PI_ROOM_UTM_CALLBACK, &params, sizeof(piRoomUTMParams), -1);
 	}
 }
 
@@ -976,7 +980,7 @@ void piAddRoomNameChangedCallback
 		piRoomNameChangedParams params;
 		params.roomType = roomType;
 
-		piAddCallback(peer, PEERTrue, callbacks->roomNameChanged, callbacks->param, PI_ROOM_NAME_CHANGED_CALLBACK, &params, sizeof(piRoomNameChangedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->roomNameChanged, callbacks->param, PI_ROOM_NAME_CHANGED_CALLBACK, &params, sizeof(piRoomNameChangedParams), -1);
 	}
 }
 
@@ -1036,7 +1040,7 @@ void piAddRoomModeChangedCallback
 		params.roomType = roomType;
 		params.mode = *mode;
 
-		piAddCallback(peer, PEERTrue, callbacks->roomModeChanged, callbacks->param, PI_ROOM_MODE_CHANGED_CALLBACK, &params, sizeof(piRoomModeChangedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->roomModeChanged, callbacks->param, PI_ROOM_MODE_CHANGED_CALLBACK, &params, sizeof(piRoomModeChangedParams), -1);
 	}
 }
 
@@ -1120,7 +1124,7 @@ void piAddPlayerMessageCallback
 		params.message = (char *)message;
 		params.messageType = messageType;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerMessage, callbacks->param, PI_PLAYER_MESSAGE_CALLBACK, &params, sizeof(piPlayerMessageParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerMessage, callbacks->param, PI_PLAYER_MESSAGE_CALLBACK, &params, sizeof(piPlayerMessageParams), -1);
 	}
 }
 
@@ -1220,7 +1224,7 @@ void piAddPlayerUTMCallback
 		params.parameters = (char *)parameters;
 		params.authenticated = authenticated;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerUTM, callbacks->param, PI_PLAYER_UTM_CALLBACK, &params, sizeof(piPlayerUTMParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerUTM, callbacks->param, PI_PLAYER_UTM_CALLBACK, &params, sizeof(piPlayerUTMParams), -1);
 	}
 }
 
@@ -1289,7 +1293,7 @@ void piAddReadyChangedCallback
 		params.nick = (char *)nick;
 		params.ready = ready;
 
-		piAddCallback(peer, PEERTrue, callbacks->readyChanged, callbacks->param, PI_READY_CHANGED_CALLBACK, &params, sizeof(piReadyChangedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->readyChanged, callbacks->param, PI_READY_CHANGED_CALLBACK, &params, sizeof(piReadyChangedParams), -1);
 	}
 }
 
@@ -1358,7 +1362,7 @@ void piAddGameStartedCallback
 		params.server = server;
 		params.message = (char *)message;
 
-		piAddCallback(peer, PEERTrue, callbacks->gameStarted, callbacks->param, PI_GAME_STARTED_CALLBACK, &params, sizeof(piGameStartedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->gameStarted, callbacks->param, PI_GAME_STARTED_CALLBACK, &params, sizeof(piGameStartedParams), -1);
 	}
 }
 
@@ -1427,7 +1431,7 @@ void piAddPlayerJoinedCallback
 		params.roomType = roomType;
 		params.nick = (char *)nick;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerJoined, callbacks->param, PI_PLAYER_JOINED_CALLBACK, &params, sizeof(piPlayerJoinedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerJoined, callbacks->param, PI_PLAYER_JOINED_CALLBACK, &params, sizeof(piPlayerJoinedParams), -1);
 	}
 }
 
@@ -1511,7 +1515,7 @@ void piAddPlayerLeftCallback
 		params.nick = (char *)nick;
 		params.reason = (char *)reason;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerLeft, callbacks->param, PI_PLAYER_LEFT_CALLBACK, &params, sizeof(piPlayerLeftParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerLeft, callbacks->param, PI_PLAYER_LEFT_CALLBACK, &params, sizeof(piPlayerLeftParams), -1);
 	}
 }
 
@@ -1595,7 +1599,7 @@ void piAddKickedCallback
 		params.nick = (char *)nick;
 		params.reason = (char *)reason;
 
-		piAddCallback(peer, PEERTrue, callbacks->kicked, callbacks->param, PI_KICKED_CALLBACK, &params, sizeof(piKickedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->kicked, callbacks->param, PI_KICKED_CALLBACK, &params, sizeof(piKickedParams), -1);
 	}
 }
 
@@ -1651,7 +1655,7 @@ void piAddNewPlayerListCallback
 		piNewPlayerListParams params;
 		params.roomType = roomType;
 
-		piAddCallback(peer, PEERTrue, callbacks->newPlayerList, callbacks->param, PI_NEW_PLAYER_LIST_CALLBACK, &params, sizeof(piNewPlayerListParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->newPlayerList, callbacks->param, PI_NEW_PLAYER_LIST_CALLBACK, &params, sizeof(piNewPlayerListParams), -1);
 	}
 }
 
@@ -1735,7 +1739,7 @@ void piAddPlayerChangedNickCallback
 		params.oldNick = (char *)oldNick;
 		params.newNick = (char *)newNick;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerChangedNick, callbacks->param, PI_PLAYER_CHANGED_NICK_CALLBACK, &params, sizeof(piPlayerChangedNickParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerChangedNick, callbacks->param, PI_PLAYER_CHANGED_NICK_CALLBACK, &params, sizeof(piPlayerChangedNickParams), -1);
 	}
 }
 
@@ -1819,7 +1823,7 @@ void piAddPlayerInfoCallback
 		params.IP = IP;
 		params.profileID = profileID;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerInfo, callbacks->param, PI_PLAYER_INFO_CALLBACK, &params, sizeof(piPlayerInfoParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerInfo, callbacks->param, PI_PLAYER_INFO_CALLBACK, &params, sizeof(piPlayerInfoParams), -1);
 	}
 }
 
@@ -1884,7 +1888,7 @@ void piAddDisconnectedCallback
 		piDisconnectedParams params;
 		params.reason = (char *)reason;
 
-		piAddCallback(peer, PEERTrue, callbacks->disconnected, callbacks->param, PI_DISCONNECTED_CALLBACK, &params, sizeof(piDisconnectedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->disconnected, callbacks->param, PI_DISCONNECTED_CALLBACK, &params, sizeof(piDisconnectedParams), -1);
 	}
 }
 
@@ -1953,7 +1957,7 @@ void piAddPingCallback
 		params.nick = (char *)nick;
 		params.ping = ping;
 
-		piAddCallback(peer, PEERTrue, callbacks->ping, callbacks->param, PI_PING_CALLBACK, &params, sizeof(piPingParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->ping, callbacks->param, PI_PING_CALLBACK, &params, sizeof(piPingParams), -1);
 	}
 }
 
@@ -2037,7 +2041,7 @@ void piAddCrossPingCallback
 		params.nick2 = (char *)nick2;
 		params.crossPing = crossPing;
 
-		piAddCallback(peer, PEERTrue, callbacks->crossPing, callbacks->param, PI_CROSS_PING_CALLBACK, &params, sizeof(piCrossPingParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->crossPing, callbacks->param, PI_CROSS_PING_CALLBACK, &params, sizeof(piCrossPingParams), -1);
 	}
 }
 
@@ -2114,7 +2118,7 @@ void piAddChangeNickCallback
 	params.newNick = (char *)newNick;
 	params.oldNick = (char *)oldNick;
 
-	piAddCallback(peer, success, callback, param, PI_CHANGE_NICK_CALLBACK, &params, sizeof(piChangeNickParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_CHANGE_NICK_CALLBACK, &params, sizeof(piChangeNickParams), opID);
 }
 
 /* GlobalKeyChanged.
@@ -2211,7 +2215,7 @@ void piAddGlobalKeyChangedCallback
 		params.key = (char *)key;
 		params.value = (char *)value;
 
-		piAddCallback(peer, PEERTrue, callbacks->globalKeyChanged, callbacks->param, PI_GLOBAL_KEY_CHANGED_CALLBACK, &params, sizeof(piGlobalKeyChangedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->globalKeyChanged, callbacks->param, PI_GLOBAL_KEY_CHANGED_CALLBACK, &params, sizeof(piGlobalKeyChangedParams), -1);
 	}
 }
 
@@ -2311,7 +2315,7 @@ void piAddRoomKeyChangedCallback
 		params.key = (char *)key;
 		params.value = (char *)value;
 
-		piAddCallback(peer, PEERTrue, callbacks->roomKeyChanged, callbacks->param, PI_ROOM_KEY_CHANGED_CALLBACK, &params, sizeof(piRoomKeyChangedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->roomKeyChanged, callbacks->param, PI_ROOM_KEY_CHANGED_CALLBACK, &params, sizeof(piRoomKeyChangedParams), -1);
 	}
 }
 
@@ -2445,7 +2449,7 @@ void piAddGetGlobalKeysCallback
 	params.keys = (char **)keys;
 	params.values = (char **)values;
 
-	piAddCallback(peer, success, callback, param, PI_GET_GLOBAL_KEYS_CALLBACK, &params, sizeof(piGetGlobalKeysParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_GET_GLOBAL_KEYS_CALLBACK, &params, sizeof(piGetGlobalKeysParams), opID);
 }
 
 /* GetRoomKeys.
@@ -2583,7 +2587,7 @@ void piAddGetRoomKeysCallback
 	params.keys = (char **)keys;
 	params.values = (char **)values;
 
-	piAddCallback(peer, success, callback, param, PI_GET_ROOM_KEYS_CALLBACK, &params, sizeof(piGetRoomKeysParams), opID);
+	piAddCallback_wrapper(peer, success, callback, param, PI_GET_ROOM_KEYS_CALLBACK, &params, sizeof(piGetRoomKeysParams), opID);
 }
 
 /* PlayerFlagsChanged.
@@ -2659,7 +2663,7 @@ void piAddPlayerFlagsChangedCallback
 		params.oldFlags = oldFlags;
 		params.newFlags = newFlags;
 
-		piAddCallback(peer, PEERTrue, callbacks->playerFlagsChanged, callbacks->param, PI_PLAYER_FLAGS_CHANGED_CALLBACK, &params, sizeof(piPlayerFlagsChangedParams), -1);
+		piAddCallback_wrapper(peer, PEERTrue, callbacks->playerFlagsChanged, callbacks->param, PI_PLAYER_FLAGS_CHANGED_CALLBACK, &params, sizeof(piPlayerFlagsChangedParams), -1);
 	}
 }
 
@@ -2724,7 +2728,7 @@ void piAddAuthenticateCDKeyCallback
 	params.result = result;
 	params.message = (char *)message;
 
-	piAddCallback(peer, PEERTrue, callback, param, PI_AUTHENTICATE_CDKEY_CALLBACK, &params, sizeof(piAuthenticateCDKeyParams), opID);
+	piAddCallback_wrapper(peer, PEERTrue, callback, param, PI_AUTHENTICATE_CDKEY_CALLBACK, &params, sizeof(piAuthenticateCDKeyParams), opID);
 }
 
 /* AutoMatch Status.
@@ -2779,7 +2783,7 @@ void piAddAutoMatchStatusCallback
 
 	params.status = connection->autoMatchStatus;
 
-	piAddCallback(peer, PEERTrue, operation->callback, operation->callbackParam, PI_AUTO_MATCH_STATUS_CALLBACK, &params, sizeof(piAutoMatchStatusParams), operation->ID);
+	piAddCallback_wrapper(peer, PEERTrue, operation->callback, operation->callbackParam, PI_AUTO_MATCH_STATUS_CALLBACK, &params, sizeof(piAutoMatchStatusParams), operation->ID);
 }
 
 /* AutoMatch Rate.
