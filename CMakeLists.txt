@@ -55,22 +55,21 @@ OPTION(OPTION_LINKER_LLD "Use LLD linker in unix based compilers" ON)
 
 # paths to search libs
 IF(NOT MSVC_CL_BUILD)
-	MESSAGE("---->1!!!!!!!!")
-	SET(LIBRARY_SEARCH_PATHS "
-		${LIBRARY_SEARCH_PATHS}
-		~/Library/Frameworks 
-		/Library/Frameworks
-		/mingw
-		/usr/pkg
-		/usr/local
-		/usr
-		/sw # Fink
-		/opt/local # DarwinPorts
-		/opt/csw # Blastwave
-		/opt
-		/local
-		C:/MinGW
-	")
+    SET(LIBRARY_SEARCH_PATHS "
+        ${LIBRARY_SEARCH_PATHS}
+        ~/Library/Frameworks 
+        /Library/Frameworks
+        /mingw
+        /usr/pkg
+        /usr/local
+        /usr
+        /sw # Fink
+        /opt/local # DarwinPorts
+        /opt/csw # Blastwave
+        /opt
+        /local
+        C:/MinGW
+    ")
 ENDIF()
 
 # depends

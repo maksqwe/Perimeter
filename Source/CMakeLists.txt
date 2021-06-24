@@ -37,6 +37,10 @@ if(NOT OPTION_FINAL_VERSION)
     ADD_SUBDIRECTORY("TriggerEditor")
 ENDIF()
 
+IF(NOT MSVC_CL_BUILD)
+	SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS} ${SDL2_LIBRARY})
+ENDIF()
+
 INCLUDE_DIRECTORIES(
     "${PROJECT_SOURCE_DIR}/Source/Game"
     "${PROJECT_SOURCE_DIR}/Source/XTool"
@@ -106,7 +110,6 @@ ELSE()
     SET(perimeter_LINK_LIBS ${perimeter_LINK_LIBS}
         # dl is required for dladdr in stacktrace,
         dl
-        ${SDL2_LIBRARY}
     )
 ENDIF()
 
