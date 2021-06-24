@@ -406,7 +406,7 @@ static void ciSocketThinkSend(ciSocket * sock)
 
 		// Try and send some.
 		/////////////////////
-		len = min(sock->outputQueue.length, 1024);
+		len = (std::min)(sock->outputQueue.length, 1024);
 		rcode = send(sock->sock, sock->outputQueue.buffer, len, 0);
 		if(rcode == 0)
 			return;

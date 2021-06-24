@@ -136,7 +136,7 @@ void ciHandleDisconnect(CHAT chat, const char * reason)
 	{
 		ciCallbackDisconnectedParams params;
 		params.reason = (char *)reason;
-		ciAddCallback(chat, CALLBACK_DISCONNECTED, connection->globalCallbacks.disconnected, &params, connection->globalCallbacks.param, 0, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_DISCONNECTED, connection->globalCallbacks.disconnected, &params, connection->globalCallbacks.param, 0, NULL);
 	}
 }
 
@@ -163,7 +163,7 @@ static void ciThink(CHAT chat, int ID)
 			{
 				ciCallbackRawParams params;
 				params.raw = message->message;
-				ciAddCallback(chat, CALLBACK_RAW, connection->globalCallbacks.raw, &params, connection->globalCallbacks.param, 0, NULL);
+				ciAddCallback_wrapper(chat, CALLBACK_RAW, connection->globalCallbacks.raw, &params, connection->globalCallbacks.param, 0, NULL);
 			}
 
 			// Process the message.
@@ -574,7 +574,7 @@ void chatChangeNick(CHAT chat,
 			params.oldNick = connection->nick;
 			params.newNick = (char *)newNick;
 			ID = ciGetNextID(chat);
-			ciAddCallback(chat, CALLBACK_CHANGE_NICK, callback, &params, param, ID, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_CHANGE_NICK, callback, &params, param, ID, NULL);
 
 			CI_DO_BLOCKING;
 		}
@@ -708,7 +708,7 @@ void chatAuthenticateCDKey(CHAT chat,
 			params.result = 0;
 			params.message = "";
 			ID = ciGetNextID(chat);
-			ciAddCallback(chat, CALLBACK_AUTHENTICATE_CDKEY, callback, &params, param, ID, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_AUTHENTICATE_CDKEY, callback, &params, param, ID, NULL);
 
 			CI_DO_BLOCKING;
 		}
@@ -836,7 +836,7 @@ void chatSendChannelMessage(CHAT chat,
 		params.user = connection->nick;
 		params.message = (char *)message;
 		params.type = type;
-		ciAddCallback(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, channel);
+		ciAddCallback_wrapper(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, channel);
 	}
 }
 
@@ -881,7 +881,7 @@ void chatGetChannelTopic(CHAT chat,
 		params.success = CHATTrue;
 		params.channel = (char *)channel;
 		params.topic = (char *)topic;
-		ciAddCallback(chat, CALLBACK_GET_CHANNEL_TOPIC, callback, &params, param, ID, channel);
+		ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_TOPIC, callback, &params, param, ID, channel);
 	}
 	else
 	{
@@ -980,7 +980,7 @@ void chatGetChannelMode(CHAT chat,
 			params.success = CHATTrue;
 			params.channel = (char *)channel;
 			params.mode = &mode;
-			ciAddCallback(chat, CALLBACK_GET_CHANNEL_MODE, callback, &params, param, ID, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_MODE, callback, &params, param, ID, NULL);
 
 			CI_DO_BLOCKING;
 
@@ -1047,7 +1047,7 @@ void chatGetChannelPassword(CHAT chat,
 	params.channel = (char *)channel;
 	params.enabled = CHATTrue;
 	params.password = (char *)password;
-	ciAddCallback(chat, CALLBACK_GET_CHANNEL_PASSWORD, callback, &params, param, ID, NULL);
+	ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_PASSWORD, callback, &params, param, ID, NULL);
 
 	CI_DO_BLOCKING;
 }
@@ -1335,7 +1335,7 @@ void chatGetBasicUserInfo(CHAT chat,
 
 		ID = ciGetNextID(chat);
 
-		ciAddCallback(chat, CALLBACK_GET_BASIC_USER_INFO, callback, &params, param, ID, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_GET_BASIC_USER_INFO, callback, &params, param, ID, NULL);
 	}
 	else
 	{
@@ -1478,7 +1478,7 @@ void chatGetUserMode(CHAT chat,
 		params.mode = mode;
 
 		ID = ciGetNextID(chat);
-		ciAddCallback(chat, CALLBACK_GET_USER_MODE, callback, &params, param, ID, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_GET_USER_MODE, callback, &params, param, ID, NULL);
 
 		CI_DO_BLOCKING;
 	}
@@ -1840,7 +1840,7 @@ void ciNickError(CHAT chat, int type)
 		memset(&params, 0, sizeof(ciCallbackNickErrorParams));
 		params.type = type;
 		params.nick = connection->nick;
-		ciAddCallback(chat, CALLBACK_NICK_ERROR, connection->nickErrorCallback, &params, connection->connectParam, 0, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_NICK_ERROR, connection->nickErrorCallback, &params, connection->connectParam, 0, NULL);
 	}
 	else
 	{

@@ -52,6 +52,13 @@ devsupport@gamespy.com
 								  assert(operation->peer);\
 								  peer = operation->peer;\
                                   connection = (piConnection *)peer;
+
+
+#define piAddOperation_wrapper(_res_operation, _peer, _enum_operation, _ptr, _callback, _param, _opid) \
+	auto _callback_ptr = &(_callback); \
+	void *_void_callback = reinterpret_cast<void *&>(_callback_ptr); \
+	_res_operation = piAddOperation(_peer, _enum_operation, _ptr, _void_callback, _param, _opid);
+
 #if 0
 // for Visual Assist
 PEER peer;
@@ -455,7 +462,7 @@ PEERBool piNewConnectOperation
 
 	// Add an operation.
 	////////////////////
-	operation = piAddOperation(peer, PI_CONNECT_OPERATION, NULL, callback, callbackParam, opID);
+	piAddOperation_wrapper(operation, peer, PI_CONNECT_OPERATION, NULL, callback, callbackParam, opID)
 	if(!operation)
 		return PEERFalse;
 
@@ -743,7 +750,7 @@ PEERBool piNewCreateStagingRoomOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_CREATE_ROOM_OPERATION, NULL, callback, callbackParam, opID);
+	piAddOperation_wrapper(operation, peer, PI_CREATE_ROOM_OPERATION, NULL, callback, callbackParam, opID);
 	if(!operation)
 		return PEERFalse;
 	operation->socketClose = createdSocket;
@@ -926,7 +933,7 @@ PEERBool piNewJoinRoomOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_JOIN_ROOM_OPERATION, NULL, callback, callbackParam, opID);
+	piAddOperation_wrapper(operation, peer, PI_JOIN_ROOM_OPERATION, NULL, callback, callbackParam, opID);
 	if(!operation)
 		return PEERFalse;
 	operation->roomType = roomType;
@@ -962,7 +969,8 @@ PEERBool piNewListGroupRoomsOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = connection->listingGroupsOperation = piAddOperation(peer, PI_LIST_GROUP_ROOMS_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_LIST_GROUP_ROOMS_OPERATION, NULL, callback, param, opID);
+	connection->listingGroupsOperation = operation;
 	if(!operation)
 		return PEERFalse;
 
@@ -1054,7 +1062,7 @@ PEERBool piNewGetPlayerInfoOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_GET_PLAYER_INFO_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_GET_PLAYER_INFO_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
@@ -1083,7 +1091,7 @@ PEERBool piNewGetProfileIDOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_GET_PROFILE_ID_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_GET_PROFILE_ID_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
@@ -1112,7 +1120,7 @@ PEERBool piNewGetIPOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_GET_IP_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_GET_IP_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
@@ -1175,7 +1183,7 @@ PEERBool piNewChangeNickOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_CHANGE_NICK_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_CHANGE_NICK_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
@@ -1250,7 +1258,7 @@ PEERBool piNewGetGlobalKeysOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_GET_GLOBAL_KEYS_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_GET_GLOBAL_KEYS_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
@@ -1335,7 +1343,7 @@ PEERBool piNewGetRoomKeysOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_GET_ROOM_KEYS_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_GET_ROOM_KEYS_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 	operation->roomType = roomType;
@@ -1370,7 +1378,12 @@ static void piAuthenticateCDKeyCallback
 	// Add the callback.
 	////////////////////
 	if(operation->callback)
-		piAddAuthenticateCDKeyCallback(peer, result, message, static_cast<peerAuthenticateCDKeyCallback>(operation->callback), operation->callbackParam, operation->ID);
+	{
+
+		auto callback_ptr = &(operation->callback);
+		peerAuthenticateCDKeyCallback peerAuthCB = reinterpret_cast<peerAuthenticateCDKeyCallback&>(callback_ptr);
+		piAddAuthenticateCDKeyCallback(peer, result, message, peerAuthCB, operation->callbackParam, operation->ID);
+	}
 
 	// Remove the operation.
 	////////////////////////
@@ -1397,7 +1410,7 @@ PEERBool piNewAuthenticateCDKeyOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_AUTHENTICATE_CDKEY_OPERATION, NULL, callback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_AUTHENTICATE_CDKEY_OPERATION, NULL, callback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
@@ -1428,13 +1441,14 @@ PEERBool piNewAutoMatchOperation
 
 	// Add the operation.
 	/////////////////////
-	operation = piAddOperation(peer, PI_AUTO_MATCH_OPERATION, NULL, statusCallback, param, opID);
+	piAddOperation_wrapper(operation, peer, PI_AUTO_MATCH_OPERATION, NULL, statusCallback, param, opID);
 	if(!operation)
 		return PEERFalse;
 
 	// Store the second callback.
 	/////////////////////////////
-	operation->callback2 = rateCallback;
+	auto rateCb = &rateCallback;
+	operation->callback2 = reinterpret_cast<void *&>(rateCb);
 
 	// Store the socket and port.
 	/////////////////////////////

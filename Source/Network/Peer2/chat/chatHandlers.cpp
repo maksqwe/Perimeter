@@ -19,6 +19,7 @@ devsupport@gamespy.com
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
+#include "chat.h"
 #include "chatMain.h"
 #include "chatSocket.h"
 #include "chatHandlers.h"
@@ -91,6 +92,20 @@ devsupport@gamespy.com
 
 #define FINISH_FILTER          ciFinishFilter(chat, filter, &params)
 #define IS_ALPHA(c) ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+
+#define ciAddFilter_wrapper(_res, _chat, _type, _name, _name2, _callback1, _callback2, _param, _data) \
+	typedef void(*_func_dummy)(); _func_dummy _dummyCB; \
+	void* _void_callback1 = NULL; \
+	if(_callback1) { \
+		auto _callback_ptr1 = &_dummyCB; \
+		_void_callback1 = reinterpret_cast<void *&>(_callback_ptr1); \
+	} \
+	void* _void_callback2 = NULL; \
+	if(_callback2) { \
+		auto _callback_ptr2 = &_dummyCB; \
+		_void_callback2 = reinterpret_cast<void *&>(_callback_ptr2); \
+	} \
+	_res = ciAddFilter(_chat, _type, _name, _name2, _void_callback1, _void_callback2, _param, _data);
 
 enum
 {
@@ -878,7 +893,9 @@ int ciAddLISTFilter(CHAT chat, chatEnumChannelsCallbackEach callbackEach, chatEn
 		return 0; //ERRCON
 	memset(data, 0, sizeof(LISTData));
 
-	return ciAddFilter(chat, TYPE_LIST, NULL, NULL, callbackEach, callbackAll, param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_LIST, NULL, NULL, callbackEach, callbackAll, param, data);
+	return ret;
 }
 
 int ciAddJOINFilter(CHAT chat, const char * channel, chatEnterChannelCallback callback, void * param, chatChannelCallbacks * callbacks, const char * password)
@@ -895,8 +912,8 @@ int ciAddJOINFilter(CHAT chat, const char * channel, chatEnterChannelCallback ca
 	memset(data, 0, sizeof(JOINData));
 	data->callbacks = *callbacks;
 	strcpy(data->password, password);
-	
-	rcode = ciAddFilter(chat, TYPE_JOIN, channel, NULL, callback, NULL, param, data);
+
+	ciAddFilter_wrapper(rcode, chat, TYPE_JOIN, channel, NULL, callback, NULL, param, data);
 	if(rcode == 0)
 		gsifree(data);
 
@@ -905,7 +922,9 @@ int ciAddJOINFilter(CHAT chat, const char * channel, chatEnterChannelCallback ca
 
 int ciAddTOPICFilter(CHAT chat, const char * channel, chatGetChannelTopicCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_TOPIC, channel, NULL, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_TOPIC, channel, NULL, callback, NULL, param, NULL);
+	return ret;
 }
 
 int ciAddNAMESFilter(CHAT chat, const char * channel, chatEnumUsersCallback callback, void * param)
@@ -915,7 +934,9 @@ int ciAddNAMESFilter(CHAT chat, const char * channel, chatEnumUsersCallback call
 		return 0; //ERRCON
 	memset(data, 0, sizeof(NAMESData));
 
-	return ciAddFilter(chat, TYPE_NAMES, channel, NULL, callback, NULL, param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_NAMES, channel, NULL, callback, NULL, param, data);
+	return ret;
 }
 
 int ciAddWHOISFilter(CHAT chat, const char * user, chatGetUserInfoCallback callback, void * param)
@@ -926,7 +947,7 @@ int ciAddWHOISFilter(CHAT chat, const char * user, chatGetUserInfoCallback callb
 		return 0; //ERRCON
 	memset(data, 0, sizeof(WHOISData));
 
-	rcode = ciAddFilter(chat, TYPE_WHOIS, user, NULL, callback, NULL, param, data);
+	ciAddFilter_wrapper(rcode, chat, TYPE_WHOIS, user, NULL, callback, NULL, param, data);
 	if(rcode == 0)
 		gsifree(data);
 	return rcode;
@@ -934,22 +955,30 @@ int ciAddWHOISFilter(CHAT chat, const char * user, chatGetUserInfoCallback callb
 
 int ciAddWHOFilter(CHAT chat, const char * user, chatGetBasicUserInfoCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_WHO, user, NULL, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_WHO, user, NULL, callback, NULL, param, NULL);
+	return ret;
 }
 
 int ciAddCWHOFilter(CHAT chat, const char * channel, chatGetChannelBasicUserInfoCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_CWHO, channel, NULL, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_CWHO, channel, NULL, callback, NULL, param, NULL);
+	return ret;
 }
 
 int ciAddCMODEFilter(CHAT chat, const char * channel, chatGetChannelModeCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_CMODE, channel, NULL, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_CMODE, channel, NULL, callback, NULL, param, NULL);
+	return ret;
 }
 
 int ciAddUMODEFilter(CHAT chat, const char * user, const char * channel, chatGetUserModeCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_UMODE, user, channel, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_UMODE, user, channel, callback, NULL, param, NULL);
+	return ret;
 }
 
 int ciAddBANFilter(CHAT chat, const char * user, const char * channel)
@@ -965,7 +994,9 @@ int ciAddBANFilter(CHAT chat, const char * user, const char * channel)
 		return 0; //ERRCON
 	}
 
-	return ciAddFilter(chat, TYPE_BAN, user, NULL, NULL, NULL, NULL, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_BAN, user, NULL, NULL, NULL, NULL, data);
+	return ret;
 }
 
 int ciAddGETBANFilter(CHAT chat, const char * channel, chatEnumChannelBansCallback callback, void * param)
@@ -975,12 +1006,16 @@ int ciAddGETBANFilter(CHAT chat, const char * channel, chatEnumChannelBansCallba
 		return 0; //ERRCON
 	memset(data, 0, sizeof(GETBANData));
 
-	return ciAddFilter(chat, TYPE_GETBAN, channel, NULL, callback, NULL, param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_GETBAN, channel, NULL, callback, NULL, param, data);
+	return ret;
 }
 
 int ciAddNICKFilter(CHAT chat, const char * oldNick, const char * newNick, chatChangeNickCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_NICK, oldNick, newNick, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_NICK, oldNick, newNick, callback, NULL, param, NULL);
+	return ret;
 }
 
 int ciAddGETKEYFilter(CHAT chat, const char * cookie, int num, const char ** keys, const char * channel, chatGetGlobalKeysCallback callback, void * param)
@@ -1022,7 +1057,9 @@ int ciAddGETKEYFilter(CHAT chat, const char * cookie, int num, const char ** key
 		}
 	}
 
-	return ciAddFilter(chat, TYPE_GETKEY, cookie, NULL, callback, NULL, param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_GETKEY, cookie, NULL, callback, NULL, param, data);
+	return ret;
 }
 
 int ciAddGETCKEYFilter(CHAT chat, const char * cookie, int num, const char ** keys, CHATBool channel, CHATBool getBroadcastKeys, chatGetChannelKeysCallback callback, void * param)
@@ -1063,7 +1100,9 @@ int ciAddGETCKEYFilter(CHAT chat, const char * cookie, int num, const char ** ke
 	}
 	data->num = dest;
 
-	return ciAddFilter(chat, TYPE_GETCKEY, cookie, NULL, callback, NULL, param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_GETCKEY, cookie, NULL, callback, NULL, param, data);
+	return ret;
 }
 
 int ciAddGETCHANKEYFilter(CHAT chat, const char * cookie, int num, const char ** keys, CHATBool getBroadcastKeys, chatGetChannelKeysCallback callback, void * param)
@@ -1106,7 +1145,9 @@ int ciAddGETCHANKEYFilter(CHAT chat, const char * cookie, int num, const char **
 		data->num = dest;
 	}
 
-	return ciAddFilter(chat, TYPE_GETCHANKEY, cookie, NULL, callback, NULL, param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_GETCHANKEY, cookie, NULL, callback, NULL, param, data);
+	return ret;
 }
 
 int ciAddUNQUIETFilter(CHAT chat, const char * channel)
@@ -1123,12 +1164,16 @@ int ciAddUNQUIETFilter(CHAT chat, const char * channel)
 		return 0; //ERRCON
 	memset(data, 0, sizeof(NAMESData));
 
-	return ciAddFilter(chat, TYPE_UNQUIET, channel, NULL, callbacks->newUserList, NULL, callbacks->param, data);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_UNQUIET, channel, NULL, callbacks->newUserList, NULL, callbacks->param, data);
+	return ret;
 }
 
 int ciAddCDKEYFilter(CHAT chat, chatAuthenticateCDKeyCallback callback, void * param)
 {
-	return ciAddFilter(chat, TYPE_CDKEY, NULL, NULL, callback, NULL, param, NULL);
+	int ret;
+	ciAddFilter_wrapper(ret, chat, TYPE_CDKEY, NULL, NULL, callback, NULL, param, NULL);
+	return ret;
 }
 
 /*****************
@@ -1451,7 +1496,7 @@ void ciPrivmsgHandler(CHAT chat, ciServerMessage * message)
 				params.type = CHAT_ACTION;
 			else
 				params.type = CHAT_MESSAGE;
-			ciAddCallback(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
 		}
 	}
 	else
@@ -1469,7 +1514,7 @@ void ciPrivmsgHandler(CHAT chat, ciServerMessage * message)
 				params.type = CHAT_ACTION;
 			else
 				params.type = CHAT_MESSAGE;
-			ciAddCallback(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
+			ciAddCallback_wrapper(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
 		}
 	}
 }
@@ -1504,7 +1549,7 @@ void ciNoticeHandler(CHAT chat, ciServerMessage * message)
 				params.user = NULL;
 			params.message = msg;
 			params.type = CHAT_NOTICE;
-			ciAddCallback(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
 		}
 	}
 	else
@@ -1522,7 +1567,7 @@ void ciNoticeHandler(CHAT chat, ciServerMessage * message)
 				params.user = NULL;
 			params.message = msg;
 			params.type = CHAT_NOTICE;
-			ciAddCallback(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
+			ciAddCallback_wrapper(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
 		}
 	}
 }
@@ -1557,7 +1602,7 @@ void ciUTMHandler(CHAT chat, ciServerMessage * message)
 				params.user = NULL;
 			params.message = msg;
 			params.type = CHAT_UTM;
-			ciAddCallback(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
 		}
 	}
 	else
@@ -1575,7 +1620,7 @@ void ciUTMHandler(CHAT chat, ciServerMessage * message)
 				params.user = NULL;
 			params.message = msg;
 			params.type = CHAT_UTM;
-			ciAddCallback(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
+			ciAddCallback_wrapper(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
 		}
 	}
 }
@@ -1610,7 +1655,7 @@ void ciATMHandler(CHAT chat, ciServerMessage * message)
 				params.user = NULL;
 			params.message = msg;
 			params.type = CHAT_ATM;
-			ciAddCallback(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_PRIVATE_MESSAGE, connection->globalCallbacks.privateMessage, &params, connection->globalCallbacks.param, 0, NULL);
 		}
 	}
 	else
@@ -1628,7 +1673,7 @@ void ciATMHandler(CHAT chat, ciServerMessage * message)
 				params.user = NULL;
 			params.message = msg;
 			params.type = CHAT_ATM;
-			ciAddCallback(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
+			ciAddCallback_wrapper(chat, CALLBACK_CHANNEL_MESSAGE, callbacks->channelMessage, &params, callbacks->param, 0, target);
 		}
 	}
 }
@@ -1813,7 +1858,7 @@ void ciJoinHandler(CHAT chat, ciServerMessage * message)
 				params.channel = channel;
 				params.user = nick;
 				params.mode = mode;
-				ciAddCallback(chat, CALLBACK_USER_JOINED, callbacks->userJoined, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_USER_JOINED, callbacks->userJoined, &params, callbacks->param, 0, channel);
 			}
 
 			// Call the user list updated callback.
@@ -1822,7 +1867,7 @@ void ciJoinHandler(CHAT chat, ciServerMessage * message)
 			{
 				ciCallbackUserListUpdatedParams params;
 				params.channel = channel;
-				ciAddCallback(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
 			}
 		}
 	}
@@ -1877,7 +1922,7 @@ void ciPartHandler(CHAT chat, ciServerMessage * message)
 					params.why = CHAT_LEFT;
 					params.reason = reason;
 					params.kicker = NULL;
-					ciAddCallback(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
+					ciAddCallback_wrapper(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
 				}
 
 				// Call the user list updated callback.
@@ -1886,7 +1931,7 @@ void ciPartHandler(CHAT chat, ciServerMessage * message)
 				{
 					ciCallbackUserListUpdatedParams params;
 					params.channel = channel;
-					ciAddCallback(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
+					ciAddCallback_wrapper(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
 				}
 			}
 		}
@@ -1939,7 +1984,7 @@ void ciKickHandler(CHAT chat, ciServerMessage * message)
 				params.channel = channel;
 				params.user = kicker;
 				params.reason = reason;
-				ciAddCallback(chat, CALLBACK_KICKED, callbacks->kicked, &params, callbacks->param, 0, NULL);
+				ciAddCallback_wrapper(chat, CALLBACK_KICKED, callbacks->kicked, &params, callbacks->param, 0, NULL);
 			}
 			
 			// Left the channel.
@@ -1962,7 +2007,7 @@ void ciKickHandler(CHAT chat, ciServerMessage * message)
 					params.why = CHAT_KICKED;
 					params.reason = reason;
 					params.kicker = kicker;
-					ciAddCallback(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
+					ciAddCallback_wrapper(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
 				}
 				
 				// Call the user list updated callback.
@@ -1971,7 +2016,7 @@ void ciKickHandler(CHAT chat, ciServerMessage * message)
 				{
 					ciCallbackUserListUpdatedParams params;
 					params.channel = channel;
-					ciAddCallback(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
+					ciAddCallback_wrapper(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
 				}
 			}
 		}
@@ -2009,7 +2054,7 @@ static void ciQuitEnumChannelsCallback(CHAT chat, const char * user, const char 
 				params.why = CHAT_QUIT;
 				params.reason = (char *)reason;
 				params.kicker = NULL;
-				ciAddCallback(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
 			}
 
 			// Call the user list updated callback.
@@ -2018,7 +2063,7 @@ static void ciQuitEnumChannelsCallback(CHAT chat, const char * user, const char 
 			{
 				ciCallbackUserListUpdatedParams params;
 				params.channel = (char *)channel;
-				ciAddCallback(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
 			}
 		}
 	}
@@ -2073,7 +2118,7 @@ static void ciKillEnumChannelsCallback(CHAT chat, const char * user, const char 
 				params.why = CHAT_KILLED;
 				params.reason = (char *)reason;
 				params.kicker = NULL;
-				ciAddCallback(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_USER_PARTED, callbacks->userParted, &params, callbacks->param, 0, channel);
 			}
 
 			// Call the user list updated callback.
@@ -2082,7 +2127,7 @@ static void ciKillEnumChannelsCallback(CHAT chat, const char * user, const char 
 			{
 				ciCallbackUserListUpdatedParams params;
 				params.channel = (char *)channel;
-				ciAddCallback(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_USER_LIST_UPDATED, callbacks->userListUpdated, &params, callbacks->param, 0, channel);
 			}
 		}
 	}
@@ -2139,7 +2184,7 @@ void ciTopicHandler(CHAT chat, ciServerMessage * message)
 		ciCallbackTopicChangedParams params;
 		params.channel = channel;
 		params.topic = topic;
-		ciAddCallback(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &params, callbacks->param, 0, channel);
+		ciAddCallback_wrapper(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &params, callbacks->param, 0, channel);
 	}
 }
 
@@ -2289,7 +2334,7 @@ void ciInviteHandler(CHAT chat, ciServerMessage * message)
 		ciCallbackInvitedParams params;
 		params.channel = channel;
 		params.user = nick;
-		ciAddCallback(chat, CALLBACK_INVITED, connection->globalCallbacks.invited, &params, connection->globalCallbacks.param, 0, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_INVITED, connection->globalCallbacks.invited, &params, connection->globalCallbacks.param, 0, NULL);
 	}
 }
 
@@ -2564,7 +2609,7 @@ void ciRplTopicHandler(CHAT chat, ciServerMessage * message)
 			ciCallbackTopicChangedParams params;
 			params.channel = channel;
 			params.topic = topic;
-			ciAddCallback(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &params, callbacks->param, 0, channel);
+			ciAddCallback_wrapper(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &params, callbacks->param, 0, channel);
 		}
 	}
 }
@@ -2616,7 +2661,7 @@ void ciRplNoTopicHandler(CHAT chat, ciServerMessage * message)
 			ciCallbackTopicChangedParams params;
 			params.channel = channel;
 			params.topic = "";
-			ciAddCallback(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &params, callbacks->param, 0, channel);
+			ciAddCallback_wrapper(chat, CALLBACK_TOPIC_CHANGED, callbacks->topicChanged, &params, callbacks->param, 0, channel);
 		}
 	}
 }
@@ -2751,7 +2796,7 @@ void ciRplWhoReplyHandler(CHAT chat, ciServerMessage * message)
 		params.user = user;
 		params.address = address;
 		
-		ciAddCallback(chat, CALLBACK_GET_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_GET_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
 
 		// We want to wait until we get the end, but we've already called the callback.
 		///////////////////////////////////////////////////////////////////////////////
@@ -2772,7 +2817,7 @@ void ciRplWhoReplyHandler(CHAT chat, ciServerMessage * message)
 		params.user = user;
 		params.address = address;
 
-		ciAddCallback(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
+		ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_BASIC_USER_INFO, filter->callback, &params, filter->param, filter->ID, NULL);
 
 		return;
 	}
@@ -2960,7 +3005,7 @@ void ciRplGetKeyHandler(CHAT chat, ciServerMessage * message)
 		}
 		else
 		{
-			ciAddCallback(chat, CALLBACK_GET_GLOBAL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_GET_GLOBAL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
 		}
 
 		for(i = 0 ; i < num ; i++)
@@ -3072,7 +3117,7 @@ void ciRplGetCKeyHandler(CHAT chat, ciServerMessage * message)
 				/////////////////////
 				params.key = key;
 				params.value = value;
-				ciAddCallback(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, &params, callbacks->param, 0, channel);
 
 				*flags = temp;
 			}
@@ -3187,7 +3232,7 @@ void ciRplGetCKeyHandler(CHAT chat, ciServerMessage * message)
 		}
 		else
 		{
-			ciAddCallback(chat, CALLBACK_GET_CHANNEL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_GET_CHANNEL_KEYS, filter->callback, &params, filter->param, filter->ID, NULL);
 		}
 
 		for(i = 0 ; i < num ; i++)
@@ -3300,7 +3345,7 @@ void ciRplGetChanKeyHandler(CHAT chat, ciServerMessage * message)
 				/////////////////////
 				params.key = key;
 				params.value = value;
-				ciAddCallback(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, &params, callbacks->param, 0, channel);
+				ciAddCallback_wrapper(chat, CALLBACK_BROADCAST_KEY_CHANGED, callbacks->broadcastKeyChanged, &params, callbacks->param, 0, channel);
 
 				*flags = temp;
 			}
@@ -3592,7 +3637,7 @@ void ciRplListHandler(CHAT chat, ciServerMessage * message)
 			params.channel = channel;
 			params.topic = topic;
 			params.numUsers = numUsers;
-			ciAddCallback(chat, CALLBACK_ENUM_CHANNELS_EACH, filter->callback, &params, filter->param, filter->ID, NULL);
+			ciAddCallback_wrapper(chat, CALLBACK_ENUM_CHANNELS_EACH, filter->callback, &params, filter->param, filter->ID, NULL);
 
 			//TODO:only store this stuff if there's an "all" callback
 
@@ -3717,7 +3762,7 @@ void ciRplChannelModeIsHandler(CHAT chat, ciServerMessage * message)
 			ciCallbackChannelModeChangedParams params;
 			params.channel = channel;
 			params.mode = &mode;
-			ciAddCallback(chat, CALLBACK_CHANNEL_MODE_CHANGED, callbacks->channelModeChanged, &params, callbacks->param, 0, channel);
+			ciAddCallback_wrapper(chat, CALLBACK_CHANNEL_MODE_CHANGED, callbacks->channelModeChanged, &params, callbacks->param, 0, channel);
 		}
 	}
 
